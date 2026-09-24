@@ -3,32 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ویندوز سرور ۲ | اپیزود ۳ : مانیتورینگ و روتینگ</title>
+    <title>هنوز نرسیدیم!</title>
     
     <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
-                    
-                    
-                    
-                    
                     colors: {
-                        // Episode 3 Accent Color: Neon Cyan
                         accent: '#00e5ff',
-                        accentHover: '#33edff',
-                        darkBg: '#0f0f13',
+                        darkBg: '#050b14',
                     }
                 }
             }
@@ -38,469 +30,88 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
-            background-color: #0f0f13;
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: rgba(10, 15, 30, 0.4);
+        /* انیمیشن برای گوی‌های درخشان پس‌زمینه */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        /* Glassmorphism Panel Base */
+        .glass-card {
+            background: rgba(30, 30, 35, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-        
-        .glass-sidebar {
-            background: rgba(5, 10, 20, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(0, 229, 255, 0.2);
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Content Sections Toggle */
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f0f13; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
-
-        /* Monospace / Code Blocks */
-        .mono-inline {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #67e8f9;
-            padding: 0.15rem 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            font-size: 0.9em;
-            direction: ltr;
-            display: inline-block;
-        }
-
-        .mono-block {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #cffafe;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-right: 4px solid #00e5ff;
-            direction: ltr;
-            text-align: left;
-            margin: 1rem 0;
-            overflow-x: auto;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        /* Sidebar active item styling */
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
-            border-right: 3px solid #00e5ff;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex font-sans">
 
-    <!-- Mobile Header & Menu Toggle -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
-        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۲</div>
-        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
-            <i class="fa-solid fa-bars text-2xl"></i>
-        </button>
+<body class="min-h-screen relative flex items-center justify-center p-4">
+
+    <!-- افکت‌های نوری معلق در پس‌زمینه -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 flex items-center justify-center pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute bottom-[10%] left-[10%] w-96 h-96 bg-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Sidebar (Right) -->
-    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
-        <div class="p-6 border-b border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                <i class="fa-solid fa-route text-accent text-xl"></i>
+    <div class="w-full max-w-[420px] z-10">
+        <!-- کادر گلس‌مورفیسم -->
+        <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 text-center flex flex-col items-center">
+            
+            <!-- آیکون ساعت با افکت نئونی -->
+            <div class="mb-8 mt-2 relative">
+                <div class="absolute inset-0 bg-accent blur-xl opacity-20 rounded-full"></div>
+                <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 border-accent/30 bg-accent/5 relative z-10 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
             </div>
-            <div>
-                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
-                <p class="text-accent/80 text-sm">اپیزود ۳ : مانیتورینگ و روتینگ</p>
-            </div>
-        </div>
 
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
-            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
-            
-            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="monitoring-caching">
-                <i class="fa-solid fa-chart-line w-5 text-center"></i>
-                <span class="text-sm font-medium">پرفورمنس و لاگ‌ها</span>
+            <!-- متن اصلی -->
+            <h1 class="text-xl sm:text-2xl font-black text-white mb-6 leading-[2.2] tracking-wide drop-shadow-lg">
+                داداش چقد عجله داری<br>
+                <span class="text-accent">صبر کن هنوز نرسیدیم که :)</span>
+            </h1>
+
+            <!-- متن توضیحات -->
+            <p class="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-10 px-2 font-light">
+                این اپیزود هنوز آماده نشده یا سرورش در حال ساخته. یه کم دیگه بهمون فرصت بده، به زودی راه‌اندازی میشه!
+            </p>
+
+            <!-- دکمه بازگشت به صفحه اصلی -->
+            <a href="/" 
+               class="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-medium text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                <span class="whitespace-nowrap">بازگشت به لیست اپیزودها</span>
+                <!-- آیکون فلش (با انیمیشن هاور به سمت راست برای زبان فارسی) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
             </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="url-rewrite-mime">
-                <i class="fa-solid fa-shuffle w-5 text-center"></i>
-                <span class="text-sm font-medium">پسوندها و URL Rewrite</span>
-            </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="app-architecture">
-                <i class="fa-solid fa-layer-group w-5 text-center"></i>
-                <span class="text-sm font-medium">معماری Application Pool</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="routing-network">
-                <i class="fa-solid fa-network-wired w-5 text-center"></i>
-                <span class="text-sm font-medium">مسیریابی (Routing)</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="security-advanced">
-                <i class="fa-solid fa-shield-halved w-5 text-center"></i>
-                <span class="text-sm font-medium">امنیت پیشرفته و DFS</span>
-            </a>
-        </nav>
-
-        <div class="p-4 border-t border-white/5 text-center">
-        </div>
-    </aside>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
-        <div class="max-w-4xl mx-auto">
-            
-            <!-- SECTION 1: Monitoring & Caching -->
-            <section id="monitoring-caching" class="section-content active fade-in">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"></div>
-                    
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-chart-line text-accent"></i>
-                        بهینه‌سازی پاسخ‌ها و مانیتورینگ
-                    </h2>
-                    
-                    <div class="space-y-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                                <h3 class="text-lg font-bold text-accent mb-2"><i class="fa-solid fa-reply me-2"></i>HTTP Response</h3>
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    هدرهای مخفی که همراه با سایت به مرورگر کاربر ارسال می‌شوند. در IIS می‌توانیم این هدرها را دستکاری کنیم (مثلاً پنهان کردن نام و نسخه وب‌سرور برای جلوگیری از هک، یا افزودن هدرهای امنیتی).
-                                </p>
-                            </div>
-                            <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                                <h3 class="text-lg font-bold text-accent mb-2"><i class="fa-solid fa-bolt me-2"></i>Output Caching</h3>
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    ابزار حیاتی پرفورمنس! خروجی نهایی صفحات داینامیک را در RAM سرور کش می‌کند تا برای کاربران بعدی، بدون درگیر شدن مجدد دیتابیس و CPU، در کسری از ثانیه لود شود.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">لاگ‌های IIS و تحلیل داده‌ها</h3>
-                            
-                            <p class="text-gray-300 leading-relaxed mb-4 text-sm">
-                                سرویس IIS تمام درخواست‌ها را در فایل‌های متنی (W3C Format) ثبت می‌کند. اما این فایل‌ها <strong>خام</strong> هستند و حجم هارد را به سرعت پر می‌کنند. خواندن آن‌ها با Notepad غیرممکن است.
-                            </p>
-
-                            <div class="flex flex-col space-y-4">
-                                <div class="p-4 bg-white/5 rounded-lg border-r-4 border-accent">
-                                    <h4 class="font-bold text-white mb-1">Web Log Storming</h4>
-                                    <p class="text-sm text-gray-400">نرم‌افزاری از شرکت Dataland که فایل‌های خام و حجیم IIS را دریافت کرده و آن‌ها را به نمودارها و گراف‌های قابل فهم تبدیل می‌کند تا ترافیک و حملات را آنالیز کنیم.</p>
-                                </div>
-                                <div class="p-4 bg-white/5 rounded-lg border-r-4 border-yellow-500">
-                                    <h4 class="font-bold text-white mb-1">Google Analytics</h4>
-                                    <p class="text-sm text-gray-400">ابزار ابری که با کد جاوااسکریپت کار می‌کند. <strong>نقطه ضعف:</strong> فقط زمانی آمار می‌گیرد که صفحه لود شود و کاربر اینترنت داشته باشد (برای اینترانت و ارورهای ۵۰۰ سرور کار نمی‌کند). بنابراین لاگ IIS و گوگل آنالیتیکس مکمل یکدیگرند.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: URL Rewrite & MIME -->
-            <section id="url-rewrite-mime" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-shuffle text-accent"></i>
-                        پسوندها و بازنویسی مسیر (URL Rewrite)
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-2"><i class="fa-solid fa-file-signature"></i> انواع فایل‌ها (MIME Type)</h3>
-                            <p class="text-gray-300 leading-relaxed mb-4 text-sm">
-                                این بخش، <strong>دیکشنریِ پسوندهای IIS</strong> است. اگر فایلی در سایت شما باشد که پسوندش (مثل <span class="mono-inline">.apk</span> یا فرمت‌های ویدیویی) در این دیکشنری تعریف نشده باشد، IIS به دلایل امنیتی بلافاصله ارور <strong>404.3</strong> می‌دهد و اجازه دانلود نمی‌دهد. باید پسوندها را دستی در این لیست اضافه کنید.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-3">ماژول IIS URL Rewrite</h3>
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                                <p class="text-gray-300 text-sm leading-relaxed mb-3">
-                                    این ماژول به صورت پیش‌فرض نصب نیست و باید دانلود شود. به ما اجازه می‌دهد با استفاده از الگوها (Regex) مسیرهای درخواستی کاربر را بازنویسی کنیم.
-                                </p>
-                                <div class="p-3 bg-accent/10 rounded border border-accent/20">
-                                    <strong class="text-accent text-sm"><i class="fa-solid fa-lock me-2"></i>کاربرد اصلی:</strong> 
-                                    <span class="text-gray-300 text-sm">هدایت اجباری کاربران از <span class="mono-inline">HTTP</span> به <span class="mono-inline">HTTPS</span>.</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">رفتار Redirect و کدهای وضعیت</h3>
-                            <ul class="space-y-3">
-                                <li class="bg-white/5 p-4 rounded-lg flex items-start gap-4">
-                                    <span class="text-accent font-bold text-xl mt-1">301</span>
-                                    <div>
-                                        <strong class="text-white block mb-1">انتقال دائم (Moved Permanently)</strong>
-                                        <p class="text-sm text-gray-400">مهم‌ترین کد برای سئو. به گوگل می‌گوید صفحه برای همیشه منتقل شده تا اعتبار آن به آدرس جدید منتقل شود.</p>
-                                    </div>
-                                </li>
-                                <li class="bg-white/5 p-4 rounded-lg flex items-start gap-4">
-                                    <span class="text-blue-400 font-bold text-xl mt-1">302</span>
-                                    <div>
-                                        <strong class="text-white block mb-1">انتقال موقت (Found / Temporary)</strong>
-                                        <p class="text-sm text-gray-400">صفحه موقتاً منتقل شده و در آینده برمی‌گردد. رتبه سئو منتقل نمی‌شود.</p>
-                                    </div>
-                                </li>
-                                <li class="bg-white/5 p-4 rounded-lg flex items-start gap-4">
-                                    <span class="text-gray-400 font-bold text-xl mt-1">307/308</span>
-                                    <div>
-                                        <strong class="text-white block mb-1">انتقال‌های سخت‌گیرانه (Strict Redirects)</strong>
-                                        <p class="text-sm text-gray-400">اجازه تغییر متد درخواست (مثل POST به GET) را حین ریدایرکت نمی‌دهند (مخصوص APIها).</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: App Architecture -->
-            <section id="app-architecture" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-layer-group text-accent"></i>
-                        معماری سایت و Application Pool
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3"><i class="fa-solid fa-folder-tree"></i> دایرکتوری مجازی (Virtual Directory)</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                                یک "پوشه میانبر" در سایت است. مثلاً کدهای سایت شما در درایو C قرار دارد، اما با ساخت VD، پوشه دانلودها و مدیا را در یک هارد دیگر یا روی یک File Server در شبکه قرار می‌دهید. کاربر آدرس سایت را می‌بیند اما IIS فایل‌ها را از منبع دیگری می‌خواند.
-                            </p>
-                        </div>
-
-                        <div class="bg-gradient-to-br from-accent/20 to-transparent p-[1px] rounded-2xl">
-                            <div class="bg-[#0f0f13] rounded-2xl p-6 h-full border border-accent/20">
-                                <h3 class="text-2xl font-black text-white mb-4">قلب تپنده IIS</h3>
-                                
-                                <div class="mb-5">
-                                    <h4 class="font-bold text-accent mb-1">Application</h4>
-                                    <p class="text-sm text-gray-400">به هر سایت یا بخشی از سایت که قرار است کدهای برنامه‌نویسی (مثل ASP.NET) را اجرا کند می‌گویند.</p>
-                                </div>
-
-                                <div>
-                                    <h4 class="font-bold text-accent mb-2">Application Pool (استخر منابع)</h4>
-                                    <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
-                                        این مفهوم به معنای <strong>قرنطینه و اختصاص منابع</strong> (RAM و CPU) است. اگر ۳ سایت روی یک سرور داشته باشیم و همه در یک App Pool باشند، با Crash کردن یکی از آن‌ها، هر ۳ سایت از کار می‌افتند!
-                                    </p>
-                                    <div class="bg-red-500/10 border-r-4 border-red-500 p-3 rounded-l-lg mb-2">
-                                        <p class="text-xs text-gray-300"><i class="fa-solid fa-triangle-exclamation text-red-500 me-1"></i> معماری اصولی این است که برای هر سایت یک Application Pool مجزا بسازیم (ایزوله‌سازی). در این حالت پروسس‌های آن‌ها کاملاً از هم جدا کار می‌کنند.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: Routing -->
-            <section id="routing-network" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-network-wired text-accent"></i>
-                        مسیریابی (Routing) در لایه ۳
-                    </h2>
-
-                    <div class="space-y-6">
-                        <div class="bg-white/5 p-5 rounded-xl border border-white/10">
-                            <h3 class="text-lg font-bold text-accent mb-2">فلسفه روتر و قانون Broadcast</h3>
-                            <p class="text-sm leading-relaxed text-gray-300 mb-2">
-                                روترها شبکه‌های مختلف (Subnet ها) را به هم متصل می‌کنند تا دامنه برادکست (Broadcast Domain) کوچک شود و امنیت شبکه‌های سازمانی حفظ شود.
-                            </p>
-                            <p class="text-sm leading-relaxed text-gray-300">
-                                <strong class="text-red-400">قانون طلایی:</strong> روتر هیچ پکت برادکستی را عبور نمی‌دهد. تنها استثنا <strong>DHCP Relay Agent</strong> است که پیام برادکست کلاینت را به صورت Unicast به سمت DHCP سرور می‌فرستد.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">جدول مسیریابی (Routing Table)</h3>
-                            <p class="text-sm text-gray-300 mb-3">شبکه‌های متصل به پورت روتر به صورت <em>Directly Connected</em> شناخته می‌شود. بقیه مسیرها از طریق Default Gateway پیدا می‌شوند.</p>
-                            
-                            <p class="text-sm font-bold text-accent mt-4">دستور Static Route ثابت (Permanent) در ویندوز:</p>
-                            <div class="mono-block mt-2 text-sm">
-                                route -p add 192.168.10.0 mask 255.255.255.0 192.168.1.1
-                            </div>
-                            <p class="text-xs text-gray-400">برای مشاهده جدول روتینگ سیستم از دستور <span class="mono-inline">route print</span> استفاده می‌شود.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                            <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                                <h4 class="font-bold text-accent mb-1 text-sm"><i class="fa-solid fa-microchip me-1"></i> روتر سخت‌افزاری</h4>
-                                <p class="text-xs text-gray-400 mt-1">دیوایس‌های سیسکو/جونیپر با چیپ‌های ASIC. سرعت بالا، تاخیر کم. مخصوص هسته (Core) دیتاسنترها.</p>
-                            </div>
-                            <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                                <h4 class="font-bold text-accent mb-1 text-sm"><i class="fa-solid fa-laptop-code me-1"></i> روتر نرم‌افزاری</h4>
-                                <p class="text-xs text-gray-400 mt-1">ویندوز سرور RRAS یا میکروتیک روی سرور مجازی. ارزان و منعطف. مخصوص شعب و شبکه‌های متوسط.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex gap-4 p-4 bg-accent/10 border-r-4 border-accent rounded-l-lg">
-                            <div class="flex-1">
-                                <h4 class="font-bold text-white mb-1">Throughput</h4>
-                                <p class="text-xs text-gray-300">پهنای باند عبوری؛ حجم کل دیتای قابل عبور در یک ثانیه (عرض اتوبان).</p>
-                            </div>
-                            <div class="flex-1 border-r border-accent/20 pr-4">
-                                <h4 class="font-bold text-white mb-1">Concurrent Connections</h4>
-                                <p class="text-xs text-gray-300">حداکثر تعداد نشست‌های همزمان در حافظه RAM روتر.</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg font-bold text-white mb-2">Dynamic Routing</h3>
-                            <div class="flex flex-col gap-2 mt-2">
-                                <div class="bg-black/20 p-3 rounded-lg border border-white/5 text-sm">
-                                    <strong class="text-accent inline-block w-16">OSPF:</strong> محبوب در سازمان‌ها؛ مسیریابی بر اساس پهنای باند.
-                                </div>
-                                <div class="bg-black/20 p-3 rounded-lg border border-white/5 text-sm">
-                                    <strong class="text-accent inline-block w-16">EIGRP:</strong> پروتکل سیسکو با سرعت همگرایی فوق‌العاده بالا.
-                                </div>
-                                <div class="bg-black/20 p-3 rounded-lg border border-white/5 text-sm">
-                                    <strong class="text-accent inline-block w-16">BGP:</strong> پروتکل مسیریابی اینترنت جهانی.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 5: Security & DFS -->
-            <section id="security-advanced" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-shield-halved text-accent"></i>
-                        امنیت پیشرفته، مدیریت و DFS
-                    </h2>
-
-                    <div class="space-y-6">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3">لایه‌های امنیتی IIS</h3>
-                            <div class="space-y-3">
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <h4 class="font-bold text-white mb-1">Request Filtering</h4>
-                                    <p class="text-sm text-gray-400">یک WAF کوچک در دل IIS. مسدود کردن پسوندهای خاص، جلوگیری از SQL Injection و محدودیت‌های URL.</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <h4 class="font-bold text-white mb-1">HSTS</h4>
-                                    <p class="text-sm text-gray-400">به مرورگر دستور می‌دهد در آینده فقط از طریق پروتکل امن HTTPS متصل شود. جلوگیری کامل از حملات SSL Stripping.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-3 border-b border-white/10 pb-2">مدیریت و بک‌آپ سرور</h3>
-                            <ul class="space-y-3 text-sm text-gray-300">
-                                <li>
-                                    <strong>Management Service:</strong> ابزاری برای مدیریت IIS از راه دور (بدون نیاز به ریموت دسکتاپ). روی پورت امن <span class="mono-inline">8192</span> کار می‌کند.
-                                </li>
-                                <li>
-                                    <strong>Shared Configuration:</strong> در معماری‌های بزرگ (Web Farm)، تنظیمات سرورها به صورت یکپارچه از یک پوشه اشتراکی خوانده می‌شود.
-                                </li>
-                                <li>
-                                    <strong>بک‌آپ‌گیری از IIS:</strong> استفاده از ابزار appcmd برای بک‌آپ از فایل تنظیمات:
-                                    <div class="mono-block text-xs mt-2">appcmd add backup "MyBackupName"</div>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="p-5 bg-gradient-to-r from-accent/20 to-transparent border-r-4 border-accent rounded-l-lg mt-4">
-                            <h3 class="text-lg font-bold text-white mb-2"><i class="fa-solid fa-sitemap me-2"></i>سیستم فایل توزیع‌شده (DFS)</h3>
-                            <p class="text-sm leading-relaxed text-gray-300 mb-3">
-                                تکنولوژی قدرتمند مایکروسافت برای مدیریت فایل‌ها در شبکه‌های سازمانی بزرگ که شامل دو بخش است:
-                            </p>
-                            <ul class="list-disc list-inside text-sm text-gray-400 space-y-2">
-                                <li><strong>DFS Namespace:</strong> ایجاد یک مسیر شبکه‌ای واحد برای دسترسی کاربران، در حالی که پوشه‌ها ممکن است روی سرورهای فیزیکی مختلف باشند.</li>
-                                <li><strong>DFS Replication:</strong> همگام‌سازی و کپی‌برداری اتوماتیک در سطح Block-level بین سرورهای شعب مختلف.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
             
         </div>
-    </main>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section-content');
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = item.getAttribute('data-target');
-
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-
-                    sections.forEach(section => {
-                        section.classList.remove('active', 'fade-in');
-                        if (section.id === targetId) {
-                            section.classList.add('active');
-                            void section.offsetWidth; 
-                            section.classList.add('fade-in');
-                        }
-                    });
-
-                    if(window.innerWidth < 1024) {
-                        closeMobileSidebar();
-                    }
-                });
-            });
-
-            function openMobileSidebar() {
-                sidebar.classList.remove('translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobileSidebar() {
-                sidebar.classList.add('translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-
-            mobileMenuBtn.addEventListener('click', openMobileSidebar);
-            sidebarOverlay.addEventListener('click', closeMobileSidebar);
-        });
-    </script>
 </body>
 </html>
