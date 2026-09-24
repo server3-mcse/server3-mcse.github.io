@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ویندوز سرور ۲ | اپیزود ۱۱</title>
+    <title>هنوز نرسیدیم!</title>
     
     <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
                     colors: {
-                        // Episode 11 Accent Color: Neon Cyan
                         accent: '#00e5ff',
-                        accentHover: '#33edff',
                         darkBg: '#050b14',
                     }
                 }
@@ -35,389 +30,88 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
+            font-family: 'Vazirmatn', sans-serif !important;
             background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: rgba(10, 15, 30, 0.4);
+        /* انیمیشن برای گوی‌های درخشان پس‌زمینه */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        /* Glassmorphism Panel Base */
+        .glass-card {
+            background: rgba(30, 30, 35, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-        
-        .glass-sidebar {
-            background: rgba(5, 10, 20, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(0, 229, 255, 0.2);
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Content Sections Toggle */
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #050b14; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
-
-        /* Monospace / Code Blocks */
-        .mono-inline {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #67e8f9;
-            padding: 0.15rem 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            font-size: 0.9em;
-            direction: ltr;
-            display: inline-block;
-        }
-
-        .mono-block {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #cffafe;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-right: 4px solid #00e5ff;
-            direction: ltr;
-            text-align: left;
-            margin: 1rem 0;
-            overflow-x: auto;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        /* Sidebar active item styling */
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
-            border-right: 3px solid #00e5ff;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex font-sans">
 
-    <!-- Mobile Header & Menu Toggle -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
-        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۲</div>
-        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
-            <i class="fa-solid fa-bars text-2xl"></i>
-        </button>
+<body class="min-h-screen relative flex items-center justify-center p-4">
+
+    <!-- افکت‌های نوری معلق در پس‌زمینه -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 flex items-center justify-center pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute bottom-[10%] left-[10%] w-96 h-96 bg-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Sidebar (Right) -->
-    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
-        <div class="p-6 border-b border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                <i class="fa-solid fa-desktop text-accent text-xl"></i>
+    <div class="w-full max-w-[420px] z-10">
+        <!-- کادر گلس‌مورفیسم -->
+        <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 text-center flex flex-col items-center">
+            
+            <!-- آیکون ساعت با افکت نئونی -->
+            <div class="mb-8 mt-2 relative">
+                <div class="absolute inset-0 bg-accent blur-xl opacity-20 rounded-full"></div>
+                <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 border-accent/30 bg-accent/5 relative z-10 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
             </div>
-            <div>
-                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
-                <p class="text-accent/80 text-sm">اپیزود ۱۱ : کنسول WSUS</p>
-            </div>
-        </div>
 
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
-            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
-            
-            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="wsus-prereq">
-                <i class="fa-solid fa-puzzle-piece w-5 text-center"></i>
-                <span class="text-sm font-medium">پیش‌نیازهای گزارش‌گیری</span>
+            <!-- متن اصلی -->
+            <h1 class="text-xl sm:text-2xl font-black text-white mb-6 leading-[2.2] tracking-wide drop-shadow-lg">
+                داداش چقد عجله داری<br>
+                <span class="text-accent">صبر کن هنوز نرسیدیم که :)</span>
+            </h1>
+
+            <!-- متن توضیحات -->
+            <p class="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-10 px-2 font-light">
+                این اپیزود هنوز آماده نشده یا سرورش در حال ساخته. یه کم دیگه بهمون فرصت بده، به زودی راه‌اندازی میشه!
+            </p>
+
+            <!-- دکمه بازگشت به صفحه اصلی -->
+            <a href="/" 
+               class="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-medium text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                <span class="whitespace-nowrap">بازگشت به لیست اپیزودها</span>
+                <!-- آیکون فلش (با انیمیشن هاور به سمت راست برای زبان فارسی) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
             </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="wsus-dashboard">
-                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
-                <span class="text-sm font-medium">کالبدشکافی داشبورد و وضعیت‌ها</span>
-            </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="cve-safety-scanner">
-                <i class="fa-solid fa-shield-virus w-5 text-center"></i>
-                <span class="text-sm font-medium">کدهای CVE و Safety Scanner</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="auto-approval">
-                <i class="fa-solid fa-robot w-5 text-center"></i>
-                <span class="text-sm font-medium">اتوماسیون (Automatic Approval)</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="client-targeting">
-                <i class="fa-solid fa-users-gear w-5 text-center"></i>
-                <span class="text-sm font-medium">عملیات Client-Side Targeting</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
-        <div class="max-w-4xl mx-auto">
-            
-            <!-- SECTION 1: Prerequisites -->
-            <section id="wsus-prereq" class="section-content active fade-in">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"></div>
-                    
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-puzzle-piece text-accent"></i>
-                        پیش‌نیازهای حیاتی کنسول WSUS
-                    </h2>
-                    
-                    <p class="text-gray-300 leading-relaxed mb-6 text-sm text-justify">
-                        کنسول WSUS ذاتاً خام است و برای اینکه بتواند گزارش‌های گرافیکی (Reports) و خروجی‌های PDF/Excel دقیقی از وضعیت آپدیت کلاینت‌ها به شما ارائه دهد، نیاز به نصب دو افزونه جانبی (Add-on) قبل از کار با آن دارد:
-                    </p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                            <h3 class="text-lg font-bold text-accent mb-2">۱. Microsoft Report Viewer</h3>
-                            <p class="text-sm text-gray-400 leading-relaxed">
-                                موتور اصلی رندر و نمایش گزارش‌های گرافیکی. بدون نصب این پکیج، اگر در کنسول WSUS روی تب Reports کلیک کنید، با ارور مواجه می‌شوید و هیچ نموداری نمایش داده نمی‌شود.
-                            </p>
-                        </div>
-                        <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                            <h3 class="text-lg font-bold text-accent mb-2">۲. SQLSysClrTypes (SqlDom)</h3>
-                            <p class="text-sm text-gray-400 leading-relaxed">
-                                یک پیش‌نیاز دیتابیسی (CLRT) برای ابزار Report Viewer است. چون WSUS داده‌های خود را در دیتابیس WID (یا SQL Server) ذخیره می‌کند، این ابزار برای ترجمه داده‌های دیتابیس به گزارش الزامی است.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: Dashboard Statuses -->
-            <section id="wsus-dashboard" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-chart-pie text-accent"></i>
-                        کالبدشکافی داشبورد اصلی
-                    </h2>
-
-                    <div class="space-y-8">
-                        <!-- وضعیت کامپیوترها -->
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">وضعیت کامپیوترها (Computers)</h3>
-                            <div class="space-y-3">
-                                <div class="bg-white/5 p-4 rounded-xl border-r-4 border-red-500 flex flex-col justify-center">
-                                    <h4 class="font-bold text-white text-sm">Computers With Errors</h4>
-                                    <p class="text-xs text-gray-400 mt-1">کامپیوترهایی که هنگام دانلود یا نصب آپدیت از WSUS دچار خطای سیستمی شده‌اند یا مدت‌هاست ارتباطشان با سرور قطع شده است.</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border-r-4 border-yellow-500 flex flex-col justify-center">
-                                    <h4 class="font-bold text-white text-sm">Computers Needing Updates</h4>
-                                    <p class="text-xs text-gray-400 mt-1">سیستم‌هایی که اسکن شده‌اند و مشخص شده به آپدیت‌های جدیدی نیاز دارند که هنوز روی آن‌ها نصب نشده است.</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border-r-4 border-green-500 flex flex-col justify-center">
-                                    <h4 class="font-bold text-white text-sm">Installed / Not Applicable</h4>
-                                    <p class="text-xs text-gray-400 mt-1">سیستم‌هایی که ۱۰۰٪ آپدیت هستند (Installed) یا آپدیت‌های موجود در سرور اصلاً با سیستم‌عامل آن‌ها سازگار نیست (Not Applicable).</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- آمار سرور و آپدیت‌ها -->
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">آمار سرور (Server Statistics)</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="bg-black/30 p-4 rounded-xl border border-white/5">
-                                    <h4 class="font-bold text-accent text-sm text-center mb-2">Unapproved Updates</h4>
-                                    <p class="text-xs text-gray-400 text-center">آپدیت‌های جدیدی که از سایت مایکروسافت دانلود (Sync) شده‌اند، اما ادمین هنوز تصمیمی برای تایید یا رد آن‌ها نگرفته است.</p>
-                                </div>
-                                <div class="bg-black/30 p-4 rounded-xl border border-white/5">
-                                    <h4 class="font-bold text-accent text-sm text-center mb-2">Approved Updates</h4>
-                                    <p class="text-xs text-gray-400 text-center">آپدیت‌هایی که ادمین به صورت دستی یا اتوماتیک تایید (Approve) کرده تا برای نصب به کلاینت‌ها ارسال شوند.</p>
-                                </div>
-                                <div class="bg-black/30 p-4 rounded-xl border border-white/5">
-                                    <h4 class="font-bold text-accent text-sm text-center mb-2">Declined Updates</h4>
-                                    <p class="text-xs text-gray-400 text-center">آپدیت‌هایی که ادمین آن‌ها را رد (Decline) کرده است (مثلاً آپدیت‌های منسوخ شده یا آپدیتی که در شبکه باگ ایجاد کرده است).</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: CVE & Safety Scanner -->
-            <section id="cve-safety-scanner" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-shield-virus text-accent"></i>
-                        تحلیل امنیتی: کدهای CVE و Safety Scanner
-                    </h2>
-
-                    <div class="space-y-6">
-                        <div class="bg-[#050b14] border border-white/10 p-6 rounded-xl">
-                            <h3 class="text-xl font-bold text-accent mb-3">کدهای CVE چیست؟</h3>
-                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
-                                در جزئیات هر آپدیت امنیتی در WSUS، یک یا چند کد با فرمت <span class="mono-inline">CVE-YYYY-NNNN</span> می‌بینید (Common Vulnerabilities and Exposures). این کدها شناسه‌های جهانیِ حفره‌های امنیتی هستند.
-                            </p>
-                            <div class="p-4 bg-accent/10 border-r-4 border-accent rounded-l-lg">
-                                <p class="text-sm text-white font-semibold">
-                                    <i class="fa-solid fa-magnifying-glass me-2"></i>کاربرد برای ادمین:
-                                </p>
-                                <p class="text-xs text-gray-300 mt-2 leading-relaxed">
-                                    با کپی کردن این کد و جستجوی آن در سایت مایکروسافت (یا سایت‌های امنیتی مثل NVD)، می‌توانید "زندگی‌نامه" و دلیل انتشار آن آپدیت را بخوانید. مثلاً متوجه می‌شوید این آپدیت برای بستن یک حفره بحرانی در سرویس Print Spooler ویندوز منتشر شده است.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="bg-black/30 p-6 rounded-xl border border-white/5">
-                            <h3 class="text-lg font-bold text-white mb-2"><i class="fa-solid fa-stethoscope text-accent me-2"></i>Microsoft Safety Scanner (MSERT)</h3>
-                            <p class="text-sm text-gray-400 leading-relaxed text-justify">
-                                یک ابزار امنیتی پرتابل و اجرایی (Standalone) از سوی مایکروسافت است. این ابزار نصب نمی‌شود، بلکه مستقیماً اجرا شده و سیستم را برای پیدا کردن بدافزارها و ویروس‌های جدید اسکن و پاکسازی می‌کند. 
-                                معمولاً در کنار آپدیت‌های WSUS یا دیفندر، برای مواقع اورژانسی و اسکنِ سیستم‌های مشکوک به آلودگی در سازمان دانلود و استفاده می‌شود.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: Automatic Approval -->
-            <section id="auto-approval" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-robot text-accent"></i>
-                        اتوماسیون: Automatic Approval
-                    </h2>
-
-                    <div class="space-y-6">
-                        <p class="text-sm text-gray-300 leading-relaxed text-justify">
-                            تایید کردن دستیِ صدها آپدیت در هفته برای یک ادمین شبکه خسته‌کننده است. بخش <strong>Automatic Approvals</strong> در WSUS اجازه می‌دهد قوانینی (Rules) بنویسیم تا سرور به طور خودکار آپدیت‌ها را تایید کند.
-                        </p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                            <div class="bg-white/5 p-5 rounded-xl border border-white/10 relative overflow-hidden">
-                                <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
-                                <h4 class="font-bold text-white mb-2">۱. تنظیم Rule (قوانین)</h4>
-                                <p class="text-xs text-gray-400 leading-relaxed">
-                                    می‌توانیم مشخص کنیم که مثلاً اگر آپدیتی از نوع <em>Security Updates</em> بود و منحصراً برای بیلد (Build) مشخصی از <em>Windows 11</em> منتشر شده بود، شامل این قانون شود.
-                                </p>
-                            </div>
-                            <div class="bg-white/5 p-5 rounded-xl border border-white/10 relative overflow-hidden">
-                                <div class="absolute right-0 top-0 w-1 h-full bg-blue-500"></div>
-                                <h4 class="font-bold text-white mb-2">۲. اجرای خودکار</h4>
-                                <p class="text-xs text-gray-400 leading-relaxed">
-                                    به محض اینکه WSUS با دیتاسنتر مایکروسافت سینک (Sync) کند و چنین آپدیتی را ببیند، وضعیت آن را به طور خودکار به <strong>Approved</strong> تغییر می‌دهد، فایل‌های آن را دانلود کرده و برای گروه کلاینت‌هایی که شما مشخص کرده‌اید (مثلاً گروه IT) ارسال می‌کند.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 5: Client-Side Targeting -->
-            <section id="client-targeting" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-users-gear text-accent"></i>
-                        عملیات Client-Side Targeting
-                    </h2>
-
-                    <div class="space-y-6">
-                        <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
-                            اگر بخواهید ۱۰۰۰ کامپیوتر را در WSUS در گروه‌های مختلف (مثل مالی، منابع انسانی، سرورها) دسته‌بندی کنید، Drag & Drop کردن آن‌ها به صورت دستی (Server-Side Targeting) یک فاجعه است. راه حل استاندارد استفاده از <strong>Client-Side Targeting</strong> است.
-                        </p>
-
-                        <div class="bg-black/40 border border-accent/20 rounded-xl p-6">
-                            <h3 class="font-bold text-accent mb-4 text-lg">مراحل پیاده‌سازی گام‌به‌گام:</h3>
-                            
-                            <ol class="list-decimal list-inside space-y-4 text-sm text-gray-400 marker:text-accent font-bold">
-                                <li>
-                                    <span class="font-normal text-white">در کنسول WSUS:</span>
-                                    <span class="font-normal">ابتدا یک گروه خالی (Computer Group) با نام دقیق می‌سازیم (مثلاً <span class="mono-inline text-xs">Servers-Group</span>).</span>
-                                </li>
-                                <li>
-                                    <span class="font-normal text-white">تغییر متد در سرور:</span>
-                                    <span class="font-normal">در بخش Optionsِ سرور WSUS، گزینه Computers را باز کرده و تیک را روی <strong>Use Group Policy or registry settings on computers</strong> قرار می‌دهیم.</span>
-                                </li>
-                                <li>
-                                    <span class="font-normal text-white">تنظیمات Group Policy در دامین کنترلر:</span>
-                                    <ul class="list-disc list-inside ms-6 mt-2 space-y-2 text-gray-400 font-normal">
-                                        <li>یک پالیسی جدید به OU سرورها لینک می‌کنیم.</li>
-                                        <li>به مسیر <span class="mono-inline text-xs">Windows Components > Windows Update</span> می‌رویم.</li>
-                                        <li>پالیسی <strong>Enable client-side targeting</strong> را روشن می‌کنیم.</li>
-                                        <li class="text-accent">در فیلد باز شده، دقیقاً نام گروهی که در WSUS ساختیم (<span class="mono-inline text-xs">Servers-Group</span>) را تایپ می‌کنیم.</li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <span class="font-normal text-white">نتیجه کار:</span>
-                                    <span class="font-normal">وقتی کلاینت‌ها آپدیت پالیسی را دریافت کنند (<span class="mono-inline text-xs">gpupdate</span>) و به WSUS متصل شوند، به طور کاملاً خودکار و هوشمندانه، خود را در گروه مربوطه قرار می‌دهند!</span>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </section>
             
         </div>
-    </main>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section-content');
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = item.getAttribute('data-target');
-
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-
-                    sections.forEach(section => {
-                        section.classList.remove('active', 'fade-in');
-                        if (section.id === targetId) {
-                            section.classList.add('active');
-                            void section.offsetWidth; 
-                            section.classList.add('fade-in');
-                        }
-                    });
-
-                    if(window.innerWidth < 1024) {
-                        closeMobileSidebar();
-                    }
-                });
-            });
-
-            function openMobileSidebar() {
-                sidebar.classList.remove('translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobileSidebar() {
-                sidebar.classList.add('translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-
-            mobileMenuBtn.addEventListener('click', openMobileSidebar);
-            sidebarOverlay.addEventListener('click', closeMobileSidebar);
-        });
-    </script>
 </body>
 </html>
