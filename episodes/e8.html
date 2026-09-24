@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ویندوز سرور ۲ | اپیزود ۸</title>
+    <title>هنوز نرسیدیم!</title>
     
     <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
                     colors: {
-                        // Episode 8 Accent Color: Neon Cyan
                         accent: '#00e5ff',
-                        accentHover: '#33edff',
                         darkBg: '#050b14',
                     }
                 }
@@ -35,486 +30,88 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
+            font-family: 'Vazirmatn', sans-serif !important;
             background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: rgba(10, 15, 30, 0.4);
+        /* انیمیشن برای گوی‌های درخشان پس‌زمینه */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        /* Glassmorphism Panel Base */
+        .glass-card {
+            background: rgba(30, 30, 35, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-        
-        .glass-sidebar {
-            background: rgba(5, 10, 20, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(0, 229, 255, 0.2);
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Content Sections Toggle */
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #050b14; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
-
-        /* Monospace / Code Blocks */
-        .mono-inline {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #67e8f9;
-            padding: 0.15rem 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            font-size: 0.9em;
-            direction: ltr;
-            display: inline-block;
-        }
-
-        .mono-block {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #cffafe;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-right: 4px solid #00e5ff;
-            direction: ltr;
-            text-align: left;
-            margin: 1rem 0;
-            overflow-x: auto;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        /* Sidebar active item styling */
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
-            border-right: 3px solid #00e5ff;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex font-sans">
 
-    <!-- Mobile Header & Menu Toggle -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
-        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۲</div>
-        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
-            <i class="fa-solid fa-bars text-2xl"></i>
-        </button>
+<body class="min-h-screen relative flex items-center justify-center p-4">
+
+    <!-- افکت‌های نوری معلق در پس‌زمینه -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 flex items-center justify-center pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute bottom-[10%] left-[10%] w-96 h-96 bg-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Sidebar (Right) -->
-    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
-        <div class="p-6 border-b border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                <i class="fa-solid fa-layer-group text-accent text-xl"></i>
+    <div class="w-full max-w-[420px] z-10">
+        <!-- کادر گلس‌مورفیسم -->
+        <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 text-center flex flex-col items-center">
+            
+            <!-- آیکون ساعت با افکت نئونی -->
+            <div class="mb-8 mt-2 relative">
+                <div class="absolute inset-0 bg-accent blur-xl opacity-20 rounded-full"></div>
+                <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 border-accent/30 bg-accent/5 relative z-10 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
             </div>
-            <div>
-                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
-                <p class="text-accent/80 text-sm">اپیزود ۸ : معماری کَش و بک‌آپ</p>
-            </div>
-        </div>
 
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
-            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
-            
-            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="branchcache-arch">
-                <i class="fa-solid fa-network-wired w-5 text-center"></i>
-                <span class="text-sm font-medium">معماری BranchCache</span>
+            <!-- متن اصلی -->
+            <h1 class="text-xl sm:text-2xl font-black text-white mb-6 leading-[2.2] tracking-wide drop-shadow-lg">
+                داداش چقد عجله داری<br>
+                <span class="text-accent">صبر کن هنوز نرسیدیم که :)</span>
+            </h1>
+
+            <!-- متن توضیحات -->
+            <p class="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-10 px-2 font-light">
+                این اپیزود هنوز آماده نشده یا سرورش در حال ساخته. یه کم دیگه بهمون فرصت بده، به زودی راه‌اندازی میشه!
+            </p>
+
+            <!-- دکمه بازگشت به صفحه اصلی -->
+            <a href="/" 
+               class="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-medium text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                <span class="whitespace-nowrap">بازگشت به لیست اپیزودها</span>
+                <!-- آیکون فلش (با انیمیشن هاور به سمت راست برای زبان فارسی) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
             </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="storage-replica">
-                <i class="fa-solid fa-clone w-5 text-center"></i>
-                <span class="text-sm font-medium">Storage Replica (SR)</span>
-            </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="wsb-intro">
-                <i class="fa-solid fa-floppy-disk w-5 text-center"></i>
-                <span class="text-sm font-medium">Windows Server Backup</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="rto-rpo-types">
-                <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
-                <span class="text-sm font-medium">RPO, RTO و انواع بک‌آپ</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="wsb-advanced">
-                <i class="fa-solid fa-shield-virus w-5 text-center"></i>
-                <span class="text-sm font-medium">امنیت باج‌افزار و محدودیت‌ها</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
-        <div class="max-w-4xl mx-auto">
-            
-            <!-- SECTION 1: BranchCache -->
-            <section id="branchcache-arch" class="section-content active fade-in">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"></div>
-                    
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-network-wired text-accent"></i>
-                        بهینه‌سازی با BranchCache
-                    </h2>
-                    
-                    <div class="space-y-6">
-                        <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                            <h3 class="text-lg font-bold text-accent mb-2">مودهای BranchCache</h3>
-                            <p class="text-sm text-gray-300 leading-relaxed mb-3">ابزاری برای کش کردن فایل‌های سرور مرکزی در شعب فرعی جهت کاهش مصرف پهنای باند.</p>
-                            <ul class="list-disc list-inside text-sm text-gray-400 space-y-2">
-                                <li><strong class="text-white">Distributed Cache:</strong> مخصوص شعب کوچک (بدون سرور). فایل‌های کش شده بین کلاینت‌ها (مثل شبکه تورنت) به اشتراک گذاشته می‌شود.</li>
-                                <li><strong class="text-white">Hosted Cache:</strong> مخصوص شعب بزرگ. تمام فایل‌های کش روی هاردِ یک سرورِ اختصاصی در شعبه ذخیره می‌شود.</li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">تنظیمات Hash Publication (در GPO)</h3>
-                            <p class="text-sm text-gray-400 mb-3">سرور فایل را ارسال نمی‌کند، بلکه شناسه رمزنگاری شده (Hash) می‌دهد تا کلاینت اول در شبکه لوکال بگردد.</p>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <div class="bg-white/5 p-3 rounded-lg border border-white/10 text-center">
-                                    <strong class="text-accent text-sm">Allow for All</strong>
-                                    <p class="text-xs text-gray-400 mt-1">هش‌سازی تمام پوشه‌های سرور (مصرف بالای CPU).</p>
-                                </div>
-                                <div class="bg-white/5 p-3 rounded-lg border border-white/10 text-center border-accent/40">
-                                    <strong class="text-accent text-sm">Allow Only BranchCache</strong>
-                                    <p class="text-xs text-gray-400 mt-1">فقط پوشه‌هایی که تیک BranchCache دارند (بهترین حالت).</p>
-                                </div>
-                                <div class="bg-white/5 p-3 rounded-lg border border-white/10 text-center">
-                                    <strong class="text-accent text-sm">Disallow</strong>
-                                    <p class="text-xs text-gray-400 mt-1">خاموش کردن کامل قابلیت هش.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col gap-3">
-                            <div class="bg-accent/10 border-r-4 border-accent p-4 rounded-l-lg">
-                                <h4 class="font-bold text-white text-sm mb-1">شبیه‌سازی با QoS</h4>
-                                <p class="text-xs text-gray-300">در لابراتوار برای درک سرعت BranchCache، با ابزار QoS در گروپ پالیسی یک کندی لاجیکال (مثلاً محدودیت 64Kbps) ایجاد می‌کنیم تا تاثیر کش شدن فایل به وضوح دیده شود.</p>
-                            </div>
-                            <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-                                <h4 class="font-bold text-white text-sm mb-1">طول عمر و Discovery</h4>
-                                <p class="text-xs text-gray-400">کلاینت‌های ویندوز ۸ به بالا سرور کش را در AD اتوماتیک پیدا می‌کنند (Auto-Discovery). داده‌های کش شده نیز پیش‌فرض <strong>۲۸ روز</strong> معتبر (Valid) هستند.</p>
-                            </div>
-                            <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-                                <h4 class="font-bold text-white text-sm mb-1">Dynamic Disk</h4>
-                                <p class="text-xs text-gray-400">برای پیاده‌سازی RAID نرم‌افزاری در ویندوز سرور، هاردها باید از حالت Basic به Dynamic تبدیل شوند.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: Storage Replica -->
-            <section id="storage-replica" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-clone text-accent"></i>
-                        معماری Storage Replica
-                    </h2>
-
-                    <div class="space-y-6">
-                        <p class="text-sm text-gray-300 leading-relaxed text-justify bg-black/20 p-4 rounded-lg">
-                            این تکنولوژی بر خلاف DFSR، در <strong>لایه Block</strong> کار می‌کند (سخت‌افزار مستقل؛ پشتیبانی از iSCSI, RAID, JBOD) و با فایل‌های در حال کار (In-Use) یا دیتابیس‌ها مشکلی ندارد. 
-                            <span class="text-red-400 font-bold ml-1">دقت کنید: Storage Replica بک‌آپ نیست!</span> (بلکه برای Disaster Recovery و High Availability است).
-                        </p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-bolt text-accent me-2"></i>Synchronous (همگام)</h4>
-                                <p class="text-xs text-gray-400 leading-relaxed">دیتا همزمان در مبدا و مقصد نوشته می‌شود (بدون هیچگونه از دست رفتن دیتا). <strong>الزام:</strong> نیازمند پهنای باند بالا و Low Latency (LAN).</p>
-                            </div>
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-truck-fast text-accent me-2"></i>Asynchronous (ناهمگام)</h4>
-                                <p class="text-xs text-gray-400 leading-relaxed">نوشتن در مبدا و سپس ارسال در پس‌زمینه. مناسب شبکه‌های با تاخیر بالا یا WAN (شهر به شهر).</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">نکات فنی و معماری</h3>
-                            <ul class="space-y-3">
-                                <li class="flex gap-3">
-                                    <i class="fa-solid fa-microchip text-accent mt-1"></i>
-                                    <div>
-                                        <strong class="text-sm text-white">معماری درایوها (Log Volume):</strong>
-                                        <p class="text-xs text-gray-400 mt-1">در هر سرور به ۲ درایو نیاز است (دیتا + لاگ). دیتای دریافتی اول با سرعت بالا در درایو Log (ترجیحاً SSD/NVMe) نوشته می‌شود تا کلاینت منتظر نماند.</p>
-                                    </div>
-                                </li>
-                                <li class="flex gap-3">
-                                    <i class="fa-solid fa-network-wired text-accent mt-1"></i>
-                                    <div>
-                                        <strong class="text-sm text-white">SMB3 و RDMA:</strong>
-                                        <p class="text-xs text-gray-400 mt-1">ارتباط با پروتکل SMB3 است. پشتیبانی از <span class="mono-inline">RDMA-Enabled Connection</span> یعنی کارت‌شبکه‌ها دیتا را مستقیماً از RAM می‌خوانند (صفر شدن بار CPU).</p>
-                                    </div>
-                                </li>
-                                <li class="flex gap-3">
-                                    <i class="fa-solid fa-layer-group text-accent mt-1"></i>
-                                    <div>
-                                        <strong class="text-sm text-white">Thin Provisioning در برابر Thick (فیک):</strong>
-                                        <p class="text-xs text-gray-400 mt-1">دیسک Thick از ابتدا تمام فضا را با صفر پر می‌کند. اما Thin فقط فضای دیتای واقعی را می‌گیرد. SR آنقدر هوشمند است که دیسک Thin را می‌فهمد و فضای خالیِ فیک را کپی نمی‌کند.</p>
-                                    </div>
-                                </li>
-                                <li class="flex gap-3">
-                                    <i class="fa-solid fa-compress text-accent mt-1"></i>
-                                    <div>
-                                        <strong class="text-sm text-white">Data Deduplication:</strong>
-                                        <p class="text-xs text-gray-400 mt-1">حذف داده‌های تکراری. پیش‌تر فقط روی NTFS کار می‌کرد، اما از سرور ۲۰۱۹ روی فرمت <strong>ReFS</strong> نیز فعال شد.</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                            <h3 class="text-md font-bold text-accent mb-2">پیاده‌سازی (WAC و PowerShell)</h3>
-                            <p class="text-xs text-gray-300 leading-relaxed mb-3">SR کنسول مدیریتی MMC ندارد و از طریق WAC (Windows Admin Center) یا پاورشل مدیریت می‌شود.</p>
-                            <div class="mono-block text-xs mb-3">
-                                # تست بستر و پهنای باند <br>
-                                Test-SRTopology <br><br>
-                                # ساخت شراکت و شروع کپی <br>
-                                New-SRPartnership
-                            </div>
-                            <p class="text-xs text-gray-400"><strong>گزینه Use Blocks already seeded:</strong> زمانی که دیتا را با هارد اکسترنال به سرور مقصد برده‌ایم (انتقال آفلاین)، این تیک باعث می‌شود SR دیتا را از صفر کپی نکند و فقط تفاوت‌ها (Delta) را بفرستد.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: Windows Server Backup Intro -->
-            <section id="wsb-intro" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-floppy-disk text-accent"></i>
-                        معرفی Windows Server Backup
-                    </h2>
-
-                    <div class="space-y-6">
-                        <div class="bg-[#050b14] border border-white/10 p-5 rounded-xl text-center">
-                            <h3 class="text-2xl font-black text-white mb-4">قانون طلایی بک‌آپ <span class="text-accent">۳-۲-۱</span></h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-white/5 p-4 rounded-lg">
-                                    <strong class="text-3xl block text-accent mb-2">۳</strong>
-                                    <p class="text-sm text-gray-300">نسخه از داده‌ها (یک نسخه اصلی + دو نسخه بک‌آپ).</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-lg">
-                                    <strong class="text-3xl block text-accent mb-2">۲</strong>
-                                    <p class="text-sm text-gray-300">نوعِ رسانه ذخیره‌سازی متفاوت (مثل هارد و Tape).</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-lg">
-                                    <strong class="text-3xl block text-accent mb-2">۱</strong>
-                                    <p class="text-sm text-gray-300">نسخه خارج از سایت (Off-site) یا روی فضای ابری.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                                <h3 class="font-bold text-accent mb-2">معماری WSB چیست؟</h3>
-                                <p class="text-sm text-gray-300 leading-relaxed text-justify">
-                                    یک ابزار درون‌ساخت در ویندوز سرور است که با استفاده از تکنولوژی قدرتمند <strong>VSS (Volume Shadow Copy Service)</strong>، در سطح سکتور (Block-level) بک‌آپ می‌گیرد. این امر اجازه می‌دهد از فایل‌هایی که توسط سیستم در حال استفاده هستند بدون ارور بک‌آپ گرفته شود.
-                                </p>
-                            </div>
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                                <h3 class="font-bold text-accent mb-2">تفاوت Backup و Archive</h3>
-                                <p class="text-sm text-gray-300 leading-relaxed text-justify">
-                                    <strong>بک‌آپ:</strong> کپی از دیتای زنده و فعال برای مواقع بحران (Disaster Recovery). بازه نگهداری کوتاه.<br>
-                                    <strong>آرشیو:</strong> انتقال داده‌های قدیمی و غیرفعال به استوریج‌های ارزان برای آزادسازی هارد سرور اصلی و الزامات قانونی (نگهداری بلندمدت).
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: RPO, RTO & Backup Types -->
-            <section id="rto-rpo-types" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-clock-rotate-left text-accent"></i>
-                        شاخص‌های RPO/RTO و انواع بک‌آپ
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div class="flex flex-col md:flex-row gap-4">
-                            <div class="flex-1 bg-gradient-to-br from-accent/20 to-transparent p-[1px] rounded-2xl">
-                                <div class="bg-[#050b14] rounded-2xl p-6 h-full">
-                                    <h3 class="text-2xl font-bold text-white mb-2">RPO</h3>
-                                    <strong class="text-accent text-sm block mb-3">Recovery Point Objective</strong>
-                                    <p class="text-sm text-gray-400 leading-relaxed">نقطه بازیابی؛ چقدر تحمل از دست دادن دیتا داریم؟ اگر ۴ ساعت باشد، بک‌آپ‌ها باید هر ۴ ساعت گرفته شوند تا نهایتاً دیتای ۴ ساعت پیش از دست برود.</p>
-                                </div>
-                            </div>
-                            <div class="flex-1 bg-gradient-to-br from-blue-500/20 to-transparent p-[1px] rounded-2xl">
-                                <div class="bg-[#050b14] rounded-2xl p-6 h-full">
-                                    <h3 class="text-2xl font-bold text-white mb-2">RTO</h3>
-                                    <strong class="text-blue-400 text-sm block mb-3">Recovery Time Objective</strong>
-                                    <p class="text-sm text-gray-400 leading-relaxed">زمان بازیابی؛ تیم IT چقدر فرصت دارد تا سیستمِ سوخته را پس از بحران دوباره راه‌اندازی و روشن کند؟ (مثلاً ۲ ساعت).</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">انواع بک‌آپ در ویندوز</h3>
-                            <ul class="space-y-4">
-                                <li class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <strong class="text-accent">Full Backup:</strong>
-                                    <span class="text-sm text-gray-300 ms-2">کپی کامل از تمام داده‌ها (زمان‌بر و پرحجم).</span>
-                                </li>
-                                <li class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <strong class="text-accent">Incremental Backup:</strong>
-                                    <span class="text-sm text-gray-300 ms-2">بک‌آپ افزایشی؛ فقط از تغییرات نسبت به <strong>آخرین بک‌آپ (هر چه بوده)</strong> گرفته می‌شود (سریع و کم‌حجم).</span>
-                                </li>
-                                <li class="bg-red-500/10 p-4 rounded-xl border border-red-500/20">
-                                    <strong class="text-red-400">Differential Backup:</strong>
-                                    <span class="text-sm text-gray-300 ms-2">گرفتن تغییرات نسبت به <strong>آخرین Full Backup</strong>. <br> <i class="fa-solid fa-triangle-exclamation text-red-500 me-1 mt-2"></i> <strong>نقطه ضعف:</strong> ویندوز سرور بک‌آپ از نوع Differential پشتیبانی نمی‌کند!</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                                <h3 class="font-bold text-white mb-2 text-md">System State Backup</h3>
-                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
-                                    بک‌آپ از فایل‌های شخصی نیست، بلکه فایل‌های حیاتی سیستم‌عامل شامل بوت، رجیستری و مهم‌تر از همه <strong>دیتابیس Active Directory (NTDS.DIT)</strong> است. برای احیای یک دامین‌کنترلر سوخته حیاتی است.
-                                </p>
-                            </div>
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                                <h3 class="font-bold text-white mb-2 text-md">Live VM Backup</h3>
-                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
-                                    به لطف یکپارچگی کامل با سرویس Hyper-V VSS Writer، ویندوز می‌تواند از ماشین‌های مجازیِ مستقر روی سرور <strong>درحالی که روشن هستند و کار می‌کنند</strong>، بدون وقفه بک‌آپ بگیرد.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 5: Limitations & Ransomware -->
-            <section id="wsb-advanced" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-shield-virus text-accent"></i>
-                        امنیت در برابر باج‌افزار و محدودیت‌ها
-                    </h2>
-
-                    <div class="space-y-6">
-                        <div class="p-6 bg-gradient-to-l from-green-500/10 to-transparent border border-green-500/20 rounded-xl">
-                            <h3 class="text-xl font-bold text-green-400 mb-3"><i class="fa-solid fa-bug-slash me-2"></i>سپر دفاعی در برابر Ransomware</h3>
-                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
-                                باج‌افزارها برای رمزنگاری به دنبال درایوهای مانت شده (مثل C و D) می‌گردند. ترفند WSB این است که هنگام معرفی هارددیسک مقصد به عنوان محل بک‌آپ، پیشنهاد می‌دهد آن هارد را Dedicated (اختصاصی) کند.
-                            </p>
-                            <p class="text-sm text-gray-300 leading-relaxed text-justify">
-                                با تایید شما، <strong>Drive Letter از هارد گرفته می‌شود و هارد از دید ویندوز اکسپلورر کاملاً مخفی می‌شود.</strong> در نتیجه باج‌افزار نمی‌تواند آن را ببیند و بک‌آپ‌های شما سالم می‌مانند!
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">چرا WSB در سازمان‌های بزرگ جایگاهی ندارد؟</h3>
-                            <p class="text-sm text-gray-400 mb-4">در محیط‌های Enterprise ابزارهایی مانند Veeam جایگزین WSB می‌شوند به دلیل ۳ محدودیت بزرگ زیر:</p>
-                            
-                            <div class="flex flex-col gap-3">
-                                <div class="bg-black/20 p-4 rounded-lg border border-white/5 flex gap-4 items-center">
-                                    <div class="w-10 h-10 rounded bg-red-500/20 flex items-center justify-center text-red-400 font-bold">1</div>
-                                    <div>
-                                        <h4 class="font-bold text-white mb-1 text-sm">عدم پشتیبانی از Remote Backup</h4>
-                                        <p class="text-xs text-gray-400">فقط می‌تواند از سرور لوکال بک‌آپ بگیرد و قابلیت مدیریت متمرکز بک‌آپِ ده‌ها سرور را ندارد.</p>
-                                    </div>
-                                </div>
-                                <div class="bg-black/20 p-4 rounded-lg border border-white/5 flex gap-4 items-center">
-                                    <div class="w-10 h-10 rounded bg-red-500/20 flex items-center justify-center text-red-400 font-bold">2</div>
-                                    <div>
-                                        <h4 class="font-bold text-white mb-1 text-sm">نبود فشرده‌سازی (No Compression)</h4>
-                                        <p class="text-xs text-gray-400">هیچ مکانیزمی برای فشرده کردن حجم دیتا ندارد. ۱۰۰ گیگ دیتا دقیقاً ۱۰۰ گیگ هارد بک‌آپ می‌خواهد.</p>
-                                    </div>
-                                </div>
-                                <div class="bg-black/20 p-4 rounded-lg border border-white/5 flex gap-4 items-center">
-                                    <div class="w-10 h-10 rounded bg-red-500/20 flex items-center justify-center text-red-400 font-bold">3</div>
-                                    <div>
-                                        <h4 class="font-bold text-white mb-1 text-sm">زمان‌بندی (Scheduling) ضعیف</h4>
-                                        <p class="text-xs text-gray-400">رابط گرافیکی آن فقط بک‌آپ‌های روتین روزانه را قبول می‌کند. برای زمان‌بندی پیشرفته باید از محیط متنی <span class="mono-inline">wbadmin</span> و Task Scheduler استفاده کرد.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
             
         </div>
-    </main>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section-content');
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = item.getAttribute('data-target');
-
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-
-                    sections.forEach(section => {
-                        section.classList.remove('active', 'fade-in');
-                        if (section.id === targetId) {
-                            section.classList.add('active');
-                            void section.offsetWidth; 
-                            section.classList.add('fade-in');
-                        }
-                    });
-
-                    if(window.innerWidth < 1024) {
-                        closeMobileSidebar();
-                    }
-                });
-            });
-
-            function openMobileSidebar() {
-                sidebar.classList.remove('translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobileSidebar() {
-                sidebar.classList.add('translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-
-            mobileMenuBtn.addEventListener('click', openMobileSidebar);
-            sidebarOverlay.addEventListener('click', closeMobileSidebar);
-        });
-    </script>
 </body>
 </html>
