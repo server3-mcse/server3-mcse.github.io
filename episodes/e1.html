@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ویندوز سرور ۲ | اپیزود ۱</title>
+    <title>ویندوز سرور ۳ | اپیزود ۱</title>
     
-    
-<!-- Vazirmatn Font -->
+    <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -21,14 +21,10 @@
                         sans: ['Vazirmatn', 'sans-serif'],
                         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
-                    
-                    
-                    
                     colors: {
-                        // Episode 1 Accent Color: Neon Cyan
                         accent: '#00e5ff',
-                        accentHover: '#84ffff',
-                        darkBg: '#0f0f13',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
                     }
                 }
             }
@@ -38,10 +34,10 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
-            background-color: #0f0f13;
+            background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.1) 0%, transparent 40%);
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
@@ -49,7 +45,7 @@
 
         /* Glassmorphism Classes */
         .glass-panel {
-            background: rgba(30, 30, 35, 0.4);
+            background: rgba(10, 15, 30, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
@@ -57,7 +53,7 @@
         }
         
         .glass-sidebar {
-            background: rgba(20, 20, 25, 0.65);
+            background: rgba(5, 10, 20, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-left: 1px solid rgba(0, 229, 255, 0.2);
@@ -79,7 +75,7 @@
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f0f13; }
+        ::-webkit-scrollbar-track { background: #050b14; }
         ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
 
@@ -87,7 +83,7 @@
         .mono-inline {
             font-family: 'Courier New', Courier, monospace;
             background: rgba(0, 0, 0, 0.6);
-            color: #a5f3fc;
+            color: #67e8f9;
             padding: 0.15rem 0.5rem;
             border-radius: 0.375rem;
             border: 1px solid rgba(0, 229, 255, 0.3);
@@ -96,24 +92,21 @@
             display: inline-block;
         }
         
-        .mono-block {
+        .code-block {
             font-family: 'Courier New', Courier, monospace;
             background: rgba(0, 0, 0, 0.6);
-            color: #cffafe;
-            padding: 1rem;
+            color: #67e8f9;
+            padding: 1.25rem;
             border-radius: 0.75rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-right: 4px solid #00e5ff;
+            border: 1px solid rgba(0, 229, 255, 0.2);
             direction: ltr;
             text-align: left;
-            margin: 1rem 0;
-            overflow-x: auto;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
         }
 
         /* Sidebar active item styling */
         .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.2) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
             border-right: 3px solid #00e5ff;
             color: #fff;
             text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
@@ -123,8 +116,8 @@
 <body class="antialiased min-h-screen flex font-sans">
 
     <!-- Mobile Header & Menu Toggle -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6">
-        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۲</div>
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
         <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
             <i class="fa-solid fa-bars text-2xl"></i>
         </button>
@@ -134,35 +127,37 @@
     <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
         <div class="p-6 border-b border-white/5 flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                <i class="fa-brands fa-windows text-accent text-xl"></i>
+                <i class="fa-solid fa-route text-accent text-xl"></i>
             </div>
             <div>
                 <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
-                <p class="text-accent/80 text-sm">اپیزود ۱ : معماری و IIS</p>
+                <p class="text-accent/80 text-sm">اپیزود ۱ : معماری و FSMO</p>
             </div>
         </div>
 
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
             <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
             
-            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="intro">
-                <i class="fa-solid fa-sitemap w-5 text-center"></i>
-                <span class="text-sm font-medium">معماری و ساختار دوره</span>
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="course-syllabus">
+                <i class="fa-solid fa-project-diagram w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری و سیلابس دوره</span>
             </a>
             
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="iis-basics">
-                <i class="fa-solid fa-globe w-5 text-center"></i>
-                <span class="text-sm font-medium">مفاهیم پایه وب و IIS</span>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="fsmo-intro-forest">
+                <i class="fa-solid fa-tree w-5 text-center"></i>
+                <span class="text-sm font-medium">مفاهیم FSMO (Forest-Wide)</span>
             </a>
             
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="iis-install">
-                <i class="fa-solid fa-download w-5 text-center"></i>
-                <span class="text-sm font-medium">نصب و راه‌اندازی اولیه</span>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="fsmo-domain">
+                <i class="fa-solid fa-network-wired w-5 text-center"></i>
+                <span class="text-sm font-medium">نقش‌های Domain-Wide</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="dr-seizing">
+                <i class="fa-solid fa-shield-virus w-5 text-center"></i>
+                <span class="text-sm font-medium">ریکاوری، بحران و Seize</span>
             </a>
         </nav>
-
-        <div class="p-4 border-t border-white/5 text-center">
-        </div>
     </aside>
 
     <!-- Overlay for mobile sidebar -->
@@ -170,217 +165,269 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-5xl mx-auto">
             
-            <!-- SECTION 1: Intro & Structure -->
-            <section id="intro" class="section-content active fade-in">
+            <!-- SECTION 1: Course Syllabus -->
+            <section id="course-syllabus" class="section-content active fade-in">
                 <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"></div>
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
                     
                     <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-sitemap text-accent"></i>
-                        مروری بر ساختار و معماری دوره
+                        <i class="fa-solid fa-map-location-dot text-accent"></i>
+                        سیلابس دوره سرور ۳ (Identity)
                     </h2>
                     
-                    <p class="text-gray-300 leading-relaxed mb-8 text-lg">
-                        این دوره شامل <strong>۶۰ ساعت</strong> آموزش تخصصی به همراه <strong>یک جلسه اختصاصی طراحی و معماری (Design)</strong> است. در این دوره، از مفاهیم پایه‌ای سرویس‌ها عبور کرده و وارد لایه‌های عمیق‌تر، امنیت و معماری شبکه می‌شویم.
+                    <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-8">
+                        دوره ویندوز سرور ۳ که در سطح Enterprise با نام <strong>دوره Identity</strong> شناخته می‌شود، متمرکز بر مباحث پیشرفته‌ی اکتیو دایرکتوری، زیرساخت‌های دسترسی‌پذیری بالا (HA) و سرویس‌های هویتی مایکروسافت است. این دوره به ۳ بخش اصلی زیر تقسیم می‌شود:
                     </p>
-
-                    <div class="space-y-6">
-                        <!-- IIS Card -->
-                        <div class="bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
-                            <h3 class="text-xl font-bold text-accent mb-3"><i class="fa-solid fa-server me-2"></i>۱. وب‌سرور مایکروسافت (IIS)</h3>
-                            <ul class="list-disc list-inside text-gray-300 space-y-2 text-sm sm:text-base leading-loose marker:text-accent">
-                                <li>شناخت معماری و نحوه کارکرد این وب‌سرور.</li>
-                                <li><strong>انتشار (Publishing):</strong> در دسترس قرار دادن وب‌سایت‌ها.</li>
-                                <li><strong>تعامل با DNS:</strong> هدایت ترافیک کاربران به سمت وب‌سایت‌ها.</li>
-                                <li>سرویس <strong>FTP</strong> برای انتقال فایل و مدیریت از راه‌دور (Remote Management).</li>
-                                <li>امنیت ارتباطات با <strong>HTTPS</strong> و Certificate.</li>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <!-- AD Core -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5 hover:border-blue-500/40 hover:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all">
+                            <h3 class="text-lg font-bold text-blue-400 mb-4 flex items-center gap-2 border-b border-white/10 pb-3">
+                                <i class="fa-brands fa-windows"></i> اکتیو دایرکتوری
+                            </h3>
+                            <ul class="list-none space-y-3 text-sm text-gray-300">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-blue-500/70 mt-1 text-xs"></i> <span>معماری FSMO Roles</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-blue-500/70 mt-1 text-xs"></i> <span>مفاهیم AD Site & Subnet</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-blue-500/70 mt-1 text-xs"></i> <span>معماری AD Domain Trust</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-blue-500/70 mt-1 text-xs"></i> <span>استراتژی‌های Backup & Restore</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-blue-500/70 mt-1 text-xs"></i> <span>ارتقای DFL / FFL</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-blue-500/70 mt-1 text-xs"></i> <span>AD Troubleshooting & Best Practice</span></li>
                             </ul>
                         </div>
 
-                        <!-- File Server Card -->
-                        <div class="bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
-                            <h3 class="text-xl font-bold text-accent mb-3"><i class="fa-solid fa-folder-tree me-2"></i>۲. فایل سرور پیشرفته</h3>
-                            <ul class="list-disc list-inside text-gray-300 space-y-2 text-sm sm:text-base leading-loose marker:text-accent">
-                                <li><strong>DFS (Namespace & Replication):</strong> یکپارچه‌سازی مسیرها و همگام‌سازی فایل‌ها بین شعب.</li>
-                                <li><strong>FSRM:</strong> اعمال محدودیت حجم (Quota) و جلوگیری از ذخیره فایل‌های غیرمجاز (File Screening).</li>
-                                <li><strong>BranchCache:</strong> تکنولوژی بهینه‌سازی پهنای باند برای شعب فرعی.</li>
-                                <li><strong>Storage Replica & Storage Spaces:</strong> راهکارهای حرفه‌ای برای افزونگی و کپی‌برداری داده‌ها.</li>
-                                <li>راهکارهای بک‌آپ‌گیری داخلی <strong>Windows Server Backup</strong>.</li>
+                        <!-- Cluster -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5 hover:border-green-500/40 hover:shadow-[0_0_20px_rgba(34,197,94,0.1)] transition-all">
+                            <h3 class="text-lg font-bold text-green-400 mb-4 flex items-center gap-2 border-b border-white/10 pb-3">
+                                <i class="fa-solid fa-server"></i> کلاسترینگ (HA)
+                            </h3>
+                            <ul class="list-none space-y-3 text-sm text-gray-300">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500/70 mt-1 text-xs"></i> <span>پیاده‌سازی NLB</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500/70 mt-1 text-xs"></i> <span>معماری Failover Cluster</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500/70 mt-1 text-xs"></i> <span>تکنولوژی S2D (SDS)</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500/70 mt-1 text-xs"></i> <span>Hyper-V Failover</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-green-500/70 mt-1 text-xs"></i> <span>File Server Failover</span></li>
                             </ul>
                         </div>
 
-                        <!-- Remote Access & Design Card -->
-                        <div class="bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
-                            <h3 class="text-xl font-bold text-accent mb-3"><i class="fa-solid fa-network-wired me-2"></i>۳. دسترسی از راه دور و معماری (Design)</h3>
-                            <p class="text-gray-300 leading-relaxed text-sm sm:text-base mb-3">
-                                مفاهیمی همچون <strong>Routing، NAT، VPN و Proxy</strong> برای فراهم کردن دسترسی امن از بیرون سازمان. 
-                            </p>
-                            <div class="p-4 bg-accent/10 border-r-4 border-accent rounded-l-lg mt-3">
-                                <p class="text-white text-sm font-semibold">
-                                    <i class="fa-solid fa-lightbulb text-yellow-400 me-2"></i>
-                                    نکته کلیدی: اصلی‌ترین مبحث این دوره، «معماری و طراحی» است. یک متخصص شبکه ارشد مایکروسافت باید نحوه چیدمان سرورها، ارتباط با فایروال‌ها و معماری اصولی زیرساخت را درک کند.
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Hyper-v, DNS, WSUS Card -->
-                        <div class="bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
-                            <h3 class="text-xl font-bold text-accent mb-3"><i class="fa-solid fa-layer-group me-2"></i>۴. مباحث پیشرفته دیگر</h3>
-                            <ul class="list-disc list-inside text-gray-300 space-y-2 text-sm sm:text-base leading-loose marker:text-accent">
-                                <li><strong>Hyper-V:</strong> مجازی‌سازی امن با Host Guardian Service و Shielded VMs.</li>
-                                <li><strong>Advanced DNS:</strong> امنیت با DNSSEC و سیاست‌گذاری با DNS Policy.</li>
-                                <li><strong>WSUS:</strong> مدیریت و توزیع متمرکز آپدیت‌ها در شبکه‌های بزرگ با معماری Upstream/Downstream.</li>
+                        <!-- ADCS & RMS -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5 hover:border-purple-500/40 hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] transition-all">
+                            <h3 class="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2 border-b border-white/10 pb-3">
+                                <i class="fa-solid fa-shield-halved"></i> ADCS و Identity
+                            </h3>
+                            <ul class="list-none space-y-3 text-sm text-gray-300">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-purple-500/70 mt-1 text-xs"></i> <span>معماری CA & CA Tiering</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-purple-500/70 mt-1 text-xs"></i> <span>مدیریت حقوق دسترسی (AD RMS)</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-purple-500/70 mt-1 text-xs"></i> <span>دایرکتوری سبک (AD LDS)</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-purple-500/70 mt-1 text-xs"></i> <span>سرویس‌های Federation (AD FS)</span></li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 2: IIS Basics -->
-            <section id="iis-basics" class="section-content">
+            <!-- SECTION 2: FSMO & Forest Roles -->
+            <section id="fsmo-intro-forest" class="section-content">
                 <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
                     <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-globe text-accent"></i>
-                        شروع IIS و مفاهیم پایه‌ وب
+                        <i class="fa-solid fa-sitemap text-accent"></i>
+                        عملیات مستر و نقش‌های Forest-Wide
                     </h2>
 
-                    <p class="text-gray-300 leading-relaxed mb-8 text-lg border-b border-white/10 pb-6">
-                        هدف نهایی ما در این بخش، <strong>انتشار (Publish)</strong> یک صفحه وب روی شبکه داخلی (Intranet) یا اینترنت است.
-                    </p>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><i class="fa-brands fa-microsoft text-accent"></i> آشنایی با IIS</h3>
-                            <p class="text-gray-300 leading-relaxed text-justify">
-                                وب‌سرور اختصاصی مایکروسافت (Internet Information Services) وظیفه میزبانی وب‌سایت‌ها و وب‌اپلیکیشن‌ها را بر عهده دارد. از ویندوز سرور ۲۰۱۲ تا ۲۰۲۲، ساختار کلی آن تغییر بنیادینی نکرده است.
-                            </p>
-                            <p class="text-gray-300 mt-2">
-                                <strong>آیا سرور IIS باید به دامین جوین شود؟</strong> خیر، می‌تواند به صورت <span class="mono-inline">Stand-alone</span> و در محیط Workgroup کار کند. اما در شبکه دامین قابلیت‌های مدیریت متمرکز و احراز هویت یکپارچه را ارائه می‌دهد.
+                    <div class="space-y-6">
+                        <div class="bg-blue-500/10 p-5 rounded-xl border-r-4 border-blue-500">
+                            <h3 class="text-lg font-bold text-white mb-2">عملیات مستر (Operation Masters) چیست؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify">
+                                اکتیو دایرکتوری به‌طور پیش‌فرض از مدل <strong>Multi-master</strong> استفاده می‌کند؛ یعنی تغییر در هر Domain Controller اتفاق بیفتد، به بقیه Replicate می‌شود. اما برخی تغییرات حیاتی هستند که اگر همزمان در چند جا انجام شوند، دیتابیس دچار Conflict می‌شود. برای این کارهای حساس، مایکروسافت ۵ نقش کلیدی به نام <strong>FSMO Roles</strong> تعریف کرده است. در این مدل (Single-master)، <strong>فقط یک DC</strong> می‌تواند صاحب نقش باشد و بقیه صرفاً کپی هستند.
                             </p>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                                <h4 class="text-lg font-bold text-accent mb-2">رقابت وب‌سرورها</h4>
-                                <p class="text-gray-400 text-sm leading-relaxed">
-                                    IIS در برابر <strong>Apache</strong> و <strong>Nginx</strong> (در دنیای لینوکس). هیچکدام مطلقاً برتر نیستند؛ انتخاب به زبان برنامه‌نویسی بستگی دارد. IIS برای تکنولوژی‌های مایکروسافت (ASP.NET) عالی است و بقیه برای PHP. همه دارای مکانیزم‌های حرفه‌ای مانند Load Balancing و Caching هستند.
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-4 mt-8 border-b border-white/10 pb-2">نقش‌های سطح فارست (Forest-Wide)</h3>
+                            <p class="text-[15px] text-gray-400 mb-5">در کل ساختار فارست (شامل تمام دامین‌ها و چایلدها) فقط یک سرور این نقش‌ها را دارد:</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <!-- Schema Master -->
+                                <div class="bg-black/40 p-6 rounded-xl border border-white/5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                    <h4 class="font-bold text-white mb-3 text-lg flex items-center gap-2">
+                                        <i class="fa-solid fa-database text-purple-400"></i> Schema Master
+                                    </h4>
+                                    <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
+                                        اسکیما (Schema) ساختار، کلاس‌ها و Attributes دیتابیس AD را تعریف می‌کند. بدون DCای که این نقش را دارد، **هیچ تغییری در ساختار دیتابیس کل فارست** امکان‌پذیر نیست.
+                                    </p>
+                                    <div class="bg-purple-900/10 p-4 rounded-lg border border-purple-500/20">
+                                        <span class="text-sm font-bold text-purple-400 block mb-2"><i class="fa-solid fa-circle-question ml-1"></i> چه زمانی Schema تغییر می‌کند؟</span>
+                                        <ul class="list-disc list-inside text-sm text-gray-400 space-y-1.5 marker:text-purple-500">
+                                            <li>نصب سرویس‌های Enterprise (مثل Exchange Server یا Skype for Business).</li>
+                                            <li>آپگرید کردن Domain به نسخه‌های جدیدتر ویندوز سرور.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Domain Naming Master -->
+                                <div class="bg-black/40 p-6 rounded-xl border border-white/5 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                                    <h4 class="font-bold text-white mb-3 text-lg flex items-center gap-2">
+                                        <i class="fa-solid fa-globe text-emerald-400"></i> Domain Naming Master
+                                    </h4>
+                                    <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
+                                        این نقش مانند ثبت احوال کل فارست است و از نام‌های تکراری جلوگیری می‌کند. مدیریت پارتیشن‌های Application (مثل <strong>DNS ADI</strong>) نیز بر عهده این نقش است.
+                                    </p>
+                                    <div class="bg-emerald-900/10 p-4 rounded-lg border border-emerald-500/20">
+                                        <span class="text-sm font-bold text-emerald-400 block mb-2"><i class="fa-solid fa-list-check ml-1"></i> وظایف اصلی:</span>
+                                        <ul class="list-disc list-inside text-sm text-gray-400 space-y-1.5 marker:text-emerald-500">
+                                            <li>اضافه کردن دامین جدید (Child یا Tree).</li>
+                                            <li>حذف کردن یک دامین از ساختار.</li>
+                                            <li>تغییر نام دامین‌های موجود.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Domain Roles -->
+            <section id="fsmo-domain" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-network-wired text-accent"></i>
+                        نقش‌های سطح دامین (Domain-Wide)
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed mb-4">
+                            در هر دامین مجزا (چه Root و چه Child) دقیقاً یک سرور این سه نقش را بر عهده دارد.
+                        </p>
+
+                        <!-- PDC Emulator -->
+                        <div class="bg-black/30 p-6 rounded-xl border border-accent/30 relative shadow-[0_0_15px_rgba(0,229,255,0.05)]">
+                            <h3 class="text-xl font-bold text-accent mb-4 flex items-center gap-2 border-b border-accent/20 pb-3">
+                                <i class="fa-solid fa-clock"></i> ۱. PDC Emulator Master
+                            </h3>
+                            <p class="text-[15px] text-gray-300 mb-5 text-justify leading-relaxed">
+                                پرکارترین و مهم‌ترین نقش در شبکه! این سرور <strong>۵ وظیفه اصلی و حیاتی</strong> دارد:
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div class="bg-[#0a0f18] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-white text-[15px] block mb-2">۱. Password Master</strong>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">تغییرات پسوردها فوراً به این سرور ارسال می‌شود تا از خطای لاگین به دلیل تاخیر Replication جلوگیری شود.</p>
+                                </div>
+                                <div class="bg-[#0a0f18] p-4 rounded-xl border border-white/5 border-r-2 border-r-accent">
+                                    <strong class="text-accent text-[15px] block mb-2">۲. Time Master</strong>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">طبق پروتکل Kerberos، اگر اختلاف زمانی کلاینت با DC بیش از <strong>۵ دقیقه</strong> باشد، اجازه لاگین داده نمی‌شود. PDCهای هر دامین، تایم خود را از PDC دامینِ روت (Forest Root) می‌گیرند.</p>
+                                </div>
+                                <div class="bg-[#0a0f18] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-white text-[15px] block mb-2">۳. Group Policy Master</strong>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">مدیریت و اعمال یکپارچه پالیسی‌ها روی کلاینت‌ها.</p>
+                                </div>
+                                <div class="bg-[#0a0f18] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-white text-[15px] block mb-2">۴ و ۵. Legacy & Browser</strong>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">شامل وظایف Master Browser و هماهنگی با شبکه‌های قدیمی NT4 PDC.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-black/60 p-5 rounded-xl border border-accent/20">
+                                <p class="text-[15px] font-bold text-gray-300 mb-3"><i class="fa-solid fa-terminal text-accent ml-2"></i>دستورات حیاتی مدیریت زمان (Time Sync):</p>
+                                <div class="code-block space-y-4 text-sm">
+                                    <div>
+                                        <span class="text-gray-500 block mb-1"># پیدا کردن منبع تایم کلاینت (کلاینت تایمشو با کی سینک میکنه):</span>
+                                        <span class="text-accent">w32tm /query /source</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 block mb-1"># دستور اجبار به سینک زمان فورس شده:</span>
+                                        <span class="text-accent">w32tm /resync</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 block mb-1"># دستور تنظیم PDC برای سینک با اینترنت (External NTP):</span>
+                                        <span class="text-accent">w32tm /config /manualpeerlist:"pool.ntp.org" /syncfromflags:manual /reliable:yes /update</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+                            <!-- RID Master -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-white/5 hover:border-white/20 transition-colors">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <span class="text-accent">۲.</span> RID Master
+                                </h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    این سرور، <strong>بلوک‌های ۵۰۰ تایی</strong> از RID (Relative ID) را ایجاد کرده و به سایر DCها تخصیص می‌دهد. تا زمانی که DCها آبجکت جدید (مثلا کاربر) می‌سازند، بتوانند یک SID یکتا و بدون تکرار برای آن ایجاد کنند.
                                 </p>
                             </div>
-                            <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                                <h4 class="text-lg font-bold text-accent mb-2">Static در برابر Dynamic</h4>
-                                <p class="text-gray-400 text-sm leading-relaxed">
-                                    <strong>استاتیک:</strong> صفحات ثابتی که فقط از کدهای HTML/CSS تشکیل شده‌اند و دیتابیس ندارند.<br>
-                                    <strong>داینامیک:</strong> سایت‌هایی که با کاربر تعامل دارند (مثل فروشگاه‌ها) و به دیتابیس نیاز دارند (MSSQL در مایکروسافت، MySQL در لینوکس).
+
+                            <!-- Infrastructure Master -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-white/5 hover:border-white/20 transition-colors">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <span class="text-accent">۳.</span> Infrastructure Master
+                                </h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    وظیفه آپدیت نگه داشتن رفرنس‌های آبجکت‌هایی را دارد که در یک دامین هستند اما به آبجکت‌هایی در دامین دیگر اشاره می‌کنند (مثل اضافه کردن یوزری از دامین دیگر به یک گروه محلی و تغییر نام آن یوزر).
                                 </p>
                             </div>
                         </div>
 
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-lock text-accent"></i> پروتکل‌های ارتباطی: HTTP vs HTTPS</h3>
-                            <ul class="text-gray-300 space-y-3">
-                                <li><span class="mono-inline">HTTP</span>: پروتکل پایه وب روی پورت 80. اطلاعات متنی و آسیب‌پذیرند.</li>
-                                <li><span class="mono-inline">HTTPS</span>: نسخه امن روی پورت 443. وظایف آن:
-                                    <ul class="list-disc list-inside ms-5 mt-2 text-sm text-gray-400 space-y-1">
-                                        <li><strong>رمزنگاری (Encryption):</strong> جلوگیری از حملات Man-in-the-Middle.</li>
-                                        <li><strong>احراز هویت سرور:</strong> اثبات هویت سایت با گواهینامه (Certificate) و جلوگیری از Phishing.</li>
-                                        <li><strong>یکپارچگی داده‌ها:</strong> تضمین عدم تغییر داده‌ها در مسیر.</li>
-                                    </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: DR & Seizing -->
+            <section id="dr-seizing" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-radiation text-red-400"></i>
+                        بحران: Disaster Recovery و عملیات Seize
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="bg-red-500/10 p-6 rounded-xl border border-red-500/20">
+                            <h3 class="text-xl font-bold text-red-400 mb-3">وقتی DC دارنده نقش‌ها نابود می‌شود!</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                فرض کنیم سروری که PDC یا نقش‌های دیگر را داشت، به‌طور کامل از بین رفته (Crash / سخت‌افزار سوخته است). برای برگرداندن سرویس دو راهکار اصلی داریم:
+                            </p>
+                            <ul class="list-disc list-inside text-[15px] text-gray-300 space-y-2 mb-4 marker:text-red-500">
+                                <li>
+                                    استفاده از <strong>Backup</strong>: باید بک‌آپ زیر ۱۲ الی ۲۴ ساعت باشد (بسیار قبل‌تر از گذشتن Tombstone Lifetime). پروسه شامل مفاهیمی مثل Authoritative Restore و Non-authoritative Restore است.
+                                </li>
+                                <li>
+                                    استفاده از <strong>Additional DC</strong> موجود در شبکه و انتقال اجباری نقش‌ها به آن.
                                 </li>
                             </ul>
                         </div>
 
                         <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">محل‌های میزبانی وب‌سایت (Where to host?)</h3>
-                            <div class="space-y-4 text-gray-300 text-sm sm:text-base leading-relaxed">
-                                <p><strong>۱. Data Center (اینترنت):</strong></p>
-                                <ul class="list-disc list-inside ms-5 space-y-1 text-gray-400">
-                                    <li><strong>VPS/VDS:</strong> سرور مجازی اختصاصی.</li>
-                                    <li><strong>Dedicated:</strong> سرور فیزیکی اختصاصی.</li>
-                                    <li><strong>Colocation:</strong> سخت‌افزار از شما، فضا و زیرساخت از دیتاسنتر.</li>
-                                    <li><strong>Host (Shared):</strong> هاست اشتراکی؛ دریافت یک فولدر و دیتابیس بدون دسترسی به OS.</li>
-                                </ul>
-                                <p class="mt-4"><strong>۲. LAN (شبکه داخلی):</strong> قرار دادن سرور در رکِ شرکت برای پورتال‌های سازمانی.</p>
-                            </div>
-                        </div>
-
-                        <div class="p-5 bg-gradient-to-r from-accent/20 to-transparent border-r-4 border-accent rounded-l-lg">
-                            <h4 class="text-lg font-bold text-white mb-2">تفاوت انتشار سایت در LAN و اینترنت</h4>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                تفاوت اصلی در <strong>Name Resolution (تبدیل اسم به IP)</strong> است. در شبکه داخلی (LAN) ما می‌توانیم هر نام دلخواهی (مثلاً <span class="mono-inline">test.corp</span>) را در سرویس DNS داخلی تعریف کنیم. اما در بستر اینترنت، باید یک دامنه (Domain) رسمی خریداری کنیم که نام آن آزاد باشد تا در DNSهای جهانی ثبت شود.
+                            <h3 class="text-2xl font-bold text-white mb-4 mt-8 border-b border-white/10 pb-3">عملیات Seize کردن (غصب نقش‌ها)</h3>
+                            <p class="text-[15px] text-gray-300 mb-5 text-justify leading-relaxed">
+                                اگر سرور اصلی خاموش است و دیگر برنمی‌گردد، ما باید با زور (Force) نقش‌ها را روی یک Additional DC بنشانیم؛ به این کار <strong>Seize</strong> می‌گویند (از طریق <span class="mono-inline">ntdsutil</span> یا پاورشل). پس از انجام Seize باید <strong>حتماً</strong> دو کار بسیار مهم انجام دهید:
                             </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: IIS Installation -->
-            <section id="iis-install" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-download text-accent"></i>
-                        نصب و راه‌اندازی اولیه IIS
-                    </h2>
-
-                    <div class="space-y-6 text-gray-300 leading-relaxed text-lg">
-                        <p>
-                            برای راه‌اندازی وب‌سرور در ویندوز سرور، باید <strong>Role</strong> مربوط به IIS (Web Server) را از طریق <em>Server Manager</em> نصب کنیم. در حین نصب، مجموعه‌ای از Role Services (سرویس‌های وابسته) پیشنهاد می‌شود:
-                        </p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
-                                <h4 class="font-bold text-accent mb-1"><i class="fa-solid fa-file-code me-2"></i>HTTP Features</h4>
-                                <p class="text-sm text-gray-400">قابلیت‌های پایه‌ای مانند Static Content و Default Document.</p>
-                            </div>
-                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
-                                <h4 class="font-bold text-accent mb-1"><i class="fa-solid fa-folder-open me-2"></i>FTP Server</h4>
-                                <p class="text-sm text-gray-400">راه‌اندازی سرویس انتقال فایل جهت آپلود/دانلود کاربران.</p>
-                            </div>
-                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
-                                <h4 class="font-bold text-accent mb-1"><i class="fa-solid fa-sliders me-2"></i>Management Tools</h4>
-                                <p class="text-sm text-gray-400">ابزار مدیریت گرافیکی <span class="mono-inline">inetmgr</span> برای مدیریت بصری سایت‌ها.</p>
-                            </div>
-                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
-                                <h4 class="font-bold text-accent mb-1"><i class="fa-solid fa-shield me-2"></i>Security & Performance</h4>
-                                <p class="text-sm text-gray-400">فشرده‌سازی محتوا، احراز هویت و فیلترینگ درخواست‌ها.</p>
-                            </div>
-                        </div>
-
-                        <h3 class="text-2xl font-bold text-white mt-10 mb-4 border-b border-white/10 pb-2">تست نصب و مشاهده صفحه پیش‌فرض</h3>
-                        <p class="text-base">
-                            پس از اتمام موفقیت‌آمیز نصب، IIS به طور خودکار یک سایت پیش‌فرض (Default Web Site) را استارت می‌کند. فایل‌های این سایت در مسیر زیر قرار دارند:
-                        </p>
-                        
-                        <div class="mono-block">
-                            C:\inetpub\wwwroot
-                        </div>
-
-                        <p class="text-base mt-6">
-                            <strong>نحوه تست (Verify Installation):</strong> برای اطمینان از کارکرد صحیح، یک مرورگر باز کنید:
-                        </p>
-                        
-                        <ul class="list-disc list-inside ms-5 space-y-3 text-base marker:text-accent">
-                            <li>
-                                اگر روی <strong>خود سرور</strong> هستید، یکی از مقادیر زیر را در نوار آدرس وارد کنید:
-                                <div class="mt-2 space-x-2 rtl:space-x-reverse">
-                                    <span class="mono-inline">http://localhost</span>
-                                    <span class="text-sm">یا</span>
-                                    <span class="mono-inline">http://127.0.0.1</span>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="bg-black/40 border border-white/10 p-6 rounded-xl relative overflow-hidden hover:border-red-500/30 transition-all">
+                                    <div class="absolute right-0 top-0 w-1 h-full bg-red-500"></div>
+                                    <h4 class="font-bold text-white text-lg mb-3 flex items-center gap-2">
+                                        <i class="fa-solid fa-broom text-red-400"></i> ۱. پاک‌سازی Metadata
+                                    </h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        باید متادیتا، رکوردها، آثار و بقایای DC پاک شده (سوخته) را با استفاده از ابزار <code class="mono-inline text-red-400">ntdsutil</code> از دیتابیس اکتیو دایرکتوری و همچنین از کنسول‌های DNS و Sites and Services به طور <strong>کامل</strong> پاک کنیم تا سرورهای دیگر به دنبال آن نگردند.
+                                    </p>
                                 </div>
-                            </li>
-                            <li>
-                                اگر روی <strong>کلاینت داخل شبکه</strong> هستید، <strong>آی‌پی سرور</strong> (مثلاً <span class="mono-inline">192.168.1.10</span>) یا <strong>نام کامپیوتر</strong> را وارد کنید.
-                            </li>
-                        </ul>
-
-                        <div class="mt-8 p-6 glass-panel rounded-xl border border-accent/30 text-center flex flex-col items-center justify-center">
-                            <i class="fa-brands fa-microsoft text-4xl text-accent mb-3"></i>
-                            <h4 class="text-xl font-bold text-white mb-2">نتیجه موفقیت‌آمیز</h4>
-                            <p class="text-gray-400 text-sm max-w-lg mx-auto">
-                                اگر همه‌چیز درست باشد، صفحه خوش‌آمدگویی و لاگوی آبی‌رنگ و معروف IIS روی مرورگر شما بارگذاری می‌شود. این یعنی وب‌سرور شما روی پورت ۸۰ در وضعیت Listening قرار دارد!
-                            </p>
+                                <div class="bg-black/40 border border-white/10 p-6 rounded-xl relative overflow-hidden hover:border-accent/30 transition-all">
+                                    <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
+                                    <h4 class="font-bold text-white text-lg mb-3 flex items-center gap-2">
+                                        <i class="fa-solid fa-heart-pulse text-accent"></i> ۲. مانیتورینگ سلامت
+                                    </h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        باید مطمئن شویم اکتیو دایرکتوری روی سرور جدید درست کار می‌کند و Replication بدون خطا در حال انجام است. برای این کار از ابزارهای قدرتمندی نظیر <code class="mono-inline">dcdiag</code> و <code class="mono-inline">repadmin /showrepl</code> استفاده می‌کنیم.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </section>
@@ -396,39 +443,33 @@
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-            // Navigation Logic
             navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetId = item.getAttribute('data-target');
 
-                    // Update active state on nav
                     navItems.forEach(nav => nav.classList.remove('active'));
                     item.classList.add('active');
 
-                    // Show target section with animation
                     sections.forEach(section => {
                         section.classList.remove('active', 'fade-in');
                         if (section.id === targetId) {
                             section.classList.add('active');
-                            // Trigger reflow to restart CSS animation
                             void section.offsetWidth; 
                             section.classList.add('fade-in');
                         }
                     });
 
-                    // Close mobile sidebar on link click
                     if(window.innerWidth < 1024) {
                         closeMobileSidebar();
                     }
                 });
             });
 
-            // Mobile Sidebar Toggle Logic
             function openMobileSidebar() {
                 sidebar.classList.remove('translate-x-full');
                 sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                document.body.style.overflow = 'hidden';
             }
 
             function closeMobileSidebar() {
@@ -443,3 +484,4 @@
     </script>
 </body>
 </html>
+```eof
