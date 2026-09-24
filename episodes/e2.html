@@ -3,32 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ویندوز سرور ۲ | اپیزود ۲ : معماری و امنیت</title>
+    <title>هنوز نرسیدیم!</title>
     
     <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
-                    
-                    
-                    
-                    
                     colors: {
-                        // Episode 2 Accent Color: Neon Cyan
                         accent: '#00e5ff',
-                        accentHover: '#33edff',
-                        darkBg: '#0f0f13', // هماهنگ با پس‌زمینه پورتال
+                        darkBg: '#050b14',
                     }
                 }
             }
@@ -38,398 +30,88 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
-            background-color: #0f0f13;
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: rgba(10, 15, 30, 0.4);
+        /* انیمیشن برای گوی‌های درخشان پس‌زمینه */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        /* Glassmorphism Panel Base */
+        .glass-card {
+            background: rgba(30, 30, 35, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-        
-        .glass-sidebar {
-            background: rgba(5, 10, 20, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(0, 229, 255, 0.2);
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Content Sections Toggle */
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f0f13; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
-
-        /* Monospace / Code Blocks */
-        .mono-inline {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #67e8f9;
-            padding: 0.15rem 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            font-size: 0.9em;
-            direction: ltr;
-            display: inline-block;
-        }
-
-        /* Sidebar active item styling */
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
-            border-right: 3px solid #00e5ff;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex font-sans">
 
-    <!-- Mobile Header & Menu Toggle -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
-        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۲</div>
-        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
-            <i class="fa-solid fa-bars text-2xl"></i>
-        </button>
+<body class="min-h-screen relative flex items-center justify-center p-4">
+
+    <!-- افکت‌های نوری معلق در پس‌زمینه -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 flex items-center justify-center pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute bottom-[10%] left-[10%] w-96 h-96 bg-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Sidebar (Right) -->
-    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
-        <div class="p-6 border-b border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                <i class="fa-solid fa-network-wired text-accent text-xl"></i>
+    <div class="w-full max-w-[420px] z-10">
+        <!-- کادر گلس‌مورفیسم -->
+        <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 text-center flex flex-col items-center">
+            
+            <!-- آیکون ساعت با افکت نئونی -->
+            <div class="mb-8 mt-2 relative">
+                <div class="absolute inset-0 bg-accent blur-xl opacity-20 rounded-full"></div>
+                <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 border-accent/30 bg-accent/5 relative z-10 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
             </div>
-            <div>
-                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
-                <p class="text-accent/80 text-sm">اپیزود ۲ : معماری و امنیت</p>
-            </div>
-        </div>
 
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
-            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
-            
-            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="binding-settings">
-                <i class="fa-solid fa-link w-5 text-center"></i>
-                <span class="text-sm font-medium">تنظیمات پایه و Binding</span>
+            <!-- متن اصلی -->
+            <h1 class="text-xl sm:text-2xl font-black text-white mb-6 leading-[2.2] tracking-wide drop-shadow-lg">
+                داداش چقد عجله داری<br>
+                <span class="text-accent">صبر کن هنوز نرسیدیم که :)</span>
+            </h1>
+
+            <!-- متن توضیحات -->
+            <p class="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-10 px-2 font-light">
+                این اپیزود هنوز آماده نشده یا سرورش در حال ساخته. یه کم دیگه بهمون فرصت بده، به زودی راه‌اندازی میشه!
+            </p>
+
+            <!-- دکمه بازگشت به صفحه اصلی -->
+            <a href="/" 
+               class="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-medium text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                <span class="whitespace-nowrap">بازگشت به لیست اپیزودها</span>
+                <!-- آیکون فلش (با انیمیشن هاور به سمت راست برای زبان فارسی) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
             </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="publishing-auth">
-                <i class="fa-solid fa-users-viewfinder w-5 text-center"></i>
-                <span class="text-sm font-medium">انتشار و احراز هویت</span>
-            </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="security-errors">
-                <i class="fa-solid fa-shield-halved w-5 text-center"></i>
-                <span class="text-sm font-medium">امنیت و مدیریت خطاها</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="ssl-certs">
-                <i class="fa-solid fa-certificate w-5 text-center"></i>
-                <span class="text-sm font-medium">گواهینامه‌ها و HTTPS</span>
-            </a>
-        </nav>
-
-        <div class="p-4 border-t border-white/5 text-center">
-        </div>
-    </aside>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
-        <div class="max-w-4xl mx-auto">
-            
-            <!-- SECTION 1: Binding & Base Settings -->
-            <section id="binding-settings" class="section-content active fade-in">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"></div>
-                    
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-link text-accent"></i>
-                        مفهوم Binding و تنظیمات پایه
-                    </h2>
-                    
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3 flex items-center gap-2"><i class="fa-solid fa-server"></i> میزبانی چندین سایت روی یک سرور</h3>
-                            <p class="text-gray-300 leading-relaxed text-justify mb-3">
-                                چگونه روی یک سرور با یک آدرس IP، ده‌ها وب‌سایت مختلف روی پورت مشترک 443 داشته باشیم بدون تداخل؟ 
-                                اینجا مفهوم <strong>Binding</strong> وارد می‌شود.
-                            </p>
-                            <div class="bg-white/5 border border-white/10 p-5 rounded-xl">
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    ما با استفاده از <strong>Host Name</strong> به IIS می‌فهمانیم که ترافیک ورودی را چگونه تفکیک کند. وقتی کاربر <span class="mono-inline">Site-A.com</span> را در مرورگر می‌زند، این نام در هدرِ پکت ارسال می‌شود. IIS هدر را می‌خواند و کاربر را دقیقاً به پوشه همان سایت هدایت می‌کند. ما هیچ محدودیتی در تعداد سایت‌های روی یک سرور نداریم!
-                                </p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">تنظیمات پایه‌ای سایت در IIS</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                                <div class="bg-black/20 p-5 rounded-xl border border-white/5 hover:border-accent/30 transition-colors">
-                                    <h4 class="text-lg font-bold text-accent mb-2"><i class="fa-solid fa-file-code me-2"></i>Default Document</h4>
-                                    <p class="text-gray-400 text-sm leading-relaxed">
-                                        وقتی کاربر آدرس سایت را بدون ذکر نام فایل وارد می‌کند، IIS از این بخش متوجه می‌شود که صفحه اصلی (Home Page) کدام است (مثلاً <span class="mono-inline">index.html</span> یا <span class="mono-inline">default.aspx</span>).
-                                    </p>
-                                </div>
-                                <div class="bg-black/20 p-5 rounded-xl border border-white/5 hover:border-accent/30 transition-colors">
-                                    <h4 class="text-lg font-bold text-accent mb-2"><i class="fa-solid fa-folder-tree me-2"></i>Directory Browsing</h4>
-                                    <p class="text-gray-400 text-sm leading-relaxed">
-                                        سایت را شبیه یک پوشه ویندوزی (یا FTP) می‌کند تا کاربر لیست تمام فایل‌ها را ببیند. <strong>نکته امنیتی:</strong> در محیط عملیاتی این قابلیت باید خاموش باشد.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: Publishing & Authentication -->
-            <section id="publishing-auth" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-users-viewfinder text-accent"></i>
-                        انتشار سایت و احراز هویت
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3 flex items-center gap-2"><i class="fa-solid fa-globe"></i> انتشار سایت در اینترنت (Publishing)</h3>
-                            <p class="text-gray-300 leading-relaxed mb-4">
-                                برای اینکه سایتی که روی سرور داخلی (IIS) ساختیم از بیرون شبکه دیده شود، به دو گام اساسی نیاز داریم:
-                            </p>
-                            <ul class="space-y-3">
-                                <li class="bg-white/5 p-4 rounded-lg border-l-4 border-accent text-gray-300 text-sm">
-                                    <strong>۱. روتر و Port Forwarding (NAT):</strong> روی روتر لبه شبکه تنظیم می‌کنیم که هر درخواستی روی پورت ۸۰ یا ۴۴۳ آمد، به IP داخلی سرور IIS پاس داده شود.
-                                </li>
-                                <li class="bg-white/5 p-4 rounded-lg border-l-4 border-blue-500 text-gray-300 text-sm">
-                                    <strong>۲. تنظیمات DNS:</strong> وارد پنل دامنه (یا DNS ISP) می‌شویم و یک <strong>رکورد A</strong> می‌سازیم تا نام دامنه ما به IP پابلیکِ روتر اشاره کند.
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">انواع احراز هویت (Authentication)</h3>
-                            <div class="space-y-4">
-                                <div class="p-4 bg-black/30 rounded-xl border border-white/5 flex gap-4">
-                                    <div class="text-accent text-2xl pt-1"><i class="fa-solid fa-user-secret"></i></div>
-                                    <div>
-                                        <h4 class="font-bold text-white mb-1">Anonymous (ناشناس)</h4>
-                                        <p class="text-sm text-gray-400">به صورت پیش‌فرض روشن است؛ هر کاربر یا رباتی در اینترنت می‌تواند بدون نیاز به رمزعبور سایت را ببیند.</p>
-                                    </div>
-                                </div>
-                                <div class="p-4 bg-black/30 rounded-xl border border-white/5 flex gap-4">
-                                    <div class="text-orange-400 text-2xl pt-1"><i class="fa-solid fa-lock-open"></i></div>
-                                    <div>
-                                        <h4 class="font-bold text-white mb-1">Basic Authentication</h4>
-                                        <p class="text-sm text-gray-400">نیاز به وارد کردن یوزر و پسورد ویندوزی دارد. مشکل اینجاست که اطلاعات را به صورت متنی (Clear Text) می‌فرستد مگر اینکه سایت حتماً HTTPS باشد.</p>
-                                    </div>
-                                </div>
-                                <div class="p-4 bg-black/30 rounded-xl border border-white/5 flex gap-4">
-                                    <div class="text-green-400 text-2xl pt-1"><i class="fa-brands fa-windows"></i></div>
-                                    <div>
-                                        <h4 class="font-bold text-white mb-1">Windows Authentication</h4>
-                                        <p class="text-sm text-gray-400">مخصوص شبکه‌های دامین (Active Directory). اگر کاربر با سیستم شرکتی لاگین کرده باشد، مرورگر توکن امنیتی او را مخفیانه به IIS می‌فرستد و خودکار وارد سایت می‌شود (قابلیت SSO).</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: Security & Errors -->
-            <section id="security-errors" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-shield-halved text-accent"></i>
-                        امنیت و مدیریت خطاها
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3">مدیریت صفحات خطا (Error Pages)</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                                وقتی خطایی مثل <span class="mono-inline">404 Not Found</span> یا <span class="mono-inline">500 Internal Server Error</span> رخ می‌دهد، می‌توانیم صفحات ساده و سفید IIS را با صفحات گرافیکی شخصی‌سازی شده جایگزین کنیم.
-                            </p>
-                            <div class="bg-yellow-500/10 border-r-4 border-yellow-500 p-4 rounded-l-lg">
-                                <p class="text-gray-200 text-sm">
-                                    <i class="fa-solid fa-triangle-exclamation text-yellow-500 me-2"></i>
-                                    <strong>Detailed Errors:</strong> IIS هوشمند است و ارورهای با جزئیات کامل (برای دیباگ) را فقط به کسی نشان می‌دهد که روی خود سرور (Localhost) باشد تا اطلاعات حیاتی لو نرود.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">ایران‌اکسس کردن و محدودیت‌ها</h3>
-                            <ul class="list-disc list-inside ms-2 space-y-3 text-sm text-gray-300 marker:text-accent">
-                                <li>
-                                    <strong>روش غیر اصولی (با IIS):</strong> نصب ماژول <em>IP and Domain Restrictions</em> و مجاز کردن رنج IPهای ایران.
-                                </li>
-                                <li>
-                                    <strong>روش اصولی (معماری درست):</strong> محدود کردن کشورها باید در لبه شبکه و روی فایروال یا روتر (مثل میکروتیک) انجام شود تا ترافیک خارجی اصلاً به سرور IIS نرسد.
-                                </li>
-                                <li>
-                                    <strong>مسدودسازی بر اساس دامنه:</strong> اگر بخواهیم یک دامنه خاص را بلاک کنیم، IIS مجبور به پرس‌وجوی <strong>Reverse DNS (PTR)</strong> برای هر IP می‌شود که باعث کندی شدید سرور می‌گردد و کاربردی نیست.
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="p-5 bg-gradient-to-r from-red-500/10 to-transparent border border-red-500/20 rounded-xl">
-                            <h3 class="text-lg font-bold text-red-400 mb-2 flex items-center gap-2">
-                                <i class="fa-solid fa-virus"></i> حملات DDoS و Dynamic IP Restriction
-                            </h3>
-                            <p class="text-gray-400 text-sm leading-relaxed">
-                                در حملات <strong>DDoS</strong>، هزاران کامپیوتر آلوده ترافیک فیک می‌فرستند تا سرور Down شود. ماژول <em>Dynamic IP Restriction</em> به صورت هوشمند رفتار کاربر را می‌سنجد. مثلاً اگر یک IP در کسری از ثانیه ۱۰۰ درخواست داد، بلافاصله موقتاً بلاک می‌شود تا جلوی حملات لایه وب گرفته شود.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: SSL & Certificates -->
-            <section id="ssl-certs" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-certificate text-accent"></i>
-                        گواهینامه‌ها و ارتباط امن (HTTPS)
-                    </h2>
-
-                    <div class="space-y-6 text-gray-300">
-                        <div class="bg-white/5 p-5 rounded-xl border border-white/10">
-                            <h3 class="text-lg font-bold text-accent mb-2">کلید عمومی و خصوصی (Public & Private Key)</h3>
-                            <p class="text-sm leading-relaxed">
-                                سرور دو کلید تولید می‌کند. <strong>Private Key</strong> باید در سرور مخفی بماند. <strong>Public Key</strong> در قالب Certificate به اینترنت داده می‌شود. اگر کسی پیامی را با کلید عمومی قفل کند، فقط با کلید خصوصی داخل سرور باز می‌شود.
-                            </p>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <h4 class="font-bold text-white mb-1 text-sm"><span class="mono-inline">فایل CSR</span></h4>
-                                <p class="text-xs text-gray-400 mt-2">
-                                    (Certificate Signing Request): فایل متنی تولید شده در سرور حاوی کلید عمومی و اطلاعات سایت. این فایل را به شرکت صادرکننده می‌دهیم تا امضا کند.
-                                </p>
-                            </div>
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <h4 class="font-bold text-white mb-1 text-sm"><span class="mono-inline">CA (Certificate Authority)</span></h4>
-                                <p class="text-xs text-gray-400 mt-2">
-                                    شرکت‌های معتبر جهانی صادرکننده گواهینامه. شرکت <strong>Certum</strong> یکی از معدود CAهایی است که به راحتی برای ایران (دامنه‌های .ir) گواهینامه صادر می‌کند.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="bg-accent/10 border-r-4 border-accent p-5 rounded-l-lg mt-4">
-                            <h3 class="text-lg font-bold text-white mb-2">خروجی CA و فایل PFX چیست؟</h3>
-                            <p class="text-sm leading-relaxed text-gray-300">
-                                شرکت پس از تایید، فایل گواهینامه (<span class="mono-inline">.crt</span> یا <span class="mono-inline">.cer</span>) را تحویل می‌دهد. اما IIS برای HTTPS کردن سایت به کلید خصوصی هم نیاز دارد. ما باید فایل گواهینامه را با کلید خصوصی ترکیب کرده و یک فایل واحد و پسورددار به نام <strong>PFX (PKCS#12)</strong> بسازیم. این تنها فرمتی است که IIS برای Import کاملاً درک می‌کند.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mt-8 mb-4 border-b border-white/10 pb-2">سطوح اعتبارسنجی (Validation)</h3>
-                            <div class="flex flex-col gap-3">
-                                <div class="flex items-center gap-3 bg-black/20 p-3 rounded-lg border border-white/5">
-                                    <span class="mono-inline w-12 text-center text-accent font-bold">DV</span>
-                                    <p class="text-sm text-gray-400"><strong>Domain Validation:</strong> فقط مالکیت دامنه بررسی می‌شود (سریع و ارزان).</p>
-                                </div>
-                                <div class="flex items-center gap-3 bg-black/20 p-3 rounded-lg border border-white/5">
-                                    <span class="mono-inline w-12 text-center text-accent font-bold">OV</span>
-                                    <p class="text-sm text-gray-400"><strong>Organization Validation:</strong> مدارک ثبت شرکت نیز بررسی و در گواهینامه درج می‌شود.</p>
-                                </div>
-                                <div class="flex items-center gap-3 bg-black/20 p-3 rounded-lg border border-white/5">
-                                    <span class="mono-inline w-12 text-center text-accent font-bold">EV</span>
-                                    <p class="text-sm text-gray-400"><strong>Extended Validation:</strong> بالاترین سطح تایید هویت و سخت‌گیرانه‌ترین نوع شرکتی.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-6">
-                            <p class="text-sm text-gray-500">
-                                ابزارهایی مانند <span class="mono-inline">Certificatetool.com</span> برای بررسی سلامت گواهینامه، چک کردن CSR و تبدیل فرمت‌ها بسیار کاربردی هستند.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
             
         </div>
-    </main>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section-content');
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-            // Navigation Logic
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = item.getAttribute('data-target');
-
-                    // Update active state on nav
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-
-                    // Show target section with animation
-                    sections.forEach(section => {
-                        section.classList.remove('active', 'fade-in');
-                        if (section.id === targetId) {
-                            section.classList.add('active');
-                            // Trigger reflow to restart CSS animation
-                            void section.offsetWidth; 
-                            section.classList.add('fade-in');
-                        }
-                    });
-
-                    // Close mobile sidebar on link click
-                    if(window.innerWidth < 1024) {
-                        closeMobileSidebar();
-                    }
-                });
-            });
-
-            // Mobile Sidebar Toggle Logic
-            function openMobileSidebar() {
-                sidebar.classList.remove('translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobileSidebar() {
-                sidebar.classList.add('translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-
-            mobileMenuBtn.addEventListener('click', openMobileSidebar);
-            sidebarOverlay.addEventListener('click', closeMobileSidebar);
-        });
-    </script>
 </body>
 </html>
