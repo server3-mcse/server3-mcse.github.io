@@ -3,29 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ویندوز سرور ۲ | اپیزود ۵</title>
+    <title>هنوز نرسیدیم!</title>
     
     <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
-                    
                     colors: {
-                        // Episode 5 Accent Color: Neon Cyan
                         accent: '#00e5ff',
-                        accentHover: '#84ffff',
-                        darkBg: '#0f0f13', // هماهنگ با پس‌زمینه پورتال
+                        darkBg: '#050b14',
                     }
                 }
             }
@@ -35,401 +30,88 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
-            background-color: #0f0f13;
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: rgba(10, 15, 30, 0.4);
+        /* انیمیشن برای گوی‌های درخشان پس‌زمینه */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        /* Glassmorphism Panel Base */
+        .glass-card {
+            background: rgba(30, 30, 35, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-        
-        .glass-sidebar {
-            background: rgba(5, 10, 20, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(0, 229, 255, 0.2);
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Content Sections Toggle */
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f0f13; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
-
-        /* Monospace / Code Blocks */
-        .mono-inline {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #67e8f9;
-            padding: 0.15rem 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            font-size: 0.9em;
-            direction: ltr;
-            display: inline-block;
-        }
-
-        .mono-block {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #cffafe;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-right: 4px solid #00e5ff;
-            direction: ltr;
-            text-align: left;
-            margin: 1rem 0;
-            overflow-x: auto;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        /* Sidebar active item styling */
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
-            border-right: 3px solid #00e5ff;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex font-sans">
 
-    <!-- Mobile Header & Menu Toggle -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
-        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۲</div>
-        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
-            <i class="fa-solid fa-bars text-2xl"></i>
-        </button>
+<body class="min-h-screen relative flex items-center justify-center p-4">
+
+    <!-- افکت‌های نوری معلق در پس‌زمینه -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 flex items-center justify-center pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute bottom-[10%] left-[10%] w-96 h-96 bg-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Sidebar (Right) -->
-    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
-        <div class="p-6 border-b border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                <i class="fa-solid fa-network-wired text-accent text-xl"></i>
+    <div class="w-full max-w-[420px] z-10">
+        <!-- کادر گلس‌مورفیسم -->
+        <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 text-center flex flex-col items-center">
+            
+            <!-- آیکون ساعت با افکت نئونی -->
+            <div class="mb-8 mt-2 relative">
+                <div class="absolute inset-0 bg-accent blur-xl opacity-20 rounded-full"></div>
+                <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 border-accent/30 bg-accent/5 relative z-10 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
             </div>
-            <div>
-                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
-                <p class="text-accent/80 text-sm">اپیزود ۵ : روتینگ و میکروتیک</p>
-            </div>
-        </div>
 
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
-            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
-            
-            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="rras-lan-routing">
-                <i class="fa-solid fa-route w-5 text-center"></i>
-                <span class="text-sm font-medium">پیکربندی RRAS و LAN Routing</span>
-            </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="nat-implementation">
-                <i class="fa-solid fa-exchange-alt w-5 text-center"></i>
-                <span class="text-sm font-medium">پیاده‌سازی NAT در سرور</span>
-            </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="address-filtering">
-                <i class="fa-solid fa-filter w-5 text-center"></i>
-                <span class="text-sm font-medium">ساب‌نت مسک و فیلترینگ</span>
-            </a>
+            <!-- متن اصلی -->
+            <h1 class="text-xl sm:text-2xl font-black text-white mb-6 leading-[2.2] tracking-wide drop-shadow-lg">
+                داداش چقد عجله داری<br>
+                <span class="text-accent">صبر کن هنوز نرسیدیم که :)</span>
+            </h1>
 
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="msft-vs-mikrotik">
-                <i class="fa-solid fa-microchip w-5 text-center"></i>
-                <span class="text-sm font-medium">مایکروسافت در برابر میکروتیک</span>
-            </a>
-        </nav>
+            <!-- متن توضیحات -->
+            <p class="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-10 px-2 font-light">
+                این اپیزود هنوز آماده نشده یا سرورش در حال ساخته. یه کم دیگه بهمون فرصت بده، به زودی راه‌اندازی میشه!
+            </p>
 
-        <div class="p-4 border-t border-white/5 text-center">
+            <!-- دکمه بازگشت به صفحه اصلی -->
+            <a href="/" 
+               class="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-medium text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                <span class="whitespace-nowrap">بازگشت به لیست اپیزودها</span>
+                <!-- آیکون فلش (با انیمیشن هاور به سمت راست برای زبان فارسی) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </a>
             
         </div>
-    </aside>
+    </div>
 
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
-        <div class="max-w-4xl mx-auto">
-            
-            <!-- SECTION 1: RRAS & LAN Routing -->
-            <section id="rras-lan-routing" class="section-content active fade-in">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"></div>
-                    
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-route text-accent"></i>
-                        راه‌اندازی اولیه و نقش LAN Routing
-                    </h2>
-                    
-                    <div class="space-y-6">
-                        <p class="text-gray-300 text-lg leading-relaxed mb-4">
-                            پس از نصب Role مربوط به <strong>Remote Access</strong> در ویندوز سرور، سرویس هنوز خاموش است و نیاز به پیکربندی دارد.
-                        </p>
-                        
-                        <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                            <h3 class="text-lg font-bold text-accent mb-2"><i class="fa-solid fa-gear me-2"></i>پیکربندی سفارشی (Custom Configuration)</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                وقتی کنسول RRAS را باز می‌کنیم، برای اینکه سرور دقیقاً همان کاری را بکند که ما می‌خواهیم (بدون ویزاردهای محدودکننده مایکروسافت)، روی سرور کلیک راست کرده و گزینه <span class="mono-inline">Custom Configuration</span> را انتخاب می‌کنیم.
-                            </p>
-                        </div>
-                        
-                        <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                            <h3 class="text-lg font-bold text-accent mb-2"><i class="fa-solid fa-network-wired me-2"></i>انتخاب LAN Routing</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                با تیک زدن گزینه <span class="mono-inline">LAN Routing</span>، ویندوز سرور رسماً تبدیل به یک روتر لایه ۳ می‌شود که می‌تواند بسته‌های اطلاعاتی (Packets) را بین کارت شبکه‌های مختلف خود (مثلاً شبکه مالی و شبکه اداری) مسیریابی کند.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: NAT & Basic Name Services -->
-            <section id="nat-implementation" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-exchange-alt text-accent"></i>
-                        پیاده‌سازی NAT در سرور مایکروسافت
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-3">فعال‌سازی NAT</h3>
-                            <p class="text-gray-300 leading-relaxed mb-4 text-sm">
-                                اگر سرور ما دو کارت شبکه دارد (یکی متصل به شبکه داخلی و دیگری متصل به اینترنت)، می‌توانیم علاوه بر Routing، سرویس NAT را هم روی آن فعال کنیم تا اینترنت را بین کاربران پخش کند.
-                            </p>
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <strong class="text-accent block mb-2">نحوه کار در کنسول:</strong>
-                                <p class="text-sm text-gray-400 leading-relaxed">
-                                    در زیرشاخه IPv4، یک پروتکل جدید به نام NAT اضافه می‌کنیم. سپس کارت شبکه‌ای که به اینترنت متصل است را به NAT معرفی کرده و گزینه <strong>Enable NAT on this interface</strong> را می‌زنیم. سرور به صورت خودکار ترافیک کاربران داخلی را ترجمه می‌کند.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">سرویس نام و آدرس‌دهی پایه (Basic Name & Address)</h3>
-                            
-                            <div class="flex flex-col md:flex-row gap-6 mt-4">
-                                <div class="flex-1 bg-black/30 p-5 rounded-xl border border-white/5">
-                                    <h4 class="font-bold text-accent mb-2">گزینه Enable Basic Name & Address</h4>
-                                    <p class="text-sm text-gray-300 leading-relaxed">
-                                        اگر این تیک را بزنیم، RRAS یک مینی-DHCP سرور و DNS Proxyِ سبک درون خودش راه می‌اندازد و به کاربرانی که به آن وصل می‌شوند به صورت خودکار IP می‌دهد.
-                                    </p>
-                                </div>
-                                <div class="flex-1 bg-red-500/10 p-5 rounded-xl border-t-4 border-red-500">
-                                    <h4 class="font-bold text-red-400 mb-2"><i class="fa-solid fa-triangle-exclamation me-2"></i>هشدار معماری</h4>
-                                    <p class="text-sm text-gray-300 leading-relaxed">
-                                        در شبکه‌های سازمانی (Enterprise) که دارای دامین، DNS قدرتمند و DHCP سرورِ اختصاصی هستند، <strong>هرگز</strong> این تیک را نمی‌زنیم و می‌گوییم "خودمان مدیریت آی‌پی‌ها را انجام می‌دهیم".
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: Address Filtering & Subnet /32 -->
-            <section id="address-filtering" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-filter text-accent"></i>
-                        ساب‌نت مسک خاص و فیلترینگ ترافیک
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3 flex items-center gap-2">
-                                <i class="fa-solid fa-network-wired"></i> راز ساب‌نت مسک 255.255.255.255
-                            </h3>
-                            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                                وقتی در جداول روتینگ یا فایروال با این ساب‌نت مسک (معادل <span class="mono-inline">/32</span> در CIDR) مواجه می‌شوید، یعنی چه؟
-                            </p>
-                            <div class="p-4 bg-white/5 border border-white/10 rounded-xl">
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    این مسک مشخص می‌کند که <strong>دقیقاً و منحصراً فقط همین یک عدد آی‌پی (Host IP)</strong> مد نظر ماست، نه یک رنجِ کامل. مثلاً اگر بخواهیم یک روت بنویسیم که فقط ترافیک سرور <span class="mono-inline">192.168.10.50</span> از مسیر مشخصی برود، مسک آن را چهار تا 255 می‌گذاریم تا بقیه شبکه درگیر نشوند.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">فیلترینگ در لایه روتر (Inbound & Outbound Filters)</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                                روتر RRAS مایکروسافت صرفاً یک مسیریاب ساده نیست، بلکه می‌تواند نقش یک <strong>Packet Filtering Firewall</strong> (فایروالِ پایه) را هم بازی کند.
-                            </p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                                    <h4 class="font-bold text-accent mb-2">Deny (مسدودسازی)</h4>
-                                    <p class="text-sm text-gray-400">
-                                        می‌توانید روی کارت شبکه رول بنویسید که: "هیچ پکتی از آی‌پی خاصی (مثلاً 10.10.10.5) اجازه ورود به این کارت شبکه را ندارد".
-                                    </p>
-                                </div>
-                                <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                                    <h4 class="font-bold text-accent mb-2">Allow (مجوز عبور)</h4>
-                                    <p class="text-sm text-gray-400">
-                                        یا مشخص کنید: "فقط پکت‌هایی که پورت مقصد آن‌ها 80 (ترافیک وب) است اجازه عبور از این اینترفیس را دارند".
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: Microsoft vs MikroTik -->
-            <section id="msft-vs-mikrotik" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-microchip text-accent"></i>
-                        عملیات مهندسی: مایکروسافت در برابر میکروتیک
-                    </h2>
-
-                    <p class="text-gray-300 leading-relaxed mb-6 text-sm">
-                        به عنوان یک مهندس شبکه، باید بتوانید یک سناریو را روی تجهیزات و برندهای مختلف پیاده کنید. در اینجا پیاده‌سازی دو سناریوی حیاتی را مقایسه می‌کنیم:
-                    </p>
-
-                    <div class="space-y-8">
-                        <!-- مقایسه روتینگ -->
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-4"><i class="fa-solid fa-code-branch me-2"></i>پیاده‌سازی روت دستی (Static Route)</h3>
-                            <div class="flex flex-col lg:flex-row gap-4">
-                                <div class="flex-1 bg-[#0078D7]/10 p-5 rounded-xl border border-[#0078D7]/30">
-                                    <div class="flex items-center gap-2 mb-3">
-                                        <i class="fa-brands fa-windows text-[#0078D7] text-xl"></i>
-                                        <h4 class="font-bold text-white">مایکروسافت RRAS</h4>
-                                    </div>
-                                    <ol class="list-decimal list-inside text-sm text-gray-300 space-y-2">
-                                        <li>به مسیر <span class="mono-inline">IPv4 -> Static Routes</span> می‌رویم.</li>
-                                        <li>کلیک راست کرده و <span class="mono-inline">New Static Route</span> را می‌زنیم.</li>
-                                        <li>شبکه مقصد، مسک، و درب خروج (Gateway) را وارد می‌کنیم.</li>
-                                    </ol>
-                                </div>
-                                <div class="flex-1 bg-gray-800/50 p-5 rounded-xl border border-gray-600">
-                                    <div class="flex items-center gap-2 mb-3">
-                                        <!-- آیکون میکروتیک با فونت‌آوسام (از آیکون شبکه استفاده شده) -->
-                                        <i class="fa-solid fa-router text-gray-300 text-xl"></i>
-                                        <h4 class="font-bold text-white">میکروتیک (MikroTik)</h4>
-                                    </div>
-                                    <ol class="list-decimal list-inside text-sm text-gray-300 space-y-2">
-                                        <li>از منوی اصلی به مسیر <span class="mono-inline">IP -> Routes</span> می‌رویم.</li>
-                                        <li>روی علامت <span class="mono-inline">+</span> (Add) کلیک می‌کنیم.</li>
-                                        <li>در فیلد Dst. Address مقصد و در Gateway آی‌پی روتر بعدی را می‌زنیم.</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- مقایسه NAT -->
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-4"><i class="fa-solid fa-globe me-2"></i>پیاده‌سازی NAT (پخش اینترنت)</h3>
-                            <div class="flex flex-col lg:flex-row gap-4">
-                                <div class="flex-1 bg-[#0078D7]/10 p-5 rounded-xl border border-[#0078D7]/30">
-                                    <div class="flex items-center gap-2 mb-3">
-                                        <i class="fa-brands fa-windows text-[#0078D7] text-xl"></i>
-                                        <h4 class="font-bold text-white">مایکروسافت RRAS</h4>
-                                    </div>
-                                    <ol class="list-decimal list-inside text-sm text-gray-300 space-y-2">
-                                        <li>روی <span class="mono-inline">NAT</span> کلیک راست کرده و <span class="mono-inline">New Interface</span> می‌زنیم.</li>
-                                        <li>کارت شبکه متصل به اینترنت را انتخاب می‌کنیم.</li>
-                                        <li>تیک‌های Public Interface و <span class="mono-inline">Enable NAT</span> را می‌زنیم.</li>
-                                    </ol>
-                                </div>
-                                <div class="flex-1 bg-gray-800/50 p-5 rounded-xl border border-gray-600">
-                                    <div class="flex items-center gap-2 mb-3">
-                                        <i class="fa-solid fa-router text-gray-300 text-xl"></i>
-                                        <h4 class="font-bold text-white">میکروتیک (MikroTik)</h4>
-                                    </div>
-                                    <ol class="list-decimal list-inside text-sm text-gray-300 space-y-2">
-                                        <li>به مسیر <span class="mono-inline">IP -> Firewall -> NAT</span> می‌رویم.</li>
-                                        <li>روی Add کلیک کرده، Chain را روی <span class="mono-inline">srcnat</span> و کارت شبکه خروجی را انتخاب می‌کنیم.</li>
-                                        <li>در تب Action، گزینه <strong><span class="mono-inline text-accent">masquerade</span></strong> را انتخاب می‌کنیم.</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-            
-        </div>
-    </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section-content');
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-            // Navigation Logic
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = item.getAttribute('data-target');
-
-                    // Update active state on nav
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-
-                    // Show target section with animation
-                    sections.forEach(section => {
-                        section.classList.remove('active', 'fade-in');
-                        if (section.id === targetId) {
-                            section.classList.add('active');
-                            // Trigger reflow to restart CSS animation
-                            void section.offsetWidth; 
-                            section.classList.add('fade-in');
-                        }
-                    });
-
-                    // Close mobile sidebar on link click
-                    if(window.innerWidth < 1024) {
-                        closeMobileSidebar();
-                    }
-                });
-            });
-
-            // Mobile Sidebar Toggle Logic
-            function openMobileSidebar() {
-                sidebar.classList.remove('translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobileSidebar() {
-                sidebar.classList.add('translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-
-            mobileMenuBtn.addEventListener('click', openMobileSidebar);
-            sidebarOverlay.addEventListener('click', closeMobileSidebar);
-        });
-    </script>
 </body>
 </html>
