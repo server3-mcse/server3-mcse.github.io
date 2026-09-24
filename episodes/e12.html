@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ویندوز سرور ۲ | اپیزود ۱۲</title>
+    <title>هنوز نرسیدیم!</title>
     
     <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
                     colors: {
-                        // Episode 12 Accent Color: Neon Cyan
                         accent: '#00e5ff',
-                        accentHover: '#33edff',
                         darkBg: '#050b14',
                     }
                 }
@@ -35,430 +30,88 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
+            font-family: 'Vazirmatn', sans-serif !important;
             background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: rgba(10, 15, 30, 0.4);
+        /* انیمیشن برای گوی‌های درخشان پس‌زمینه */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        /* Glassmorphism Panel Base */
+        .glass-card {
+            background: rgba(30, 30, 35, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-        
-        .glass-sidebar {
-            background: rgba(5, 10, 20, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(0, 229, 255, 0.2);
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Content Sections Toggle */
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #050b14; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
-
-        /* Monospace / Code Blocks */
-        .mono-inline {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #67e8f9;
-            padding: 0.15rem 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            font-size: 0.9em;
-            direction: ltr;
-            display: inline-block;
-        }
-
-        /* Sidebar active item styling */
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
-            border-right: 3px solid #00e5ff;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex font-sans">
 
-    <!-- Mobile Header & Menu Toggle -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
-        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۲</div>
-        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
-            <i class="fa-solid fa-bars text-2xl"></i>
-        </button>
+<body class="min-h-screen relative flex items-center justify-center p-4">
+
+    <!-- افکت‌های نوری معلق در پس‌زمینه -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 flex items-center justify-center pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute bottom-[10%] left-[10%] w-96 h-96 bg-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Sidebar (Right) -->
-    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
-        <div class="p-6 border-b border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                <i class="fa-solid fa-satellite-dish text-accent text-xl"></i>
+    <div class="w-full max-w-[420px] z-10">
+        <!-- کادر گلس‌مورفیسم -->
+        <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 text-center flex flex-col items-center">
+            
+            <!-- آیکون ساعت با افکت نئونی -->
+            <div class="mb-8 mt-2 relative">
+                <div class="absolute inset-0 bg-accent blur-xl opacity-20 rounded-full"></div>
+                <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 border-accent/30 bg-accent/5 relative z-10 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
             </div>
-            <div>
-                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
-                <p class="text-accent/80 text-sm">اپیزود ۱۲ : معماری پیشرفته DNS</p>
-            </div>
-        </div>
 
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
-            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
-            
-            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="rds-pam">
-                <i class="fa-solid fa-shield-halved w-5 text-center"></i>
-                <span class="text-sm font-medium">امنیت با PAM و RDS Knight</span>
+            <!-- متن اصلی -->
+            <h1 class="text-xl sm:text-2xl font-black text-white mb-6 leading-[2.2] tracking-wide drop-shadow-lg">
+                داداش چقد عجله داری<br>
+                <span class="text-accent">صبر کن هنوز نرسیدیم که :)</span>
+            </h1>
+
+            <!-- متن توضیحات -->
+            <p class="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-10 px-2 font-light">
+                این اپیزود هنوز آماده نشده یا سرورش در حال ساخته. یه کم دیگه بهمون فرصت بده، به زودی راه‌اندازی میشه!
+            </p>
+
+            <!-- دکمه بازگشت به صفحه اصلی -->
+            <a href="/" 
+               class="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-medium text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                <span class="whitespace-nowrap">بازگشت به لیست اپیزودها</span>
+                <!-- آیکون فلش (با انیمیشن هاور به سمت راست برای زبان فارسی) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
             </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="hyperv-replica">
-                <i class="fa-solid fa-clone w-5 text-center"></i>
-                <span class="text-sm font-medium">معماری Hyper-V Replica</span>
-            </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="dns-publish">
-                <i class="fa-solid fa-globe w-5 text-center"></i>
-                <span class="text-sm font-medium">انتشار DNS در اینترنت</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="dns-policies">
-                <i class="fa-solid fa-traffic-light w-5 text-center"></i>
-                <span class="text-sm font-medium">شاهکار DNS Policy</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="rrl-advanced">
-                <i class="fa-solid fa-shield-virus w-5 text-center"></i>
-                <span class="text-sm font-medium">پارامترهای RRL و DANE</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
-        <div class="max-w-4xl mx-auto">
-            
-            <!-- SECTION 1: RDS Knight & ManageEngine PAM -->
-            <section id="rds-pam" class="section-content active fade-in">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"></div>
-                    
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-shield-halved text-accent"></i>
-                        امنیت زیرساخت با PAM و RDS Knight
-                    </h2>
-                    
-                    <div class="space-y-6">
-                        <div class="bg-black/30 p-6 rounded-xl border border-white/5 hover:border-accent/30 transition-colors">
-                            <h3 class="text-xl font-bold text-accent mb-3 flex items-center gap-2">
-                                <i class="fa-solid fa-desktop"></i> RDS Knight (TSplus Advanced Security)
-                            </h3>
-                            <p class="text-gray-300 text-sm leading-relaxed text-justify mb-4">
-                                پورت ۳۳۸۹ (RDP) یکی از خطرناک‌ترین پورت‌های شبکه است. <strong>RDS Knight</strong> یک نرم‌افزار امنیتی قدرتمند است که به عنوان یک سپر محافظ برای Remote Desktop Services عمل می‌کند.
-                            </p>
-                            <ul class="list-disc list-inside text-sm text-gray-400 space-y-2 marker:text-accent">
-                                <li><strong>Homeland Protection:</strong> مسدود کردن کانکشن‌های RDP از کشورهای خاص (مثل چین یا روسیه) بر اساس Geo-IP.</li>
-                                <li><strong>Brute-Force Defender:</strong> بلاک کردن خودکار IP هکرها پس از چند بار ورود رمز اشتباه.</li>
-                                <li><strong>Ransomware Protection:</strong> رفتارشناسی دقیق برای جلوگیری از رمزنگاری شدن درایوهای سرور در محیط ریموت.</li>
-                                <li><strong>Working Hours:</strong> بستن دسترسی کاربران به سرور در خارج از ساعات اداری.</li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-gradient-to-r from-accent/10 to-transparent p-6 rounded-xl border border-accent/20">
-                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
-                                <i class="fa-solid fa-user-secret text-accent"></i> ManageEngine PAM (Privileged Access Management)
-                            </h3>
-                            <p class="text-gray-300 text-sm leading-relaxed text-justify mb-3">
-                                در سازمان‌های بزرگ، پسورد سرورها، روترها و دیتابیس‌ها در فایل‌های اکسل دست به دست نمی‌شود! <strong>PAM</strong> راهکاری Enterprise برای مدیریت پسوردهای حساس (Privileged) است.
-                            </p>
-                            <div class="p-3 bg-black/40 rounded-lg border-r-4 border-accent text-sm text-gray-400">
-                                <strong>چگونه کار می‌کند؟</strong> پسورد تمام سرورها درون یک "گاوصندوق دیجیتال" ذخیره و مرتباً به صورت خودکار تغییر می‌کند. وقتی ادمینِ IT می‌خواهد به سرور وصل شود، اصلاً پسورد را نمی‌بیند! بلکه به پورتال PAM لاگین کرده و دکمه RDP را می‌زند. PAM با حساب کاربریِ سطح بالا او را به سرور وصل می‌کند و **تمام ثانیه‌های کار او (Session Recording) را به صورت ویدیو ضبط می‌کند**.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: Hyper-V Replica & Zerto -->
-            <section id="hyperv-replica" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-clone text-accent"></i>
-                        کالبدشکافی Hyper-V Replica و انواع Failover
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3">Hyper-V Replica چیست؟</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed text-justify mb-4">
-                                یک مکانیزمِ داخلیِ Disaster Recovery در محیط مجازی‌سازی مایکروسافت است. این قابلیت به شما اجازه می‌دهد تا ماشین‌های مجازی (VM) خود را به صورت ناهمگام (Asynchronous) از یک سرور میزبان به سرورِ میزبان دیگری در همان شبکه یا شهر دیگری کپی (Replicate) کنید.
-                            </p>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10 relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 w-1 h-full bg-blue-500"></div>
-                                    <h4 class="font-bold text-white mb-2 text-sm">ارتباط بر بستر HTTP</h4>
-                                    <p class="text-xs text-gray-400 leading-relaxed">
-                                        این روش ترافیک را رمزنگاری <strong>نمی‌کند</strong>. فقط زمانی کار می‌کند که هر دو سرور Hyper-V عضو یک **دامینِ اکتیودایرکتوری (Domain-Joined)** باشند و با پروتکل Kerberos احراز هویت کنند.
-                                    </p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10 relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
-                                    <h4 class="font-bold text-white mb-2 text-sm">ارتباط بر بستر HTTPS</h4>
-                                    <p class="text-xs text-gray-400 leading-relaxed">
-                                        ترافیک کاملاً رمزنگاری می‌شود. این روش برای زمانی است که سرورها در محیط <strong>Workgroup</strong> هستند یا در دامین‌های نامرتبط قرار دارند. برای این کار نیاز مبرم به **گواهینامه (Certificate)** داریم.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">۳ مود حیاتی Failover در Hyper-V</h3>
-                            <ul class="space-y-4">
-                                <li class="bg-black/20 p-4 rounded-lg border border-white/5">
-                                    <strong class="text-accent text-lg flex items-center gap-2 mb-1"><i class="fa-solid fa-calendar-check"></i> Planned Failover (برنامه‌ریزی شده)</strong>
-                                    <p class="text-sm text-gray-400 leading-relaxed">زمانی استفاده می‌شود که می‌خواهیم سرور اصلی را برای تعمیرات خاموش کنیم. سیستم ابتدا VM اصلی را خاموش می‌کند، آخرین تغییرات باقیمانده را به سرور مقصد Replicate می‌کند (صفر درصد افت دیتا) و سپس VM را در سرور مقصد روشن می‌کند.</p>
-                                </li>
-                                <li class="bg-black/20 p-4 rounded-lg border border-white/5">
-                                    <strong class="text-red-400 text-lg flex items-center gap-2 mb-1"><i class="fa-solid fa-fire"></i> Unplanned Failover (برنامه‌ریزی نشده)</strong>
-                                    <p class="text-sm text-gray-400 leading-relaxed">سرور اصلی دچار فاجعه شده و ناگهان سوخته است! در سرور دوم این گزینه را می‌زنیم تا VMِ خاموش، بلافاصله روشن شود. در این حالت مقداری دیتا (بسته به فاصله زمانی آخرین سینک) از دست می‌رود.</p>
-                                </li>
-                                <li class="bg-black/20 p-4 rounded-lg border border-white/5">
-                                    <strong class="text-yellow-400 text-lg flex items-center gap-2 mb-1"><i class="fa-solid fa-vial"></i> Test Failover (آزمایشی)</strong>
-                                    <p class="text-sm text-gray-400 leading-relaxed">بهترین قابلیت مدیریتی. یک Clone (کپی) موقت از ماشینِ ریپلیکا شده می‌سازد و آن را روشن می‌کند تا مطمئن شویم سرور مقصد سالم است. این کار بدون ایجاد تداخل و در یک شبکه ایزوله انجام می‌شود.</p>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-[#050b14] border border-white/10 p-5 rounded-xl text-center">
-                            <h3 class="font-bold text-white text-xl mb-2">Zerto (زرتو) چیست؟</h3>
-                            <p class="text-sm text-gray-400 leading-relaxed max-w-2xl mx-auto">
-                                Zerto یک غولِ نرم‌افزاری در حوزه Disaster Recovery سازمان‌های Enterprise است. برخلاف Hyper-V Replica، زرتو کاملاً مستقل از Hypervisor کار می‌کند (VMware را به Hyper-V متصل می‌کند). فناوری CDP (Continuous Data Protection) آن باعث می‌شود RPO (نقطه بازیابی) شبکه به <strong>چند ثانیه</strong> برسد!
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: Publishing DNS -->
-            <section id="dns-publish" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-globe text-accent"></i>
-                        انتشار DNS در محیط اینترنت (Public DNS)
-                    </h2>
-
-                    <p class="text-gray-300 text-sm leading-relaxed mb-6">
-                        زمانی که می‌خواهیم دامین سازمانی ما (مثلاً <span class="mono-inline">mycorp.com</span>) توسط تمام افراد در اینترنت آدرس‌دهی (Resolve) شود، باید DNS سرور خود را در اینترنت پابلیش کنیم. انجام این کار نیازمند رعایت الزامات سفت و سخت زیر است:
-                    </p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 class="font-bold text-accent mb-2 text-sm">۱. IP پابلیک استاتیک</h4>
-                            <p class="text-xs text-gray-400">DNS سرور شما باید حداقل دارای یک (ترجیحاً دو) آدرس IP ثابت و معتبر اینترنتی باشد تا در پنل ثبت‌کننده دامنه (Registrar) به عنوان Name Server معرفی شود (NS1 و NS2).</p>
-                        </div>
-                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 class="font-bold text-accent mb-2 text-sm">۲. پورت ۵۳ فایروال</h4>
-                            <p class="text-xs text-gray-400">روی فایروال لبه شبکه (Edge)، باید <strong>پورت 53 (هم TCP و هم UDP)</strong> فوروارد و باز شود تا درخواست‌های Name Resolution از اینترنت به سرور برسد.</p>
-                        </div>
-                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 class="font-bold text-accent mb-2 text-sm">۳. امنیت و ایزوله‌سازی (DMZ)</h4>
-                            <p class="text-xs text-gray-400">یک DNS اینترنتی هرگز نباید همان DNS اکتیودایرکتوری شما باشد! سرور DNS پابلیک باید در منطقه DMZ فایروال قرار گیرد و فقط رکوردهای پابلیک (مثل وب و ایمیل) را داشته باشد.</p>
-                        </div>
-                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h4 class="font-bold text-accent mb-2 text-sm">۴. مقاومت در برابر DDoS</h4>
-                            <p class="text-xs text-gray-400">DNS پابلیک به شدت مستعد حملات Amplification است. فعال کردن <strong>RRL</strong> (که در بخش آخر بررسی می‌شود) برای آن صد در صد الزامی است.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: DNS Policies -->
-            <section id="dns-policies" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-traffic-light text-accent"></i>
-                        شاهکار DNS Policy در ویندوز سرور 2016
-                    </h2>
-
-                    <div class="space-y-6">
-                        <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
-                            تا قبل از ویندوز ۲۰۱۶، دی‌ان‌اسِ مایکروسافت بسیار ساده و «کور» بود؛ یک آدرس را می‌گرفت و همیشه یک IP ثابت پس می‌داد. اما <strong>DNS Policy</strong> انقلابی در مدیریت ترافیک ایجاد کرد. با این قابلیت، DNS بر اساس "چه کسی می‌پرسد" یا "ساعت چند است" پاسخ‌های متفاوتی می‌دهد!
-                        </p>
-
-                        <div class="space-y-4">
-                            <!-- ALB / Weight -->
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 border-l-4 border-l-accent">
-                                <h4 class="font-bold text-white mb-1"><i class="fa-solid fa-scale-balanced text-accent me-2"></i> Application Load Balancing (مفهوم Weight)</h4>
-                                <p class="text-sm text-gray-400 leading-relaxed">به جای Round-Robin ساده، می‌توانیم به رکوردها <strong>وزن (Weight)</strong> بدهیم. مثلاً می‌گوییم ۸۰ درصدِ ترافیکِ <span class="mono-inline">app.com</span> به سمت دیتاسنتر اصلی برود و ۲۰ درصدِ ترافیک به سمت سرور بک‌آپ برود.</p>
-                            </div>
-
-                            <!-- Geo-Location -->
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 border-l-4 border-l-accent">
-                                <h4 class="font-bold text-white mb-1"><i class="fa-solid fa-earth-americas text-accent me-2"></i> Geo-Location Based Traffic</h4>
-                                <p class="text-sm text-gray-400 leading-relaxed">DNS بر اساس IP کلاینت متوجه می‌شود کاربر کجاست (Client Subnets). اگر کاربر از اروپا بپرسد `www.site.com` کجاست، آی‌پی سرور آلمان را می‌دهد، اما اگر از ایران بپرسد، آی‌پی سرور تهران را می‌دهد (کاهش پینگ).</p>
-                            </div>
-
-                            <!-- Split Brain -->
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 border-l-4 border-l-accent">
-                                <h4 class="font-bold text-white mb-1"><i class="fa-solid fa-brain text-accent me-2"></i> Split-Brain DNS</h4>
-                                <p class="text-sm text-gray-400 leading-relaxed">یک دامنه واحد (مثلاً `crm.company.com`). اگر کارمندِ داخلِ شرکت آن را باز کند، DNS به او آی‌پی داخلی (Local IP) می‌دهد. اگر همان کارمند به خانه برود و سایت را باز کند، DNS به او آی‌پی پابلیک (Public IP) می‌دهد.</p>
-                            </div>
-
-                            <!-- Time of Day -->
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 border-l-4 border-l-accent">
-                                <h4 class="font-bold text-white mb-1"><i class="fa-regular fa-clock text-accent me-2"></i> Time of Day Redirection</h4>
-                                <p class="text-sm text-gray-400 leading-relaxed">مدیریت ترافیک بر اساس ساعت! مثلاً ترافیک از ساعت ۸ صبح تا ۵ عصر به سرور اصلی (تهران) برود، اما چون دیتاسنتر تهران شب‌ها بک‌آپ‌گیری دارد، از ۵ عصر به بعد ترافیک کاربران به سرور تبریز هدایت شود.</p>
-                            </div>
-
-                            <!-- Filtering & Forensics -->
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 border-l-4 border-l-accent">
-                                <h4 class="font-bold text-white mb-1"><i class="fa-solid fa-magnifying-glass text-accent me-2"></i> Filtering & Forensics (جرم‌شناسی)</h4>
-                                <p class="text-sm text-gray-400 leading-relaxed">می‌توانیم جستجوی دامنه‌های مخرب را در سطح DNS مسدود کنیم (Filtering). یا اگر یک کامپیوتر در شبکه آلوده شد و مدام درخواست مخرب می‌داد، درخواست او را به جای مسدود کردن، به یک سرور قرنطینه هدایت (Sinkhole) کنیم تا کارشناس امنیت رفتار بدافزار را آنالیز کند (Forensics).</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 5: RRL & Advanced -->
-            <section id="rrl-advanced" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-shield-virus text-accent"></i>
-                        پارامترهای RRL، DANE و IPv6
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3">RRL (Response Rate Limiting) چیست؟</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed mb-4 text-justify">
-                                یک سپر دفاعی در برابر حملات **DDoS و DNS Amplification**. اگر یک هکر (یا کلاینت آلوده) در ثانیه هزاران ریکوئست یکسان به DNS ما بفرستد تا سرور را فلج کند، RRL این رفتار را شناسایی کرده و پاسخ‌دهی به آن آی‌پی را محدود می‌کند.
-                                <br><strong class="text-white mt-2 block">نکته: RRL فقط از طریق PowerShell و کامند `Set-DnsServerResponseRateLimiting` فعال می‌شود.</strong>
-                            </p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <h4 class="font-bold text-white text-sm">Responses Per Second</h4>
-                                    <p class="text-xs text-gray-400 mt-1">حداکثر پاسخ‌های موفق و یکسان که در یک ثانیه به یک کلاینت داده می‌شود.</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <h4 class="font-bold text-white text-sm">Errors Per Second</h4>
-                                    <p class="text-xs text-gray-400 mt-1">حداکثر پاسخ‌های خطا (مثل ارور عدم وجود سایت) در یک ثانیه.</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <h4 class="font-bold text-white text-sm">Window</h4>
-                                    <p class="text-xs text-gray-400 mt-1">بازه زمانی که DNS سرعت را محاسبه می‌کند (معمولاً ۱ ثانیه).</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <h4 class="font-bold text-white text-sm">Leak Rate</h4>
-                                    <p class="text-xs text-gray-400 mt-1">چکه کردن! اگر کلاینت بلاک شد، هر چند درخواستِ دراپ شده، یکی را عبور بدهد (مثلاً ۱ از ۳).</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <h4 class="font-bold text-white text-sm">TC Rate (Truncation)</h4>
-                                    <p class="text-xs text-gray-400 mt-1">ارسال بیت TC. پکت را دراپ می‌کند اما به کلاینت می‌گوید "بیا از TCP استفاده کن" (برای تشخیص ربات از انسان).</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <h4 class="font-bold text-white text-sm">Maximum Responses</h4>
-                                    <p class="text-xs text-gray-400 mt-1">سقف مطلق پاسخ‌ها. به هیچ‌وجه بالاتر از این عدد به کسی در شبکه جواب ندهد.</p>
-                                </div>
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10 md:col-span-2">
-                                    <h4 class="font-bold text-white text-sm">Allow Lists (لیست سفید)</h4>
-                                    <p class="text-xs text-gray-400 mt-1">شامل Allowlist Domains / Subnets / Servers. اگر آی‌پی مدیر یا دامین‌های خودی در این لیست باشند، قوانین RRL روی آن‌ها اعمال نمی‌شود و هرگز بلاک نمی‌شوند.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col md:flex-row gap-6">
-                            <div class="flex-1 bg-black/30 p-5 rounded-xl border-t-4 border-blue-500">
-                                <h3 class="text-lg font-bold text-white mb-2">DANE Support</h3>
-                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
-                                    مخفف DNS-based Authentication of Named Entities. یک پروتکل امنیتی است که از **DNSSEC** استفاده می‌کند تا مشخص کند یک دامین دقیقاً باید از کدام گواهینامه (SSL/TLS) استفاده کند. این کار جلوی حملات Man-in-the-Middle و هک شدن شرکت‌های صادرکننده گواهینامه (CA) را می‌گیرد.
-                                </p>
-                            </div>
-                            <div class="flex-1 bg-black/30 p-5 rounded-xl border-t-4 border-accent">
-                                <h3 class="text-lg font-bold text-white mb-2">IPv6 Root Hints</h3>
-                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
-                                    همان‌طور که می‌دانید DNS برای پیدا کردن سایت‌های ناشناس به سرورهای ریشه (Root Servers) اینترنت مراجعه می‌کند. در نسخه‌های جدید ویندوز، لیست پیش‌فرض این Root Hintها علاوه بر IPv4، دارای آدرس‌های **IPv6** نیز می‌باشد تا با شبکه‌های مدرن کاملاً سازگار باشد.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
             
         </div>
-    </main>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section-content');
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = item.getAttribute('data-target');
-
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-
-                    sections.forEach(section => {
-                        section.classList.remove('active', 'fade-in');
-                        if (section.id === targetId) {
-                            section.classList.add('active');
-                            void section.offsetWidth; 
-                            section.classList.add('fade-in');
-                        }
-                    });
-
-                    if(window.innerWidth < 1024) {
-                        closeMobileSidebar();
-                    }
-                });
-            });
-
-            function openMobileSidebar() {
-                sidebar.classList.remove('translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobileSidebar() {
-                sidebar.classList.add('translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-
-            mobileMenuBtn.addEventListener('click', openMobileSidebar);
-            sidebarOverlay.addEventListener('click', closeMobileSidebar);
-        });
-    </script>
 </body>
 </html>
