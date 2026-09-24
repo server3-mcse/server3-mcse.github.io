@@ -3,32 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ویندوز سرور ۲ | اپیزود ۴</title>
+    <title>هنوز نرسیدیم!</title>
     
     <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
-                    
-                    
-                    
-                    
                     colors: {
-                        // Episode 4 Accent Color: Neon Cyan (Same as requested)
                         accent: '#00e5ff',
-                        accentHover: '#33edff',
-                        darkBg: '#0f0f13',
+                        darkBg: '#050b14',
                     }
                 }
             }
@@ -38,435 +30,88 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
-            background-color: #0f0f13;
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: rgba(10, 15, 30, 0.4);
+        /* انیمیشن برای گوی‌های درخشان پس‌زمینه */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        /* Glassmorphism Panel Base */
+        .glass-card {
+            background: rgba(30, 30, 35, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-        
-        .glass-sidebar {
-            background: rgba(5, 10, 20, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(0, 229, 255, 0.2);
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Content Sections Toggle */
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f0f13; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
-
-        /* Monospace / Code Blocks */
-        .mono-inline {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #67e8f9;
-            padding: 0.15rem 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            font-size: 0.9em;
-            direction: ltr;
-            display: inline-block;
-        }
-
-        .mono-block {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.6);
-            color: #cffafe;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-right: 4px solid #00e5ff;
-            direction: ltr;
-            text-align: left;
-            margin: 1rem 0;
-            overflow-x: auto;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        /* Sidebar active item styling */
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
-            border-right: 3px solid #00e5ff;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex font-sans">
 
-    <!-- Mobile Header & Menu Toggle -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
-        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۲</div>
-        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
-            <i class="fa-solid fa-bars text-2xl"></i>
-        </button>
+<body class="min-h-screen relative flex items-center justify-center p-4">
+
+    <!-- افکت‌های نوری معلق در پس‌زمینه -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 flex items-center justify-center pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute bottom-[10%] left-[10%] w-96 h-96 bg-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Sidebar (Right) -->
-    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
-        <div class="p-6 border-b border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                <i class="fa-solid fa-compass-drafting text-accent text-xl"></i>
+    <div class="w-full max-w-[420px] z-10">
+        <!-- کادر گلس‌مورفیسم -->
+        <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 text-center flex flex-col items-center">
+            
+            <!-- آیکون ساعت با افکت نئونی -->
+            <div class="mb-8 mt-2 relative">
+                <div class="absolute inset-0 bg-accent blur-xl opacity-20 rounded-full"></div>
+                <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 border-accent/30 bg-accent/5 relative z-10 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
             </div>
-            <div>
-                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
-                <p class="text-accent/80 text-sm">اپیزود ۴ : دیزاین و معماری</p>
-            </div>
-        </div>
 
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
-            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
-            
-            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="cna-rras-routing">
-                <i class="fa-solid fa-network-wired w-5 text-center"></i>
-                <span class="text-sm font-medium">ابزارها و پایه‌های روتینگ</span>
+            <!-- متن اصلی -->
+            <h1 class="text-xl sm:text-2xl font-black text-white mb-6 leading-[2.2] tracking-wide drop-shadow-lg">
+                داداش چقد عجله داری<br>
+                <span class="text-accent">صبر کن هنوز نرسیدیم که :)</span>
+            </h1>
+
+            <!-- متن توضیحات -->
+            <p class="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-10 px-2 font-light">
+                این اپیزود هنوز آماده نشده یا سرورش در حال ساخته. یه کم دیگه بهمون فرصت بده، به زودی راه‌اندازی میشه!
+            </p>
+
+            <!-- دکمه بازگشت به صفحه اصلی -->
+            <a href="/" 
+               class="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-medium text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                <span class="whitespace-nowrap">بازگشت به لیست اپیزودها</span>
+                <!-- آیکون فلش (با انیمیشن هاور به سمت راست برای زبان فارسی) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
             </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="igp-egp-protocols">
-                <i class="fa-solid fa-route w-5 text-center"></i>
-                <span class="text-sm font-medium">پروتکل‌های مسیریابی داینامیک</span>
-            </a>
-            
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="nat-proxy-kerio">
-                <i class="fa-solid fa-exchange-alt w-5 text-center"></i>
-                <span class="text-sm font-medium">مفاهیم NAT، پروکسی و کریو</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="vpn-architecture">
-                <i class="fa-solid fa-lock w-5 text-center"></i>
-                <span class="text-sm font-medium">معماری VPN و تونل‌زنی</span>
-            </a>
-
-            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="routing-challenges">
-                <i class="fa-solid fa-shield-halved w-5 text-center"></i>
-                <span class="text-sm font-medium">چالش‌های روتینگ و امنیت</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
-
-    <!-- Main Content Area -->
-    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
-        <div class="max-w-4xl mx-auto">
-            
-            <!-- SECTION 1: Base Routing & Tools -->
-            <section id="cna-rras-routing" class="section-content active fade-in">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl"></div>
-                    
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-network-wired text-accent"></i>
-                        ابزارها، RRAS و پایه‌های روتینگ
-                    </h2>
-                    
-                    <div class="space-y-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                                <h3 class="text-lg font-bold text-accent mb-2"><i class="fa-solid fa-display me-2"></i>Cisco Network Assistant</h3>
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    نرم‌افزاری گرافیکی (GUI) و قدیمی از شرکت سیسکو برای کانفیگ و مانیتورینگ روترها و سوئیچ‌ها بدون نیاز به حفظ کردن دستورات پیچیده CLI. امروزه جای خود را به کنترلرهای پیشرفته داده است.
-                                </p>
-                            </div>
-                            <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                                <h3 class="text-lg font-bold text-accent mb-2"><i class="fa-brands fa-windows me-2"></i>سرویس RRAS مایکروسافت</h3>
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    مخفف <em>Routing and Remote Access Service</em>. نصب این رول، ویندوز سرور را به یک <strong>روتر نرم‌افزاری</strong> تبدیل می‌کند که می‌تواند مسیریابی، NAT و سرور VPN را در شبکه پیاده‌سازی کند.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="p-5 bg-gradient-to-r from-accent/10 to-transparent border-r-4 border-accent rounded-l-lg mt-4">
-                            <h3 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-globe me-2"></i>مفهوم Autonomous System</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed">
-                                در اینترنت، شبکه‌های بسیار بزرگی که تحت مدیریت یک سازمان واحد هستند (مثل زیرساخت شاتل، ایرانسل یا گوگل) <strong>AS (سیستم خودمختار)</strong> نامیده می‌شوند. برای تفکیک این شبکه‌های عظیم، به هر کدام یک شماره یکتای جهانی به نام <span class="mono-inline">AS Number</span> اختصاص داده می‌شود. این مفهوم مرز بین پروتکل‌های روتینگ داخلی و خارجی را مشخص می‌کند.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: Dynamic Routing Protocols -->
-            <section id="igp-egp-protocols" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-route text-accent"></i>
-                        کالبدشکافی پروتکل‌های مسیریابی داینامیک
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-4 border-b border-accent/20 pb-2">IGP (Interior Gateway Protocol)</h3>
-                            <p class="text-gray-300 leading-relaxed mb-4 text-sm">
-                                پروتکل‌هایی که <strong>داخل یک سازمان</strong> (درون یک AS) کار می‌کنند. این دسته خود به سه زیرشاخه مهم تقسیم می‌شود:
-                            </p>
-                            
-                            <div class="space-y-4">
-                                <!-- Distance Vector -->
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-accent/30 transition-colors">
-                                    <h4 class="font-bold text-white mb-2 text-lg">۱. Distance Vector (بردار فاصله) - <span class="text-gray-400 font-normal">مثل RIP</span></h4>
-                                    <ul class="list-disc list-inside ms-2 text-sm text-gray-300 space-y-2 marker:text-accent">
-                                        <li><strong>ملاک بهترین مسیر:</strong> فقط تعداد پرش یا روترهای سر راه (Hop Count).</li>
-                                        <li><strong>محدودیت بزرگ:</strong> حداکثر از ۱۵ روتر عبور می‌کند. <strong>پرش ۱۶ مساوی است با Unreachable</strong> و پکت Drop می‌شود.</li>
-                                        <li><strong>مشکل آپدیت:</strong> کل جدول روتینگ خود را هر ۳۰ ثانیه به همسایه می‌فرستند که باعث اشغال پهنای باند شبکه می‌شود.</li>
-                                    </ul>
-                                </div>
-
-                                <!-- Link State -->
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-accent/30 transition-colors">
-                                    <h4 class="font-bold text-white mb-2 text-lg">۲. Link State (وضعیت پیوند) - <span class="text-gray-400 font-normal">مثل OSPF</span></h4>
-                                    <ul class="list-disc list-inside ms-2 text-sm text-gray-300 space-y-2 marker:text-accent">
-                                        <li><strong>ملاک بهترین مسیر:</strong> بر اساس <strong>پهنای باند (Bandwidth)</strong> است و به آن فرمول Cost (هزینه) می‌گویند.</li>
-                                        <li><strong>مفهوم Bridge Head (DR):</strong> روترها برای جلوگیری از شلوغی، همه با هم صحبت نمی‌کنند؛ بلکه یک نماینده به نام DR (Designated Router) انتخاب می‌کنند. همه تغییرات را به DR می‌گویند و DR نقشه را به بقیه منتقل می‌کند تا همه یک توپولوژی یکسان داشته باشند.</li>
-                                    </ul>
-                                </div>
-
-                                <!-- Hybrid / Advanced DV -->
-                                <div class="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-accent/30 transition-colors">
-                                    <h4 class="font-bold text-white mb-2 text-lg">۳. Hybrid / Advanced DV (ترکیبی) - <span class="text-gray-400 font-normal">مثل EIGRP</span></h4>
-                                    <ul class="list-disc list-inside ms-2 text-sm text-gray-300 space-y-2 marker:text-accent">
-                                        <li>پروتکل قدرتمند سیسکو. ملاک بهترین مسیر در آن، ترکیبی از چند پارامتر حیاتی است.</li>
-                                        <li>به صورت پیش‌فرض ترکیبی از <strong>Bandwidth (پهنای باند)</strong> و <strong>Delay (تاخیر)</strong> را محاسبه می‌کند. فوق‌العاده سریع و بهینه است.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-blue-400 mb-3 border-b border-blue-500/20 pb-2">EGP (Exterior Gateway Protocol)</h3>
-                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-                                <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-globe me-2 text-blue-400"></i>پروتکل BGP</h4>
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    پروتکل‌هایی که شبکه‌های عظیم (AS ها) را در اینترنت به هم وصل می‌کنند. BGP معروف‌ترین و تنها EGP زنده دنیاست. <strong>اینترنت روی دوش BGP می‌چرخد.</strong> این پروتکل کاری به پهنای باند ندارد، بلکه مسیرها را بر اساس سیاست‌های تجاری و توافقات بین کشورها (بر اساس AS Number) مسیریابی می‌کند.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: NAT & Proxy -->
-            <section id="nat-proxy-kerio" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-exchange-alt text-accent"></i>
-                        مفاهیم NAT، پروکسی و نرم‌افزار Kerio
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-accent mb-3"><i class="fa-solid fa-mask"></i> عملکرد و انواع NAT</h3>
-                            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                                NAT فرآیند ترجمه آی‌پی‌های داخلی به آی‌پی اینترنتی است. <strong>نکته کلیدی:</strong> NAT مبدا را مستقیماً به مقصد وصل نمی‌کند. روتر درخواست کاربر را می‌گیرد، آی‌پی پابلیک خودش را جای آن می‌گذارد و به اینترنت می‌فرستد. هنگام بازگشت جواب، دوباره آن را به آی‌پی داخلی کاربر ترجمه می‌کند.
-                            </p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                                    <h4 class="font-bold text-white mb-1 text-sm">Static NAT</h4>
-                                    <p class="text-xs text-gray-400 mt-1">نسبت ۱ به ۱. یک آی‌پی پابلیک ثابت اختصاصاً برای یک سرور داخلی (مثل وب‌سرور).</p>
-                                </div>
-                                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                                    <h4 class="font-bold text-white mb-1 text-sm">Dynamic NAT</h4>
-                                    <p class="text-xs text-gray-400 mt-1">مجموعه‌ای از آی‌پی‌های پابلیک داریم و به هر کاربری که زودتر درخواست داد یکی می‌دهیم.</p>
-                                </div>
-                                <div class="bg-accent/10 p-4 rounded-xl border border-accent/30">
-                                    <h4 class="font-bold text-accent mb-1 text-sm">PAT (NAT Overload)</h4>
-                                    <p class="text-xs text-gray-300 mt-1">نسبت چند هزار به ۱. استفاده از یک آی‌پی پابلیک برای کل سازمان با کمک تغییر <strong>Source Port</strong>ها. (تکنولوژی مودم‌های خانگی).</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col md:flex-row gap-6">
-                            <div class="flex-1 bg-white/5 p-5 rounded-xl border-t-4 border-gray-400">
-                                <h3 class="text-lg font-bold text-white mb-2">تفاوت پروکسی با NAT</h3>
-                                <ul class="list-disc list-inside text-sm text-gray-400 space-y-2">
-                                    <li><strong>NAT (لایه ۳):</strong> کور و بی‌احساس است. فقط آی‌پی و پورت را ترجمه می‌کند. نمی‌فهمد محتوای سایت چیست. نیازی به تنظیم کلاینت ندارد.</li>
-                                    <li><strong>Proxy (لایه ۷):</strong> هوشمند و ناظر است. ترافیک وب را می‌فهمد. به نیابت از کاربر سایت را باز می‌کند، فیلتر می‌کند و حجم را محدود می‌سازد. (مثل CCProxy). نیازمند تنظیمات در مرورگر است.</li>
-                                </ul>
-                            </div>
-                            <div class="flex-1 bg-gradient-to-b from-[#1c2e4a] to-[#0a1024] p-5 rounded-xl border-t-4 border-blue-500">
-                                <h3 class="text-lg font-bold text-white mb-2">Kerio Control چیست؟</h3>
-                                <p class="text-sm text-gray-300 leading-relaxed text-justify">
-                                    یک سیستم‌عامل سبک و فایروال (UTM) بسیار محبوب در شرکت‌های ایرانی. به جای کانفیگ‌های سخت RRAS یا سیسکو، کریو روی یک سرور نصب می‌شود تا هم NAT کند، هم مصرف اینترنت کاربران (Bandwidth Management) را سهمیه‌بندی کند و هم سرور VPN قدرتمندی باشد.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: VPN Architecture -->
-            <section id="vpn-architecture" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-tunnel-water text-accent"></i>
-                        معماری VPN و مکانیزم تونل‌زنی
-                    </h2>
-
-                    <div class="space-y-6">
-                        <div class="bg-black/20 p-5 rounded-xl border border-white/5">
-                            <h3 class="text-lg font-bold text-accent mb-2">Encapsulation (کپسوله‌سازی)</h3>
-                            <p class="text-sm leading-relaxed text-gray-300">
-                                اینترنت نمی‌تواند آی‌پی‌های داخلی (Private) را مسیریابی کند. وقتی VPN می‌زنیم، سیستم عامل پکت داخلی را رمزنگاری کرده و درون یک پکت جدید با آی‌پی پابلیک مخفی (کپسوله) می‌کند. روترِ شرکت در مقصد، این کپسول را باز کرده (Decapsulation) و دیتای داخلی را به سرورِ مقصد تحویل می‌دهد.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg font-bold text-white mb-3">انواع معماری VPN در سازمان</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="p-4 border border-white/10 rounded-lg">
-                                    <h4 class="font-bold text-accent mb-1"><i class="fa-solid fa-user-laptop me-2"></i>Client-to-Site</h4>
-                                    <p class="text-sm text-gray-400">اتصال یک کاربر دورکار (با موبایل یا لپ‌تاپ) به شبکه شرکت. (Remote Access).</p>
-                                </div>
-                                <div class="p-4 border border-white/10 rounded-lg">
-                                    <h4 class="font-bold text-accent mb-1"><i class="fa-solid fa-building me-2"></i>Site-to-Site</h4>
-                                    <p class="text-sm text-gray-400">اتصال دو ساختمان یا شعبه به هم. روترها با هم VPN می‌زنند و کارمندان اصلاً متوجه تونل نمی‌شوند.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex gap-4 p-4 bg-accent/10 border-r-4 border-accent rounded-l-lg">
-                            <div class="flex-1">
-                                <h4 class="font-bold text-white mb-1">Hub & Spoke</h4>
-                                <p class="text-xs text-gray-300">معماری ستاره‌ای در VPN شبکه‌های بزرگ. تمام شعب (Spoke) به شعبه مرکزی (Hub) وصل می‌شوند. ارتباط شعبه‌ها با هم، از طریق مرکز انجام می‌شود.</p>
-                            </div>
-                            <div class="flex-1 border-r border-accent/20 pr-4">
-                                <h4 class="font-bold text-white mb-1">ارتباط رادیویی (P2P Wireless)</h4>
-                                <p class="text-xs text-gray-300">به جای اینترنت ناامن برای VPN، یک لینک مایکروویو فیزیکی بین دو ساختمانی که در دید مستقیم هم هستند زده می‌شود. بسیار سریع‌تر اما با بُرد محدود.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 5: Routing Challenges & Security -->
-            <section id="routing-challenges" class="section-content">
-                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
-                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-                        <i class="fa-solid fa-shield-halved text-accent"></i>
-                        چالش‌های روتینگ، امنیت و احراز هویت
-                    </h2>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-bold text-yellow-400 mb-3 flex items-center gap-2">
-                                <i class="fa-solid fa-triangle-exclamation"></i> چالش قطعی اینترنت هنگام VPN زدن
-                            </h3>
-                            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                                وقتی کاربری از خانه به شرکت VPN می‌زند، ناگهان پرینتر خانگی‌اش قطع می‌شود و اینترنتش از سمت شرکت تامین می‌شود. چرا؟ چون ویندوز مسیر پیش‌فرض (Default Gateway) را تغییر می‌دهد و همه چیز را به داخل تونل می‌فرستد.
-                            </p>
-                            <div class="bg-black/30 p-4 rounded-xl border border-white/5 space-y-3">
-                                <h4 class="font-bold text-white text-sm">راه‌حل‌ها:</h4>
-                                <ul class="list-disc list-inside text-sm text-gray-400 space-y-2">
-                                    <li><strong>فعال‌سازی Split Tunneling:</strong> برداشتن تیک <span class="mono-inline">Use default gateway on remote network</span> در تنظیمات کانکشن. با این کار اینترنت کاربر از مودم خودش می‌رود و فقط ترافیک شرکت وارد VPN می‌شود.</li>
-                                    <li><strong>تعریف Static Route دستی:</strong> اگر ویندوز به درستی ترافیک شرکت را تشخیص نداد، در CMD کلاینت روت می‌نویسیم:<br>
-                                        <div class="mono-block mt-2 mb-1">route add 192.168.10.0 mask 255.255.255.0 172.16.1.1</div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-3 border-b border-white/10 pb-2">مشکل Return Route در NAT لبه شبکه</h3>
-                            <p class="text-sm leading-relaxed text-gray-300 mb-2">
-                                اگر در شبکه‌ای دو روتر داشته باشیم (R1 متصل به LAN و R2 متصل به اینترنت). وقتی درخواستی از LAN با واسطه R1 به R2 می‌رسد تا NAT شود، هنگام برگشتِ جواب از اینترنت، روتر R2 نمی‌داند شبکه LAN کجاست!
-                            </p>
-                            <p class="text-sm font-semibold text-accent">
-                                <i class="fa-solid fa-check-circle me-1"></i> قانون طلایی: همیشه روی روتری که NAT انجام می‌دهد، باید یک مسیر برگشت (Static Route) بنویسیم تا بداند جواب آی‌پی‌های شبکه داخلی را باید به روترِ پشتِ سر خود پس بدهد.
-                            </p>
-                        </div>
-
-                        <div class="p-5 bg-gradient-to-r from-blue-600/20 to-transparent border-r-4 border-blue-500 rounded-l-lg">
-                            <h3 class="text-lg font-bold text-white mb-2">تعامل RRAS با Active Directory (سرور AAA)</h3>
-                            <p class="text-sm leading-relaxed text-gray-300 mb-3">
-                                سرویس RRAS مایکروسافت اجباری به Join شدن به دامین ندارد. اما اگر عضو دامین باشد، می‌توانیم آن را به سرور <strong>AAA (Authentication, Authorization, Accounting)</strong> متصل کنیم.
-                            </p>
-                            <p class="text-sm leading-relaxed text-gray-400">
-                                در دنیای مایکروسافت به این سرور، <strong>NPS (Network Policy Server)</strong> یا همان <strong>RADIUS Server</strong> می‌گویند. مزیت این کار ایجاد یکپارچگی است؛ کاربر با همان یوزر و پسورد ویندوزی سازمان، از خانه به RRAS لاگین (VPN) می‌کند و احراز هویت مستقیماً روی اکتیو دایرکتوری انجام می‌شود.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
             
         </div>
-    </main>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const sections = document.querySelectorAll('.section-content');
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = item.getAttribute('data-target');
-
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-
-                    sections.forEach(section => {
-                        section.classList.remove('active', 'fade-in');
-                        if (section.id === targetId) {
-                            section.classList.add('active');
-                            void section.offsetWidth; 
-                            section.classList.add('fade-in');
-                        }
-                    });
-
-                    if(window.innerWidth < 1024) {
-                        closeMobileSidebar();
-                    }
-                });
-            });
-
-            function openMobileSidebar() {
-                sidebar.classList.remove('translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobileSidebar() {
-                sidebar.classList.add('translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-
-            mobileMenuBtn.addEventListener('click', openMobileSidebar);
-            sidebarOverlay.addEventListener('click', closeMobileSidebar);
-        });
-    </script>
 </body>
 </html>
