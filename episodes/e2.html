@@ -3,23 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هنوز نرسیدیم!</title>
+    <title>ویندوز سرور ۳ | اپیزود ۲</title>
     
     <!-- Vazirmatn Font -->
     <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
                     },
                     colors: {
                         accent: '#00e5ff',
+                        accentHover: '#33edff',
                         darkBg: '#050b14',
                     }
                 }
@@ -30,88 +34,402 @@
     <style>
         /* Base Dark Theme & Background Pattern */
         body {
-            font-family: 'Vazirmatn', sans-serif !important;
             background-color: #050b14;
             background-image: 
-                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.1) 0%, transparent 60%),
-                radial-gradient(circle at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
             background-attachment: fixed;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* انیمیشن برای گوی‌های درخشان پس‌زمینه */
-        @keyframes blob {
-            0% { transform: translate(0px, 0px) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0px, 0px) scale(1); }
-        }
-
-        .animate-blob {
-            animation: blob 7s infinite;
-        }
-
-        .animation-delay-2000 {
-            animation-delay: 2s;
-        }
-        
-        /* Glassmorphism Panel Base */
-        .glass-card {
-            background: rgba(30, 30, 35, 0.4);
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 229, 255, 0.15);
-            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            direction: ltr;
+            text-align: left;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
         }
     </style>
 </head>
+<body class="antialiased min-h-screen flex font-sans">
 
-<body class="min-h-screen relative flex items-center justify-center p-4">
-
-    <!-- افکت‌های نوری معلق در پس‌زمینه -->
-    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 flex items-center justify-center pointer-events-none">
-        <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
-        <div class="absolute bottom-[10%] left-[10%] w-96 h-96 bg-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
     </div>
 
-    <div class="w-full max-w-[420px] z-10">
-        <!-- کادر گلس‌مورفیسم -->
-        <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 text-center flex flex-col items-center">
-            
-            <!-- آیکون ساعت با افکت نئونی -->
-            <div class="mb-8 mt-2 relative">
-                <div class="absolute inset-0 bg-accent blur-xl opacity-20 rounded-full"></div>
-                <div class="w-24 h-24 rounded-full flex items-center justify-center border-2 border-accent/30 bg-accent/5 relative z-10 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-route text-accent text-xl"></i>
             </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۲ : Seize و RODC</p>
+            </div>
+        </div>
 
-            <!-- متن اصلی -->
-            <h1 class="text-xl sm:text-2xl font-black text-white mb-6 leading-[2.2] tracking-wide drop-shadow-lg">
-                داداش چقد عجله داری<br>
-                <span class="text-accent">صبر کن هنوز نرسیدیم که :)</span>
-            </h1>
-
-            <!-- متن توضیحات -->
-            <p class="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-10 px-2 font-light">
-                این اپیزود هنوز آماده نشده یا سرورش در حال ساخته. یه کم دیگه بهمون فرصت بده، به زودی راه‌اندازی میشه!
-            </p>
-
-            <!-- دکمه بازگشت به صفحه اصلی -->
-            <a href="/" 
-               class="group w-full flex items-center justify-center gap-3 px-6 py-4 bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-medium text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,229,255,0.3)]">
-                <span class="whitespace-nowrap">بازگشت به لیست اپیزودها</span>
-                <!-- آیکون فلش (با انیمیشن هاور به سمت راست برای زبان فارسی) -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="seize-process">
+                <i class="fa-solid fa-skull-crossbones w-5 text-center"></i>
+                <span class="text-sm font-medium">فرایند Seize کردن (۰ تا ۱۰۰)</span>
             </a>
             
-        </div>
-    </div>
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="metadata-cleanup">
+                <i class="fa-solid fa-broom w-5 text-center"></i>
+                <span class="text-sm font-medium">پاکسازی Metadata و DNS</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="rodc-architecture">
+                <i class="fa-solid fa-lock w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری RODC و امنیت</span>
+            </a>
 
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="replication-fix">
+                <i class="fa-solid fa-wrench w-5 text-center"></i>
+                <span class="text-sm font-medium">رفع خطای Replication</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: Seize Process -->
+            <section id="seize-process" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-skull-crossbones text-red-400"></i>
+                        فرایند غصب نقش‌ها (Seizing) صفر تا صد
+                    </h2>
+                    
+                    <div class="bg-red-500/10 border-r-4 border-red-500 p-5 rounded-xl mb-6">
+                        <h3 class="text-lg font-bold text-red-400 mb-2">هشدار بسیار مهم قبل از Seize!</h3>
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify">
+                            سروری که قرار است نقش‌ها را روی آن Seize کنیم (سرور مقصد)، <strong>باید حتماً Global Catalog (GC) باشد</strong>. اگر مقصد GC نباشد، معماری فارست شما به هم می‌ریزد (مخصوصاً به خاطر نقش Infrastructure Master). پس ابتدا مطمئن شوید تیک GC در سرور جدید خورده است.
+                        </p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            زمانی که DC اصلی که صاحب نقش‌های FSMO است می‌سوزد یا برای همیشه از مدار خارج می‌شود، نمی‌توانیم نقش‌ها را به صورت مسالمت‌آمیز Transfer کنیم. باید از محیط CMD و ابزار قدرتمند <code class="mono-inline">ntdsutil</code> برای تصاحب اجباری آن‌ها استفاده کنیم.
+                        </p>
+
+                        <div class="bg-black/60 p-6 rounded-xl border border-accent/20">
+                            <h3 class="font-bold text-accent mb-4"><i class="fa-solid fa-terminal mr-2"></i>کامندهای پروسه Seize به ترتیب:</h3>
+                            <div class="code-block space-y-2 text-sm leading-relaxed">
+                                <div class="text-gray-500"># ۱. ورود به محیط ابزار مدیریت دیتابیس AD</div>
+                                <div class="text-accent">ntdsutil</div>
+                                
+                                <div class="text-gray-500 mt-3"># ۲. ورود به بخش مدیریت نقش‌ها</div>
+                                <div class="text-accent">roles</div>
+                                
+                                <div class="text-gray-500 mt-3"># ۳. ورود به تنظیمات اتصال</div>
+                                <div class="text-accent">connections</div>
+                                
+                                <div class="text-gray-500 mt-3"># ۴. اتصال به سرور جدید (Additional DC) که قرار است نقش‌ها را بگیرد</div>
+                                <div class="text-accent">connect to server <span class="text-white">&lt;New-DC-Name&gt;</span></div>
+                                
+                                <div class="text-gray-500 mt-3"># ۵. خروج از منوی connection و بازگشت به منوی roles</div>
+                                <div class="text-accent">quit</div>
+                                
+                                <div class="text-gray-500 mt-3"># ۶. کامندهای تصاحب (اجرای تک‌تک این ۵ مورد و زدن Yes در پنجره اخطار):</div>
+                                <div class="text-red-400 font-bold">seize schema master</div>
+                                <div class="text-red-400 font-bold">seize naming master</div>
+                                <div class="text-red-400 font-bold">seize pdc</div>
+                                <div class="text-red-400 font-bold">seize rid master</div>
+                                <div class="text-red-400 font-bold">seize infrastructure master</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Metadata Cleanup & DNS -->
+            <section id="metadata-cleanup" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-broom text-accent"></i>
+                        پاکسازی دیتابیس (Metadata Cleanup)
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            پس از Seize کردن، سرور سوخته همچنان در دیتابیس اکتیو دایرکتوری و رکوردهای DNS وجود دارد. اگر این بقایا (Metadata) را پاک نکنیم، سرورهای دیگر مدام تلاش می‌کنند با آن ارتباط بگیرند و شبکه پر از ارورهای Replication می‌شود. سرور قبلی دیگر <strong>هرگز</strong> نباید به شبکه برگردد!
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <!-- گام اول -->
+                            <div class="bg-black/40 p-5 rounded-xl border border-white/5 hover:border-accent/30 transition-all">
+                                <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-lg mb-3">۱</div>
+                                <h3 class="font-bold text-white mb-2">کنسول ADUC</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    وارد کنسول Active Directory Users and Computers می‌شویم. به OU ای به نام <strong>Domain Controllers</strong> می‌رویم. روی کامپیوتر اکانت سرور سوخته کلیک راست کرده و Delete می‌کنیم. (در نسخه‌های جدید ویندوز، همین کار به صورت خودکار متادیتا را در پس‌زمینه پاک می‌کند).
+                                </p>
+                            </div>
+
+                            <!-- گام دوم -->
+                            <div class="bg-black/40 p-5 rounded-xl border border-white/5 hover:border-accent/30 transition-all">
+                                <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-lg mb-3">۲</div>
+                                <h3 class="font-bold text-white mb-2">کنسول Sites and Services</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    وارد کنسول AD Sites and Services می‌شویم. به سایتی که سرور خراب در آن بوده می‌رویم. زیرمجموعه سرور، ابتدا <strong>NTDS Settings</strong> آن را پاک کرده و سپس کل آبجکت سرور را Delete می‌کنیم.
+                                </p>
+                            </div>
+
+                            <!-- گام سوم -->
+                            <div class="bg-black/40 p-5 rounded-xl border border-white/5 hover:border-accent/30 transition-all">
+                                <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-lg mb-3">۳</div>
+                                <h3 class="font-bold text-white mb-2">پاکسازی DNS</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    وارد کنسول DNS می‌شویم. روی نام دامین کلیک می‌کنیم و رکوردهای <strong>Name Server (NS)</strong> که به سرور خراب اشاره دارند را حذف می‌کنیم. همچنین هر رکورد A (Host) مربوط به آن را تغییر داده یا پاک می‌کنیم.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- زون _msdcs -->
+                        <div class="mt-8 bg-blue-900/10 border border-blue-500/20 p-6 rounded-xl">
+                            <h3 class="text-xl font-bold text-blue-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-server"></i> زون <span class="mono-inline">_msdcs</span> چیست؟
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify">
+                                کلمه <strong>msdcs</strong> مخفف Microsoft Directory Services است. این یک زون حیاتی و Forest-wide در DNS است که تمام رکوردهای خدماتی (SRV Records) اکتیو دایرکتوری در آن قرار دارد. کلاینت‌ها برای اینکه بفهمند PDC کیست؟ GC کجاست؟ و DCها چه آی‌پی دارند، از این زون پرس‌وجو می‌کنند. پس از Seize کردن، حتماً این زون را چک کنید که رکوردهای حساس به سمت سرور جدید آپدیت شده باشند.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: RODC -->
+            <section id="rodc-architecture" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-lock text-accent"></i>
+                        معماری RODC (Read-Only Domain Controller)
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-6">
+                            سرور RODC یک نسخه فقط-خواندنی از دیتابیس اکتیو دایرکتوری است. ما <strong>نمی‌توانیم</strong> مستقیماً در RODC یوزر بسازیم یا پسوردی را تغییر دهیم؛ تمام تغییرات باید در DCهای اصلی (RWDC) انجام شود و سپس به صورت یک‌طرفه (Inbound) به RODC رپلیکیت شود.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- مکان نصب -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-location-crosshairs text-accent"></i> کجاها RODC می‌گذاریم؟
+                                </h3>
+                                <ul class="list-disc list-inside text-sm text-gray-400 space-y-2">
+                                    <li>در <strong>شعبات شهرستان (Branch Offices)</strong> که امنیت فیزیکی پایینی دارند و ممکن است سرور به سرقت برود.</li>
+                                    <li>در منطقه <strong>DMZ</strong> برای سرویس‌هایی که باید با بیرون ارتباط داشته باشند اما نباید دسترسی نوشتن روی دیتابیس مرکزی داشته باشند.</li>
+                                </ul>
+                            </div>
+
+                            <!-- تنظیمات سایت -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-network-wired text-accent"></i> سایت و ارتباطات
+                                </h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    یک سرور RODC حتماً به یک <strong>سایت جداگانه (AD Site)</strong> نیاز دارد تا کلاینت‌های آن شعبه بدانند باید به آن متصل شوند. <br>معمولاً این سرورها را در دیتاسنتر اصلی نصب و Replication اولیه را انجام می‌دهند (Pre-staging)، سپس بعد از چند روز ارتباط آن‌ها را قطع کرده و به صورت فیزیکی به شعبه مقصد ارسال می‌کنند.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Policy پسوردها -->
+                        <div class="bg-gradient-to-r from-accent/10 to-transparent p-6 rounded-xl border-r-4 border-accent mt-4">
+                            <h3 class="text-xl font-bold text-white mb-3">چالش کش شدن پسوردها (PRP)</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                به صورت پیش‌فرض، RODC <strong>هیچ پسوردی</strong> را در هارد خود ذخیره (Cache) نمی‌کند! اگر ارتباط RODC با سرور مرکزی قطع شود، هیچکس نمی‌تواند لاگین کند. برای حل این مشکل، مایکروسافت قابلیتی به نام PRP (Password Replication Policy) دارد.
+                            </p>
+                            
+                            <div class="bg-black/50 p-4 rounded-lg border border-red-500/30 mb-3">
+                                <strong class="text-red-400 block mb-1">نکته امنیتی در مورد Domain Admins:</strong>
+                                <p class="text-sm text-gray-400">
+                                    برای امنیت بیشتر، ادمین‌های دامین به صورت پیش‌فرض در گروه <strong>Denied RODC Password Replication Group</strong> قرار دارند. یعنی حتی اگر لینک قطع شود، <strong>دومین ادمین نمی‌تواند روی کلاینت‌های سایت RODC لاگین کند</strong> (چون پسوردش آنجا کش نمی‌شود).
+                                </p>
+                            </div>
+
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mt-3">
+                                برای اینکه کاربران شعبه (یا حتی ادمین‌ها در مواقع ضروری) بتوانند در زمان قطعی لینک لاگین کنند، <strong>باید آن‌ها را وارد گروه <span class="text-accent font-bold">Allowed RODC Password Replication Group</span> بکنیم</strong>. با این کار، پسورد آن‌ها یک بار از سرور مرکزی خوانده شده و روی RODC ذخیره می‌شود تا دفعات بعدی بتوانند آفلاین لاگین کنند.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Troubleshooting Replication -->
+            <section id="replication-fix" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-wrench text-accent"></i>
+                        رفع خطاهای Replication پس از Seize
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            گاهی اوقات پس از یک Seize سنگین و پاکسازی متادیتا، ساختار Replication شبکه (که توسط سرویس KCC مدیریت می‌شود) قفل می‌کند و دیگر سرورها با هم سینک نمی‌شوند (ارورهای <code class="mono-inline">repadmin</code>).
+                        </p>
+
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-cogs text-accent"></i> ریست کردن توپولوژی KCC از طریق رجیستری
+                            </h3>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify mb-4">
+                                در مواقع بحرانی که KCC نمی‌تواند به درستی ارتباطات (Connection Objects) را بازسازی کند، ما به صورت دستی وارد رجیستری و همچنین کنسول Sites and Services می‌شویم تا ساختار Replication از نو ساخته شود:
+                            </p>
+                            
+                            <ul class="list-none space-y-4 text-sm">
+                                <li class="flex items-start gap-3">
+                                    <i class="fa-solid fa-check-circle text-accent mt-1"></i>
+                                    <div>
+                                        <strong class="text-gray-200">گام اول (حذف کانکشن‌های خراب):</strong>
+                                        <p class="text-gray-500 mt-1">وارد AD Sites and Services شده و زیرِ NTDS Settings تمام سرورها، کانکشن‌های Replication ساخته شده را به صورت دستی پاک می‌کنیم.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa-solid fa-check-circle text-accent mt-1"></i>
+                                    <div>
+                                        <strong class="text-gray-200">گام دوم (پاکسازی رجیستری):</strong>
+                                        <p class="text-gray-500 mt-1">به مسیر رجیستری مربوط به NTDS Parameters رفته و در صورت وجود کلیدهایی که مانع کار KCC می‌شوند (یا کلیدهای استاتیک Replication که ادمین قبلی ساخته)، آن‌ها را پاک می‌کنیم.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa-solid fa-check-circle text-accent mt-1"></i>
+                                    <div>
+                                        <strong class="text-gray-200">گام سوم (فورس کردن KCC):</strong>
+                                        <p class="text-gray-500 mt-1">پس از یک بار ریستارت سرویس NTDS یا استفاده از دستور <code class="mono-inline text-accent">repadmin /kcc</code>، اکتیو دایرکتوری از نو توپولوژی ارتباطی سالم را پیدا کرده و Connection Object های جدید را می‌سازد.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; 
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
 </body>
 </html>
