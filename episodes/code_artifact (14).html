@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۴</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            direction: ltr;
+            text-align: left;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-route text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۴ : راه‌اندازی Sites و RODC</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="site-creation">
+                <i class="fa-solid fa-plus-square w-5 text-center"></i>
+                <span class="text-sm font-medium">ساخت Site و Subnet</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="connections-rep">
+                <i class="fa-solid fa-network-wired w-5 text-center"></i>
+                <span class="text-sm font-medium">کانکشن‌ها و رپلیکیت دستی</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="site-link-bridge">
+                <i class="fa-solid fa-bridge w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری Bridge و Bridgehead</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="rodc-implementation">
+                <i class="fa-solid fa-lock w-5 text-center"></i>
+                <span class="text-sm font-medium">پیاده‌سازی RODC و لاگین آفلاین</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: Site Creation & Subnets -->
+            <section id="site-creation" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-plus-square text-accent"></i>
+                        صفر تا صد ساخت Site، Subnet و DC جدید
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <!-- Step 1 & 2 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5 hover:border-accent/30 transition-all">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-accent text-sm">۱</div> ایجاد سایت جدید
+                                </h3>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                                    وارد کنسول <strong>Active Directory Sites and Services</strong> می‌شویم. روی پوشه Sites کلیک راست کرده و <code class="mono-inline">New Site</code> را می‌زنیم. نام سایت (مثلا Isfahan-Site) را وارد کرده و یک Site Link به آن اختصاص می‌دهیم (مثلا DEFAULTIPsitelink).
+                                </p>
+                            </div>
+
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5 hover:border-accent/30 transition-all">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-accent text-sm">۲</div> تعریف و Map کردن سابنت
+                                </h3>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                                    سایت بدون سابنت بی‌معنی است. روی پوشه <strong>Subnets</strong> کلیک راست کرده و <code class="mono-inline">New Subnet</code> را می‌زنیم. رنج شبکه شعبه جدید را با فرمت CIDR می‌دهیم (مثلاً <code class="text-accent">192.168.20.0/24</code>) و در همان پنجره، سایت Isfahan-Site را برای آن انتخاب (Map) می‌کنیم.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: DNS and DC -->
+                        <div class="bg-blue-900/10 p-6 rounded-xl border-l-4 border-blue-500">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm">۳</div> جوین کردن DC جدید و تنظیمات حیاتی DNS
+                            </h3>
+                            <p class="text-[15px] text-gray-300 text-justify leading-relaxed mb-4">
+                                وقتی سرور جدید را در شعبه آماده کردیم، قبل از اجرای ویزارد Promotion (تبدیل به DC)، باید تنظیمات <strong>کارت شبکه (NIC)</strong> را درست انجام دهیم.
+                            </p>
+                            
+                            <div class="bg-black/50 p-4 rounded-lg border border-white/5 space-y-3">
+                                <p class="text-sm text-gray-400">
+                                    <strong class="text-accent">قانون طلایی DNS در کارت شبکه DC جدید:</strong><br>
+                                    در زمان Promote کردن، حتماً <strong>Preferred DNS</strong> سرور جدید باید آی‌پیِ DC اصلی (مرکزی) باشد تا بتواند دامین را پیدا کند. اما پس از اتمام نصب و ریستارت، طبق Best Practice مایکروسافت باید تنظیمات را به این شکل قرار دهیم:
+                                </p>
+                                <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 ms-2 mt-2">
+                                    <li><strong>Primary DNS:</strong> آی‌پی یک DC دیگر در شبکه (مثلاً DC مرکزی). این کار برای جلوگیری از خطای خطرناک <strong class="text-red-400">DNS Island Effect</strong> (جزیره‌ای شدن سرور و قطع شدن کامل Replication) کاملاً الزامی است.</li>
+                                    <li><strong>Alternate DNS:</strong> آی‌پی لوپ‌بک خودش (127.0.0.1) یا آی‌پی خودش (جهت افزونگی و سرویس‌دهی).</li>
+                                </ul>
+                            </div>
+                            
+                            <p class="text-sm text-gray-400 mt-4 leading-relaxed">
+                                در طول ویزارد Promote کردن سرور به عنوان Additional DC، گزینه‌ای وجود دارد که می‌پرسد سرور در کدام Site قرار بگیرد. ویندوز از روی آی‌پی سرور و سابنت‌هایی که ساختیم، <strong>سایت را به صورت هوشمند تشخیص می‌دهد</strong> و آن را در Isfahan-Site قرار می‌دهد.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Connections & Replication -->
+            <section id="connections-rep" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-network-wired text-accent"></i>
+                        کانکشن‌ها، ISTG و رپلیکیت دستی
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                                <h3 class="font-bold text-accent mb-2">کانکشن‌های اتوماتیک (KCC & ISTG)</h3>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                                    ما نیازی به کشیدن خط ارتباطی بین سرورها نداریم! در ارتباطات <strong>Intra-site (درون سایت)</strong>، سرویس <strong>KCC</strong> به صورت اتوماتیک Connection Object ها را برای رپلیکیت می‌سازد.<br>
+                                    برای ارتباطات <strong>Inter-site (بین سایت‌ها)</strong>، موتور <strong>ISTG</strong> (که نماینده KCC است) این کانکشن‌ها را می‌سازد. کلمه <code>&lt;automatically generated&gt;</code> در کنسول به معنای کارکرد صحیح این موتورهاست.
+                                </p>
+                            </div>
+                            
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 border-r-2 border-r-purple-500">
+                                <h3 class="font-bold text-purple-400 mb-2">ساخت Connection Object دستی</h3>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed">
+                                    می‌توانیم روی NTDS Settings کلیک راست کرده و <code>New Active Directory Connection</code> بسازیم. <br>
+                                    <strong>نکته مهم:</strong> اگر کانکشن دستی بسازیم، KCC هرگز آن را پاک نمی‌کند (حتی اگر مسیر خراب باشد). ساخت کانکشن دستی فقط برای سناریوهای خاص (مثل فورس کردن ترافیک از یک مسیر امنیتی خاص) پیشنهاد می‌شود.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Schedule & Replication -->
+                        <div class="bg-white/5 p-6 rounded-xl border border-white/10 mt-4">
+                            <h3 class="text-lg font-bold text-white mb-3">تغییر Schedule و فورس کردن رپلیکیت</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
+                                ارتباطات بین سایت‌ها (Inter-site) به صورت پیش‌فرض هر <strong>۱۸۰ دقیقه (۳ ساعت)</strong> انجام می‌شود. برای تغییر آن، در پوشه Inter-Site Transports روی Site Link (مثلاً IP) کلیک راست کرده و Properties می‌گیریم. در اینجا می‌توانیم زمان را (مثلاً به ۱۵ دقیقه) تغییر دهیم و از بخش <strong>Change Schedule</strong> مشخص کنیم در چه ساعاتی از شبانه‌روز اصلاً رپلیکیت انجام نشود (مثلاً ساعات اوج مصرف اینترنت شعبه).
+                            </p>
+                            
+                            <div class="bg-black/60 p-4 rounded-lg border border-accent/20">
+                                <span class="block text-sm font-bold text-accent mb-2"><i class="fa-solid fa-terminal mr-2"></i>دستورات رپلیکیت چندباره (Forcing):</span>
+                                <div class="code-block text-sm space-y-2">
+                                    <div class="text-gray-500"># رپلیکیت کردن فوری تمام تغییرات بین تمام DCهای کل فارست:</div>
+                                    <div class="text-white">repadmin /syncall /A /e /P</div>
+                                    <div class="text-gray-400 text-xs mt-1">- A: تمام پارتشین‌ها | e: در کل سایت‌ها | P: Push کردن تغییرات</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Bridge & Bridgehead -->
+            <section id="site-link-bridge" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-bridge text-accent"></i>
+                        معماری Site Link Bridge و Bridgehead
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- Bridgehead -->
+                        <div class="bg-gradient-to-l from-accent/10 to-transparent p-6 rounded-xl border-l-4 border-accent">
+                            <h3 class="text-lg font-bold text-white mb-2">Preferred Bridgehead Server (DC برگزیده)</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                به صورت پیش‌فرض، ISTG به صورت هوشمند یک DC را در هر سایت به عنوان نماینده (Bridgehead) برای ارتباط با سایت‌های دیگر انتخاب می‌کند. 
+                                اگر بخواهیم خودمان یک سرور قدرتمندتر را انتخاب کنیم، روی سرور مورد نظر کلیک راست کرده و پروتکل IP را به لیست <strong>Preferred Bridgehead</strong> اضافه می‌کنیم.
+                            </p>
+                            <p class="text-xs text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
+                                <strong>اخطار:</strong> اگر شما یک سرور را دستی Preferred کنید و آن سرور خاموش شود، اکتیو دایرکتوری به صورت خودکار سرور دیگری را جایگزین <strong>نمی‌کند</strong> و رپلیکیت سایت قطع می‌شود! بهترین کار این است که انتخاب را به عهده خود ISTG بگذارید.
+                            </p>
+                        </div>
+
+                        <!-- Bridge all site links -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">تیک حیاتی: Bridge all site links (BASL)</h3>
+                            
+                            <p class="text-sm text-gray-300 mb-4 text-justify leading-relaxed">
+                                در کنسول، روی پوشه IP (زیرمجموعه Inter-Site Transports) کلیک راست کنید. گزینه‌ای وجود دارد به نام <code>Bridge all site links</code> که به صورت پیش‌فرض <strong>روشن است</strong>. این گزینه چه می‌گوید؟
+                            </p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="bg-emerald-900/10 p-5 rounded-xl border border-emerald-500/20">
+                                    <h4 class="font-bold text-emerald-400 mb-2">حالت روشن (Fully Routed)</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        وقتی روشن است، اکتیو دایرکتوری فرض می‌کند بستر شبکه شما در لایه ۳ <strong>کاملاً روتد (Fully Routed)</strong> است. <br>
+                                        یعنی اگر سایت A به B وصل باشد، و سایت B به C وصل باشد، اکتیو دایرکتوری فرض می‌کند سرورهای A می‌توانند مستقیماً به C پینگ داشته باشند و خودش یک کانکشن منطقی مستقیم از A به C می‌سازد.
+                                    </p>
+                                </div>
+
+                                <div class="bg-red-900/10 p-5 rounded-xl border border-red-500/20">
+                                    <h4 class="font-bold text-red-400 mb-2">چه زمانی باید آن را خاموش کنیم؟</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        اگر شبکه شما Fully Routed <strong>نیست</strong> (مثلاً بین شعبه A و شعبه C یک فایروال سخت‌گیر وجود دارد و هیچ ارتباط مستقیمی به هم ندارند و حتماً ترافیک باید از B رد شود)، در این حالت <strong>باید</strong> تیک Bridge All Site Links را <strong>خاموش کنید</strong>. سپس خودتان به صورت دستی <code>New Site Link Bridge</code> بسازید و مسیرهای مجاز را مشخص کنید.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: RODC Implementation -->
+            <section id="rodc-implementation" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-lock text-accent"></i>
+                        پیاده‌سازی RODC و سناریوی لاگین آفلاین
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-2">اضافه کردن RODC به سایت جدید</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify">
+                                هنگام نصب نقش AD DS روی یک سرور در شعبه (که از نظر فیزیکی ناامن است)، تیک <strong>Read-Only Domain Controller (RODC)</strong> را می‌زنیم. در همان ویزارد، سایت مربوط به شعبه را انتخاب می‌کنیم. <br>
+                                از این لحظه، این سرور دیتابیس را فقط در حالت خواندن دریافت می‌کند و هیچ تغییری مستقیماً روی آن نوشته نمی‌شود.
+                            </p>
+                        </div>
+
+                        <!-- Offline Login Scenario -->
+                        <div class="bg-black/50 p-6 rounded-xl border border-purple-500/30 relative">
+                            <div class="absolute top-0 right-0 w-1 h-full bg-purple-500 rounded-r-xl"></div>
+                            <h3 class="text-xl font-bold text-purple-400 mb-4">گروه‌های PRP و سناریوی قطعی ارتباط (Offline Login)</h3>
+                            
+                            <p class="text-[15px] text-gray-300 mb-4 text-justify leading-relaxed">
+                                RODC به صورت پیش‌فرض پسورد هیچ یوزری را در هارد خود ذخیره (Cache) نمی‌کند. وقتی کاربر شعبه می‌خواهد لاگین کند، RODC یوزر و رمز را می‌گیرد، آن را به DC مرکزی (RWDC) می‌فرستد، اگر درست بود تاییدیه را می‌گیرد و کاربر لاگین می‌شود.
+                            </p>
+                            
+                            <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-lg mb-4 text-sm text-gray-300 text-justify">
+                                <strong>بحران:</strong> اگر لینک اینترانت شعبه با مرکز قطع شود چطور؟ چون RODC رمزی در خود ندارد، هیچکس نمی‌تواند لاگین کند!
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                                    <h4 class="font-bold text-white mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-check-circle text-green-400"></i> Allowed RODC Password Replication Group
+                                    </h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        برای حل مشکل قطعی شبکه، کاربرانی که در آن شعبه کار می‌کنند را باید عضو این گروه در اکتیودایرکتوری کنیم. وقتی این کاربران برای اولین بار لاگین می‌کنند، RODC رمز آن‌ها را درخواست کرده و برای خودش <strong>کش (Cache)</strong> می‌کند.<br>
+                                        حالا اگر ارتباط با مرکز قطع شود، فقط یوزرهایی که عضو این گروه بودند و رمزشان کش شده بود، <strong>می‌توانند از طریق RODC به صورت آفلاین لاگین کنند.</strong>
+                                    </p>
+                                </div>
+
+                                <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                                    <h4 class="font-bold text-white mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-ban text-red-400"></i> Denied RODC Password Replication Group
+                                    </h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        گروهی است که اجازه ذخیره شدن پسورد را در هیچ RODC ای نمی‌دهد (اولویت Deny بالاتر از Allow است). به صورت پیش‌فرض، گروه‌های حساس مانند <strong>Domain Admins</strong> و <strong>Enterprise Admins</strong> عضو این گروه هستند تا در صورت دزدیده شدن سرور فیزیکی RODC، هکر نتواند پسورد ادمین کل شبکه را استخراج کند.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    // Active state for sidebar
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; // Trigger reflow for animation
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    // Close sidebar on mobile after click
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
