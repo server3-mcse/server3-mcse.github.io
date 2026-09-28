@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۳</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            direction: ltr;
+            text-align: left;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-route text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۳ : Sites & Replication</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="ad-sites-concepts">
+                <i class="fa-solid fa-map-location-dot w-5 text-center"></i>
+                <span class="text-sm font-medium">مفاهیم AD Sites و SRV</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="ad-partitions">
+                <i class="fa-solid fa-database w-5 text-center"></i>
+                <span class="text-sm font-medium">پارتیشن‌های اکتیو دایرکتوری</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="intra-site-rep">
+                <i class="fa-solid fa-network-wired w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری Intra-Site (درون سایت)</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="inter-site-rep">
+                <i class="fa-solid fa-globe w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری Inter-Site (بین سایت‌ها)</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="monitoring">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span class="text-sm font-medium">مانیتورینگ و ترابل‌شوتینگ</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: AD Sites & Concepts -->
+            <section id="ad-sites-concepts" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-map-location-dot text-accent"></i>
+                        اکتیو دایرکتوری سایت و رکوردهای SRV
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-blue-500/10 p-5 rounded-xl border-r-4 border-blue-500">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-blue-400"></i> AD Site اصلاً چیست و چه کاربردی دارد؟
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در شرکت‌های کوچک معمولاً یک Site داریم، اما در محیط‌های Enterprise شرایط متفاوت است. اکتیو دایرکتوری سایت (AD Site) نمایانگر توپولوژی فیزیکی و فواصل جغرافیایی شبکه است. زمانی از سایت‌ها استفاده می‌کنیم که شرکت دارای شعب مختلف با لینک‌های ارتباطی محدود است، یا در یک ساختمان با هزاران کاربر نیاز به پخش بار روی چند DC داریم. <br><br>
+                                <strong>نکته طراحی:</strong> هر سایت شامل یک یا چند <strong>Subnet</strong> است، اما یک سابنت فقط و فقط می‌تواند به یک سایت متصل شود.
+                            </p>
+                            <div class="bg-black/30 p-4 rounded-lg border border-white/5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border-b md:border-b-0 md:border-l border-white/10 pb-3 md:pb-0 md:pl-4">
+                                    <strong class="text-accent text-[15px] block mb-2"><i class="fa-solid fa-location-crosshairs mr-1"></i> Service Localization</strong>
+                                    <p class="text-xs text-gray-400 text-justify leading-relaxed">کلاینت از روی IP خود می‌فهمد در کدام سایت است و به کلاینت می‌گوییم به <strong>نزدیک‌ترین DC</strong> در شبکه محلی خودش متصل شود تا ترافیک بیهوده از لینک‌های ضعیف WAN عبور نکند.</p>
+                                </div>
+                                <div>
+                                    <strong class="text-accent text-[15px] block mb-2"><i class="fa-solid fa-traffic-light mr-1"></i> Traffic Control</strong>
+                                    <p class="text-xs text-gray-400 text-justify leading-relaxed">مدیریت زمان و میزان ترافیک رپلیکیت. می‌توانیم تنظیم کنیم که Replication بین شعب، فقط در ساعات غیر اداری انجام شود تا پهنای باند مسدود نشود.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">رکوردهای SRV و فرآیند اتصال کلاینت</h3>
+                            <p class="text-[15px] text-gray-300 mb-4 text-justify leading-relaxed">
+                                وقتی IP دی‌ان‌اس را روی کارت شبکه کلاینت تنظیم می‌کنیم، <strong>الزاماً به این معنی نیست که کلاینت برای لاگین به همان DC وصل می‌شود!</strong> کلاینت برای پیدا کردن سرورهای اکتیو دایرکتوری، از DNS رکوردهای <strong>SRV (Service Resource Records)</strong> را درخواست می‌کند (این رکوردها در پوشه <code class="mono-inline">_tcp</code> ذخیره می‌شوند). تمام DCها خود را در این پوشه ثبت می‌کنند.
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-gradient-to-br from-accent/10 to-transparent p-4 rounded-xl border border-accent/20">
+                                    <h4 class="font-bold text-accent mb-2">Priority (اولویت)</h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        اولویت اصلی پاسخگویی را تعیین می‌کند. <strong>هرچه عدد کمتر، اولویت بیشتر.</strong> اگر سرور A اولویت 0 و سرور B اولویت 10 داشته باشد، تمام کلاینت‌ها فقط سراغ سرور A می‌روند و B کاملاً بیکار می‌ماند.
+                                    </p>
+                                </div>
+                                <div class="bg-gradient-to-br from-purple-500/10 to-transparent p-4 rounded-xl border border-purple-500/20">
+                                    <h4 class="font-bold text-purple-400 mb-2">Weight (وزن - توزیع بار)</h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        زمانی کاربرد دارد که Priority دو سرور با هم برابر باشد. اگر وزن سرور اول 10 و دومی 5 باشد، به ازای هر 15 ریکوئست، 10 کلاینت به سرور اول و 5 کلاینت به سرور دوم متصل می‌شوند.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: AD Partitions -->
+            <section id="ad-partitions" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-database text-accent"></i>
+                        کالبدشکافی ۴ پارتیشن اکتیو دایرکتوری
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            اطلاعاتی که بین DCها رد و بدل (Replicate) می‌شود، شامل ۴ بخش یا Partition (کانتکست) مجزا از دیتابیس است. <strong>نکته کلیدی:</strong> وقتی سایت‌ها و DCها در یک دامین مشترک هستند، هر ۴ پارتیشن بین آن‌ها Replicate می‌شود. اما اگر دو دامین مجزا داشته باشیم، Domain Naming Context بین آن‌ها رد و بدل نمی‌شود.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/30 p-5 rounded-xl border border-blue-500/20 hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all">
+                                <h3 class="text-lg font-bold text-blue-400 mb-2 border-b border-blue-500/20 pb-2">۱. Domain Naming Context</h3>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed">شامل تمام یوزرها، کامپیوترها، گروه‌ها و ساختار OUهای <strong>همان دامین</strong> است. فقط بین DCهای دامین خودشان سینک می‌شود (مگر سرور GC باشد که خلاصه‌ای از همسایه‌ها را نگه می‌دارد).</p>
+                            </div>
+                            
+                            <div class="bg-black/30 p-5 rounded-xl border border-orange-500/20 hover:border-orange-500/50 hover:shadow-[0_0_15px_rgba(249,115,22,0.1)] transition-all">
+                                <h3 class="text-lg font-bold text-orange-400 mb-2 border-b border-orange-500/20 pb-2">۲. Configuration Partition</h3>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed">شامل تنظیمات ساختاری، توپولوژی AD Sites، سابنت‌ها و لیست تمام DCهای موجود است. این اطلاعات در سطح <strong>کل فارست</strong> پخش می‌شود.</p>
+                            </div>
+                            
+                            <div class="bg-black/30 p-5 rounded-xl border border-purple-500/20 hover:border-purple-500/50 hover:shadow-[0_0_15px_rgba(168,85,247,0.1)] transition-all">
+                                <h3 class="text-lg font-bold text-purple-400 mb-2 border-b border-purple-500/20 pb-2">۳. Schema Partition</h3>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed">طرح‌واره دیتابیس شامل کلاس‌ها و ویژگی‌های اشیاء (Attributes). مانند Configuration، این پارتیشن نیز در سطح <strong>کل فارست</strong> سینک می‌شود.</p>
+                            </div>
+                            
+                            <div class="bg-black/30 p-5 rounded-xl border border-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all">
+                                <h3 class="text-lg font-bold text-emerald-400 mb-2 border-b border-emerald-500/20 pb-2">۴. Application Partition</h3>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed">شامل دیتای نرم‌افزارهای یکپارچه با AD مانند <strong>پارتیشن‌های DNS ADI</strong> است و فقط بین سرورهایی که میزبان آن اپلیکیشن هستند سینک می‌شود.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Intra-Site Replication -->
+            <section id="intra-site-rep" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-network-wired text-accent"></i>
+                        معماری Intra-Site (رپلیکیت درون‌سایتی)
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            زمانی که DCها در <strong>یک سایت مشترک</strong> قرار دارند، چون پهنای باند شبکه بالاست (شبکه LAN)، ارتباطات بدون فشرده‌سازی و بر اساس مکانیزم اطلاع‌رسانی (Notification/Push) انجام می‌شود تا در سریع‌ترین زمان ممکن داده‌ها آپدیت شوند.
+                        </p>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/10 relative">
+                                <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">زمان‌بندی‌های حیاتی (Timings)</h3>
+                                <ul class="space-y-4 text-[15px] text-gray-400">
+                                    <li class="flex items-start gap-3">
+                                        <i class="fa-solid fa-stopwatch text-accent mt-1"></i>
+                                        <span class="leading-relaxed">وقتی تغییری در یک DC رخ می‌دهد، <strong>۱۵ ثانیه</strong> صبر می‌کند و سپس تغییر را به پارتنر اول خود می‌فرستد.</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i class="fa-solid fa-random text-accent mt-1"></i>
+                                        <span class="leading-relaxed">اگر DC چند پارتنر داشته باشد، پس از ارسال به اولی، <strong>۳ ثانیه</strong> برای هر پارتنر بعدی مکث می‌کند تا ترافیک شبکه را به یکباره مختل نکند.</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i class="fa-solid fa-heart-pulse text-accent mt-1"></i>
+                                        <span class="leading-relaxed">حتی اگر هیچ تغییری رخ ندهد، DCها <strong>هر ۱ ساعت</strong> با هم ارتباط برقرار می‌کنند تا زنده بودن شبکه چک شود (Heartbeat).</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/10 relative">
+                                <h3 class="text-lg font-bold text-accent mb-4 border-b border-accent/20 pb-2">KCC و Connection Objects</h3>
+                                <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                    ادمین نیازی به تعریف خطوط ارتباطی بین DCها ندارد! یک موتور هوشمند در بک‌گراند به نام <strong>KCC (Knowledge Consistency Checker)</strong> وظیفه ترسیم این توپولوژی را دارد.
+                                </p>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify bg-black/30 p-3 rounded-lg border border-white/5">
+                                    سرویس KCC مداوم بررسی می‌کند که سرورها چگونه با هم در ارتباط باشند و <strong>Connection Object</strong> ها را (که مسیرهای یک‌طرفه رپلیکیت هستند) به صورت خودکار و داینامیک می‌سازد.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Inter-Site Replication -->
+            <section id="inter-site-rep" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-globe text-accent"></i>
+                        معماری Inter-Site (رپلیکیت بین‌سایتی)
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            زمانی که DCها در <strong>سایت‌های مختلف</strong> قرار دارند (ارتباط بستر WAN)، ترافیک باید مدیریت شود. در اینجا مکانیزم تغییر می‌کند؛ ترافیک <strong>فشرده (Compressed)</strong> می‌شود و به جای متد Push، از مکانیزم <strong>Pull</strong> بر اساس جدول زمان‌بندی استفاده می‌شود.
+                        </p>
+
+                        <!-- ISTG & Bridgehead -->
+                        <div class="bg-gradient-to-l from-accent/10 to-transparent p-6 rounded-xl border-l-4 border-accent mb-6">
+                            <h3 class="text-lg font-bold text-white mb-3">سرویس ISTG و سرورهای Bridgehead</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                برای جلوگیری از ترافیک اضافی، سرویس <strong>ISTG (Inter-Site Topology Generator)</strong> که خود زیرمجموعه KCC است، در هر سایت یک نماینده به نام <strong>Bridgehead Server</strong> انتخاب می‌کند.
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify bg-black/40 p-3 rounded-lg border border-white/5">
+                                فقط این سرورهای Bridgehead با سایت‌های دیگر رپلیکیت می‌کنند (خودشان این ارتباط را می‌سازند) و پس از دریافت تغییرات، آن‌ها را درون سایت خودشان (به روش Intra-site) پخش می‌کنند.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Site Link -->
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-white mb-3 text-lg flex items-center gap-2"><i class="fa-solid fa-link text-accent"></i>Site Link (لینک سایت)</h4>
+                                <p class="text-[15px] text-gray-400 text-justify mb-3 leading-relaxed">
+                                    مسیر ارتباطی منطقی بین سایت‌ها را تعریف می‌کند. زمان پیش‌فرض Replication در سایت‌لینک‌ها <strong>هر ۱۸۰ دقیقه (۳ ساعت)</strong> است که توسط ادمین قابل تغییر است.
+                                </p>
+                                <div class="bg-white/5 p-3 rounded-lg border border-white/5">
+                                    <span class="text-sm font-bold text-purple-400 block mb-1">پروتکل‌های پشتیبانی شده:</span>
+                                    <ul class="list-disc list-inside text-xs text-gray-300 space-y-1">
+                                        <li><strong>DS RPC:</strong> برای شبکه‌های بر بستر IP.</li>
+                                        <li><strong>ISM SMTP:</strong> فقط برای شبکه‌های ناهمگام و بر بستر ایمیل (پارتیشن Domain را پشتیبانی نمی‌کند).</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Cost & Site Coverage -->
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-white mb-3 text-lg flex items-center gap-2"><i class="fa-solid fa-coins text-accent"></i>Cost & Site Coverage</h4>
+                                <p class="text-sm text-gray-400 text-justify mb-3 leading-relaxed">
+                                    <strong class="text-white">Site Link Cost:</strong> عددی که ارزش و هزینه مسیر را مشخص می‌کند. KCC ترافیک را از مسیری عبور می‌دهد که کمترین Cost را داشته باشد.
+                                </p>
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed border-t border-white/10 pt-3">
+                                    <strong class="text-white">Site Coverage:</strong> اگر در یک سایت هیچ DCای وجود نداشته باشد، DC سایتِ مجاور که ارزان‌ترین Cost را به آن سایتِ بدون‌سرور دارد، خودش را مسئول آنجا می‌داند و رکوردهای SRV خود را برای پاسخگویی به کلاینت‌های آنجا ثبت می‌کند.
+                                </p>
+                            </div>
+                            
+                            <!-- Transitivity -->
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 md:col-span-2">
+                                <h4 class="font-bold text-white mb-2 text-lg flex items-center gap-2"><i class="fa-solid fa-bridge text-accent"></i>Site Link Transitivity (Bridge Mode)</h4>
+                                <p class="text-[15px] text-gray-400 text-justify leading-relaxed">
+                                    به صورت پیش‌فرض، سایت لینک‌ها خاصیت <strong>Transit (گذردهی)</strong> دارند (تیک Bridge all site links در کنسول روشن است). به این معنی که اگر سایت A به سایت B متصل باشد، و سایت B به سایت C، سرورهای سایت A می‌توانند به صورت مستقیم و منطقی با سرورهای سایت C ارتباط برقرار کنند (البته به شرطی که در لایه ۳ روتینگ شبکه مسیر باز باشد).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Monitoring & Troubleshooting -->
+            <section id="monitoring" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-chart-line text-accent"></i>
+                        مانیتورینگ و ترابل‌شوتینگ کلاینت/سرور
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- Client Troubleshooting -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-laptop-code text-accent"></i> از کجا بفهمیم کلاینت از کدام DC سرویس می‌گیرد؟
+                            </h3>
+                            <div class="code-block space-y-4 text-[15px]">
+                                <div>
+                                    <span class="text-gray-500 block mb-1"># روش اول: مشاهده متغیر محیطی سیستم عامل کلاینت</span>
+                                    <span class="text-accent font-bold">echo %LOGONSERVER%</span>
+                                </div>
+                                <div class="border-t border-white/10 pt-4">
+                                    <span class="text-gray-500 block mb-1"># روش دوم: تست تخصصی لوکیشن و اعتبارسنجی Site کلاینت</span>
+                                    <span class="text-accent font-bold block mb-2">nltest /dsgetdc:yourdomain.local</span>
+                                    <div class="bg-blue-500/10 border-r-2 border-blue-500 p-3 rounded-lg text-sm text-gray-300 text-justify leading-relaxed mt-2">
+                                        این دستور فوق‌العاده کاربردی است. خروجی آن به شما نشان می‌دهد که کلاینت چه IPای گرفته، دقیقاً به کدام DC وصل شده، <strong>سایت کلاینت چیست</strong> و <strong>سایت DC چیست</strong>. اگر نام این دو سایت با هم فرق داشت، یعنی Map کردن Subnetها به Site در کنسول شما اشتباه بوده است.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enterprise Monitoring -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-server text-accent"></i> مانیتورینگ زیرساخت AD (Enterprise Tools)
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+                                <div class="bg-[#0a0f18] p-5 rounded-xl border border-white/5">
+                                    <strong class="text-white text-[15px] block mb-3 border-b border-white/10 pb-2">دستورات حیاتی مایکروسافت (CMD)</strong>
+                                    <ul class="list-none space-y-3 text-sm text-gray-400">
+                                        <li><code class="text-accent bg-black px-1.5 py-0.5 rounded font-bold text-xs">repadmin /showrepl</code> <br><span class="inline-block mt-1">گزارش جامع وضعیت Replication بین DCها.</span></li>
+                                        <li><code class="text-accent bg-black px-1.5 py-0.5 rounded font-bold text-xs">repadmin /kcc</code> <br><span class="inline-block mt-1">فورس کردن موتور KCC برای بازسازی سریع توپولوژی.</span></li>
+                                        <li><code class="text-accent bg-black px-1.5 py-0.5 rounded font-bold text-xs">dcdiag</code> <br><span class="inline-block mt-1">تست و بررسی سلامت تمام کامپوننت‌های Domain Controller.</span></li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-blue-900/10 p-5 rounded-xl border border-blue-500/30 flex flex-col justify-center">
+                                    <strong class="text-blue-400 text-[15px] block mb-3"><i class="fa-solid fa-toolbox mr-1 text-lg"></i> Dell Active Administrator</strong>
+                                    <p class="text-[14px] text-gray-300 text-justify leading-relaxed">
+                                        یکی از قدرتمندترین ابزارهای مانیتورینگ (Third-Party) که در محیط‌های Enterprise برای اکتیو دایرکتوری استفاده می‌شود. این ابزار امکاناتی نظیر مانیتورینگ گرافیکی و بلادرنگ Replication، گزارش‌گیری از لاگ‌های امنیتی، مدیریت Certificateها و قابلیت ریکاوری سریع آبجکت‌ها را به ادمین می‌دهد.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    // Active state for sidebar
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; // Trigger reflow for animation
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    // Close sidebar on mobile after click
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
