@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۵</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-route text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۵ : Trust & Kerberos</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="multi-domain">
+                <i class="fa-solid fa-sitemap w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری امنیتی و DMZ</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="trust-types">
+                <i class="fa-solid fa-handshake w-5 text-center"></i>
+                <span class="text-sm font-medium">کالبدشکافی انواع Trust</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="kerberos-auth">
+                <i class="fa-solid fa-key w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری Kerberos و KDC</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="auth-migration">
+                <i class="fa-solid fa-shield-virus w-5 text-center"></i>
+                <span class="text-sm font-medium">مایگریشن و SID History</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="upgrade-dns">
+                <i class="fa-solid fa-arrow-up-right-dots w-5 text-center"></i>
+                <span class="text-sm font-medium">چالش DNS در Child Domain</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: Multi-Domain Architecture -->
+            <section id="multi-domain" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-sitemap text-accent"></i>
+                        چرا دامین جدید؟ معماری امنیتی و چالش‌های DMZ
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-black/40 p-5 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-3">قانون ایزوله‌سازی Forest Root Domain</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-2">
+                                در طراحی‌های استاندارد، <strong>اولین دامینی که می‌سازیم (Forest Root) نباید حاوی کاربران و سرویس‌های روزمره سازمان باشد.</strong> این دامین بالاترین سطح دسترسی کل شبکه (نقش‌های Enterprise Admins و Schema Master) را دارد و باید کاملاً خالی و ایزوله نگه داشته شود. کارهای روزمره باید روی دامین‌های <strong>Child</strong> پیاده‌سازی شوند تا ادمین‌های سطح پایینِ دامین‌های فرزند نتوانند به ساختار ریشه‌ای فارست آسیب بزنند.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- DMZ & Trust Security -->
+                            <div class="bg-red-500/10 p-5 rounded-xl border border-red-500/20 hover:border-red-500/40 transition-colors">
+                                <h3 class="font-bold text-red-400 mb-2"><i class="fa-solid fa-shield-halved me-2"></i>دامین مجزا برای DMZ و چالش پورت‌ها</h3>
+                                <p class="text-xs text-gray-300 leading-relaxed text-justify mb-3">
+                                    گاهی برای سرویس‌های لبه اینترنت (ناحیه DMZ) مجبوریم یک دامین یا حتی فارست کاملاً جداگانه بسازیم. اما اگر بخواهیم بین DMZ و شبکه داخلی Trust (اعتماد) برقرار کنیم، با یک چالش امنیتی وحشتناک روبرو می‌شویم: <strong>باز کردن پورت‌های حساس!</strong>
+                                </p>
+                                <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                    تراست به پروتکل‌هایی مثل <code class="mono-inline">RPC</code>, <code class="mono-inline">DNS</code>, <code class="mono-inline">Kerberos</code>, <code class="mono-inline">LDAP</code> نیاز دارد. سوراخ کردن فایروال برای این پورت‌ها از بیرون به داخل منطقی نیست. راه‌حل جایگزین و ایمن، استفاده از <strong>Tunneling یا پروتکل IPSec</strong> برای ارتباطات بین این دو ناحیه است.
+                                </p>
+                            </div>
+
+                            <!-- Single Domain Recommendation -->
+                            <div class="bg-blue-500/10 p-5 rounded-xl border border-blue-500/20 hover:border-blue-500/40 transition-colors">
+                                <h3 class="font-bold text-blue-400 mb-2"><i class="fa-solid fa-lightbulb me-2"></i>توصیه مایکروسافت: Single Domain</h3>
+                                <p class="text-xs text-gray-300 leading-relaxed text-justify mb-3">
+                                    با وجود تمام این معماری‌ها، توصیه نهایی مایکروسافت این است: <strong>«بدون دلیل موجه دامین جدید نسازید!»</strong> ساخت دامین اضافه یعنی سرور اضافه، نگهداری اضافه و <strong>Admin Overhead</strong> (سربار مدیریتی) بسیار بالا.
+                                </p>
+                                <div class="bg-black/50 p-3 rounded-lg border border-blue-500/30 text-xs text-gray-400 text-justify mt-2">
+                                    <strong class="text-white block mb-1">SSO برای کاربر خوب است، نه ادمین!</strong> 
+                                    مکانیزم Kerberos و Single Sign-On برای راحتی کاربران عالی است، اما برای ادمین‌ها خطرناک است. ادمینِ شبکه بهتر است مدام مجبور باشد پسوردهای مختلف وارد کند. اگر ادمین SSO داشته باشد و سیستمش هک شود، هکر با همان تیکت می‌تواند کل زیرساخت را نابود کند.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Trust Types -->
+            <section id="trust-types" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-handshake text-accent"></i>
+                        کالبدشکافی عمیق انواع Trust
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-l from-accent/10 to-transparent p-5 rounded-xl border-l-4 border-accent mb-6">
+                            <h3 class="font-bold text-white mb-2">مفهوم TDO (Trusted Domain Object)</h3> 
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify">
+                                در ادبیات تراست، دامینی که <strong>اکانت‌ها و یوزرها</strong> در آن قرار دارند را <strong>Trusted Domain (TDO)</strong> می‌گویند (دامینی که به آن اعتماد شده). و دامینی که <strong>منابع و سرویس‌ها</strong> (مثل فایل سرور) را در اختیار دارد، <strong>Trusting Domain</strong> می‌نامند (دامینی که دارد اعتماد می‌کند). جهت دسترسی همیشه از Trusted به سمت Trusting است.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Parent-Child -->
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 relative overflow-hidden hover:border-white/20 transition-all">
+                                <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
+                                <h3 class="font-bold text-white mb-2 text-md">۱. Parent-Child Trust</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed text-justify mb-3">
+                                    به محض ساختن یک Child Domain، این تراست به صورت <strong>اتوماتیک</strong> بین فرزند و والد ایجاد می‌شود.
+                                </p>
+                                <ul class="list-none text-xs text-gray-400 space-y-1">
+                                    <li><i class="fa-solid fa-arrow-right-arrow-left text-accent me-1"></i> <strong>Two-Way:</strong> دو طرفه است.</li>
+                                    <li><i class="fa-solid fa-link text-accent me-1"></i> <strong>Transitive:</strong> خاصیت عبورپذیری دارد (اگر A به B، و B به C اعتماد دارد، A به صورت خودکار به C اعتماد دارد).</li>
+                                </ul>
+                            </div>
+
+                            <!-- Forest Trust -->
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 relative overflow-hidden hover:border-white/20 transition-all">
+                                <div class="absolute right-0 top-0 w-1 h-full bg-green-500"></div>
+                                <h3 class="font-bold text-white mb-2 text-md">۲. Forest Trust</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed text-justify mb-3">
+                                    مختص زمانی است که بخواهیم دو فارست کاملاً مجزا (مثلاً پس از خرید یک شرکت دیگر) را به هم متصل کنیم. این تراست فقط و فقط بین <strong>Root دامین‌های دو فارست</strong> ساخته می‌شود و می‌تواند One-Way یا Two-Way باشد. این نوع تراست نیز <strong>Transitive</strong> است (تمام Childهای دو فارست هم با هم ارتباط می‌گیرند).
+                                </p>
+                            </div>
+
+                            <!-- External Trust -->
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 relative overflow-hidden hover:border-white/20 transition-all">
+                                <div class="absolute right-0 top-0 w-1 h-full bg-orange-500"></div>
+                                <h3 class="font-bold text-white mb-2 text-md">۳. External Trust</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed text-justify mb-3">
+                                    برای زمانی است که می‌خواهیم بین دامین خودمان و یک دامینِ خاص در یک فارست دیگر (یا دامین‌های قدیمی مثل NT4) ارتباط ایجاد کنیم، <strong>بدون اینکه به کل فارست آن‌ها اعتماد کنیم</strong>. این تراست <strong>Non-Transitive (غیر عبورپذیر)</strong> است و دقیقاً محدود به همان دو دامین مشخص شده باقی می‌ماند.
+                                </p>
+                            </div>
+
+                            <!-- Shortcut Trust -->
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 relative overflow-hidden hover:border-white/20 transition-all">
+                                <div class="absolute right-0 top-0 w-1 h-full bg-purple-500"></div>
+                                <h3 class="font-bold text-white mb-2 text-md">۴. Shortcut Trust</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed text-justify mb-3">
+                                    تراست‌های Parent-Child یک مسیر احراز هویت (<strong>Trust Path</strong>) منطقی می‌سازند. اگر یک چایلد بخواهد با چایلد دیگری در سمت دور فارست ارتباط بگیرد، تیکت کربروس باید تمام مسیر والدین را بالا و پایین برود. <br>
+                                    <strong>راه‌حل:</strong> ایجاد یک Shortcut Trust (میانبر) بین آن دو چایلدِ دور از هم، تا Trust Path کوتاه شده و لاگین فوراً انجام شود.
+                                </p>
+                            </div>
+
+                            <!-- Realm Trust -->
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 md:col-span-2 relative overflow-hidden hover:border-white/20 transition-all">
+                                <div class="absolute right-0 top-0 w-1 h-full bg-pink-500"></div>
+                                <h3 class="font-bold text-white mb-2 text-md">۵. Realm Trust</h3>
+                                <p class="text-[14px] text-gray-400 leading-relaxed text-justify">
+                                    پروتکل Kerberos مختص مایکروسافت نیست و یک پروتکل متن‌باز است که در دنیای لینوکس، مک و یونیکس هم استفاده می‌شود. اگر بخواهیم بین اکتیو دایرکتوری و یک سیستم عامل غیر-ویندوزی (متن‌باز) که از کربروس (Realm) پشتیبانی می‌کند تراست برقرار کنیم، از Realm Trust استفاده می‌کنیم.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Kerberos Auth -->
+            <section id="kerberos-auth" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-key text-accent"></i>
+                        کالبدشکافی پروتکل Kerberos (صفر تا صد)
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            وقتی یک کاربر داخل دامین نام کاربری و رمز خود را وارد می‌کند (Kerberos Authentication Within a Domain)، دقیقاً چه اتفاقاتی برای صدور تیکت‌ها می‌افتد؟ این مراحل به شدت در معماری امنیت اهمیت دارند:
+                        </p>
+
+                        <div class="bg-black/40 border border-white/5 p-6 rounded-xl relative">
+                            <h3 class="font-bold text-accent mb-5 border-b border-accent/20 pb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-ticket"></i> مسیر احراز هویت و صدور TGT و Session Ticket
+                            </h3>
+                            
+                            <ol class="list-decimal list-inside space-y-6 text-[15px] text-white marker:text-accent font-bold">
+                                <li>
+                                    <span class="text-accent">دیسکاوری و پیدا کردن DC محلی:</span>
+                                    <p class="font-normal text-sm text-gray-400 mt-2 ms-6 leading-relaxed text-justify border-l-2 border-white/10 pl-3">
+                                        اولین قدم، مراجعه کلاینت به DNS است. در پوشه <code class="mono-inline">_tcp</code>، کلاینت بر اساس <strong>Subnet</strong> شبکه خودش بررسی می‌کند که در کدام <strong>Site</strong> قرار دارد. سپس لیست DCهای آن سایت را می‌گیرد و بر اساس تنظیمات <strong>Priority (اولویت)</strong> و <strong>Weight (وزن)</strong> به یک DC وصل می‌شود. (اگر اولویت و وزن برابر باشند، یک DC به صورت رندوم انتخاب می‌شود).
+                                    </p>
+                                </li>
+                                <li>
+                                    <span class="text-accent">درخواست از KDC:</span>
+                                    <p class="font-normal text-sm text-gray-400 mt-2 ms-6 leading-relaxed text-justify border-l-2 border-white/10 pl-3">
+                                        درون هر Domain Controller کامپوننتی به نام <strong>KDC (Key Distribution Center)</strong> وجود دارد. کلاینت درخواست لاگین خود را به KDC می‌فرستد.
+                                    </p>
+                                </li>
+                                <li>
+                                    <span class="text-accent">صدور بلیط طلایی TGT:</span>
+                                    <p class="font-normal text-sm text-gray-400 mt-2 ms-6 leading-relaxed text-justify border-l-2 border-white/10 pl-3">
+                                        اگر نام کاربری و رمز عبور درست بود، KDC برای کاربر یک بلیط اصلی به نام <strong>TGT (Ticket Granting Ticket)</strong> صادر می‌کند. داخل این TGT، <strong>شماره SID کاربر</strong> و لیست تمام <strong>گروه‌هایی</strong> که کاربر عضو آن‌هاست درج شده است. <br>
+                                        <span class="text-yellow-400 text-xs mt-2 block"><i class="fa-solid fa-clock me-1"></i>نکته امنیتی: اعتبار TGT به طور پیش‌فرض دقیقاً <strong>۶۰۰ دقیقه (۱۰ ساعت)</strong> است.</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <span class="text-accent">درخواست دسترسی به منبع (SPN):</span>
+                                    <p class="font-normal text-sm text-gray-400 mt-2 ms-6 leading-relaxed text-justify border-l-2 border-white/10 pl-3">
+                                        حالا کاربر می‌خواهد فایلی را از روی یک فایل سرور باز کند. فایل سرور می‌گوید TGTِ کلی برای من اعتباری ندارد، باید بلیط ورود اختصاصی بیاوری! سرویسی که کاربر قصد اتصال به آن را دارد در اکتیودایرکتوری <strong>SPN (Service Principal Name)</strong> نامیده می‌شود.
+                                    </p>
+                                </li>
+                                <li>
+                                    <span class="text-accent">صدور Session Ticket (TGS) و اتصال نهایی:</span>
+                                    <p class="font-normal text-sm text-gray-400 mt-2 ms-6 leading-relaxed text-justify border-l-2 border-white/10 pl-3">
+                                        کاربر همراه با TGT خود به DC برمی‌گردد و می‌گوید "من می‌خواهم به این SPN وصل شوم". DC با استفاده از سیستم <strong>Private Key و Public Key</strong> خود، بررسی می‌کند که TGT دستکاری نشده و معتبر است. سپس چک می‌کند که آیا کاربر مجاز به دسترسی هست یا خیر، و در نهایت <strong>Session Ticket</strong> را صادر می‌کند. کاربر این بلیط را به فایل سرور داده و با موفقیت وصل می‌شود.
+                                    </p>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Auth & Migration -->
+            <section id="auth-migration" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-shield-virus text-accent"></i>
+                        امنیت احراز هویت، ADMT و SID History
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- UPN & Auth Routing -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                                <h3 class="font-bold text-white mb-3 border-b border-white/10 pb-2">Multiple UPN Suffix</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    کاربران به صورت پیش‌فرض با پسوند دامین وارد می‌شوند (مثلا <code class="mono-inline">user@corp.local</code>). اگر بخواهیم فرمت لاگین با ایمیل رسمی سازمان (مثلا <code class="mono-inline">user@company.com</code>) یکی شود، باید یک پسوند جدید به عنوان UPN Suffix در کنسول <code>Active Directory Domains and Trusts</code> تعریف کنیم.
+                                </p>
+                            </div>
+
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                                <h3 class="font-bold text-white mb-3 border-b border-white/10 pb-2">سطوح احراز هویت در Trust</h3>
+                                <div class="text-sm text-gray-400 leading-relaxed text-justify space-y-3">
+                                    <p><strong class="text-white">Forest-Wide Authentication:</strong> اگر این گزینه انتخاب شود، کاربرِ دامین Trusted می‌تواند به <em>تمام منابعی</em> در دامین Trusting که مجوز آن‌ها به گروه Authenticated Users داده شده دسترسی پیدا کند (امنیت پایین و ریسک بالا).</p>
+                                    <p><strong class="text-accent">Selective Authentication:</strong> امنیت بسیار بالاتری دارد. در این حالت کاربر به هیچ چیزی در دامین مقابل دسترسی ندارد، مگر اینکه ادمین سرور مقصد، در تب Security کامپیوترِ خود، تیک اختصاصی <strong>"Allowed to authenticate"</strong> را دقیقاً برای همان کاربر فعال کند.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ADMT & SID History -->
+                        <div class="bg-gradient-to-br from-accent/10 to-transparent p-6 rounded-xl border border-accent/20 mt-6">
+                            <h3 class="text-xl font-bold text-white mb-3">انتقال ساختار با ADMT و بحران SID History</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-5">
+                                ابزار <strong>ADMT (Active Directory Migration Tool)</strong> محصول قدرتمند مایکروسافت برای انتقال (مایگریشن) یوزرها، کامپیوترها و گروه‌ها از یک دامین/فارست قدیمی به دامین جدید است.
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="bg-[#0a0f18] p-5 rounded-xl border border-white/5 relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                    <h4 class="font-bold text-blue-400 mb-2">مفهوم SID History</h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        وقتی یوزری با ADMT به دامین جدید می‌رود، یک SID کاملاً جدید به او داده می‌شود. مشکل اینجاست که منابع در دامین قبلی (فایل‌ها، پرینترها)، این کاربر را فقط با SID <em>قدیمی‌اش</em> می‌شناسند! <br>
+                                        برای جلوگیری از قطع شدن دسترسی کاربر، ویژگی <strong>SID History</strong> فعال می‌شود تا SID قدیمیِ او به عنوان یک رکورد تاریخی (Attribute) به اکانت جدیدش پیوست شود تا سرورهای قدیمی او را بشناسند.
+                                    </p>
+                                </div>
+
+                                <div class="bg-red-900/20 p-5 rounded-xl border border-red-500/30 relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
+                                    <h4 class="font-bold text-red-400 mb-2"><i class="fa-solid fa-radiation me-1"></i> SID History Quarantine</h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        ویژگی SID History در تراست‌ها یک ریسک فاجعه‌بار دارد که به آن حمله **SID Injection** می‌گویند. یک هکر در دامین خودش می‌تواند SIDِ گروه Enterprise Admins دامینِ مقابل را به تاریخچه اکانت معمولی خودش اضافه کند و کل شبکه را هک کند!<br>
+                                        برای دفع این حمله، قابلیتی به نام <strong>Quarantine</strong> (قرنطینه) روی External Trustها فعال است که هر SID ای که متعلق به رنج مجازِ دامینِ مقابل نباشد را فیلتر کرده و کلاً مسدود می‌کند.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Upgrades & DNS Child -->
+            <section id="upgrade-dns" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-arrow-up-right-dots text-accent"></i>
+                        ارتقای دامین و معمای DNS در Child
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 hover:bg-white/5 transition-colors">
+                                <h3 class="font-bold text-white mb-3 border-b border-white/10 pb-2">چه زمانی DC را آپگرید می‌کنیم؟</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    زمانی که به قابلیت‌های امنیتی و امکانات جدید ویندوز سرور نیاز داریم و <strong>سطح عملکرد دامین و فارست (DFL / FFL) بسیار قدیمی شده است.</strong> از آنجایی که پروسه آپگرید مستقیماً کلاس‌ها و ساختار دیتابیس را ارتقا می‌دهد، دسترسی به سرور <strong>Schema Master</strong> در زمان آپگرید صد در صد الزامی است.
+                                </p>
+                            </div>
+
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5 hover:bg-white/5 transition-colors">
+                                <h3 class="font-bold text-white mb-3 border-b border-white/10 pb-2">پیش‌نیاز ایجاد Child Domain</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    برای Promote کردن یک سرور جدید به عنوان Child Domain، سرور مقصد <strong>هم می‌تواند از قبل به دامین مادر Join شده باشد، و هم می‌تواند در حالت Workgroup باشد.</strong> تنها شرط اساسی این است که IP سرورِ دی‌ان‌اسِ دامین مادر را روی کارت شبکه خود تنظیم کرده باشد تا بتواند ساختار فارست را پیدا کند.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- DNS Suffix Search List -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-accent/30 relative mt-6">
+                            <h3 class="text-xl font-bold text-accent mb-4 border-b border-accent/20 pb-3">
+                                معمای DNS: چرا از Child به Parent پینگ داریم، اما برعکس نه؟
+                            </h3>
+                            
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-5">
+                                <strong>صورت مسئله:</strong> وقتی داخل دامین فرزند (Child) هستیم و نام کوتاه سروری در دامین بالا را پینگ می‌کنیم (مثلا <code class="mono-inline text-white">ping srv-parent</code>) پینگ می‌دهد. اما وقتی در دامین مادر (Parent) هستیم و نام کوتاه سروری در دامین پایین را می‌زنیم (<code class="mono-inline text-white">ping srv-child</code>) کلاینت آن را پیدا نمی‌کند! دلیل آن چیست؟
+                            </p>
+                            
+                            <div class="bg-[#050b14] p-6 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-white text-md mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-lightbulb text-yellow-400"></i> منطق DNS Suffix Search List
+                                </h4>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-4">
+                                    وقتی شما یک نام کوتاه (بدون پسوند) را پینگ می‌کنید، سیستم عامل سعی می‌کند به صورت خودکار پسوند دامین را به انتهای آن بچسباند تا تبدیل به یک نام کامل (FQDN) شود.<br><br>
+                                    کلاینتی که در دامینِ فرزند است (مثلاً <code class="text-white">child.corp.local</code>)، لیست جستجوی پسوندش (Suffix Search List) شامل دو مورد است: هم <strong>پسوند خودش</strong> و هم <strong>پسوند دامینِ مادر</strong> (<code class="text-white">corp.local</code>). پس اگر نام <code>srv-parent</code> را در زون خودش پیدا نکند، بلافاصله پسوند مادر را به آن چسبانده (<code>srv-parent.corp.local</code>) و سرور را پیدا می‌کند.
+                                </p>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    اما کلاینتی که در دامینِ مادر است، در لیست جستجوی خود فقط پسوند <code>corp.local</code> را دارد و <strong>هرگز نامِ Child را به انتهای اسم‌های کوتاه نمی‌چسباند.</strong> <br>
+                                </p>
+                                
+                                <div class="mt-5 p-4 bg-accent/10 rounded-lg border border-accent/20">
+                                    <strong class="text-accent text-sm block mb-2">راه‌حل‌های این چالش:</strong>
+                                    <ul class="list-disc list-inside text-sm text-gray-300 space-y-1.5 marker:text-accent">
+                                        <li>همیشه به جای نام کوتاه، نام کامل (FQDN) را وارد کنید.</li>
+                                        <li>از طریق <strong>Group Policy</strong>، لیست <code class="text-white">DNS Suffix Search List</code> را ویرایش کرده و پسوند دامین Child را به کامپیوترهای Parent اضافه کنید.</li>
+                                        <li>استفاده از زون قدرتمند <strong>GlobalNames</strong> در ساختار DNS.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; 
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
