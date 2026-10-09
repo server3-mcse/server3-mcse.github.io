@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۸</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-route text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۸ : Clustering & NLB</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="dc-cloning">
+                <i class="fa-solid fa-clone w-5 text-center"></i>
+                <span class="text-sm font-medium">مفهوم DC Cloning</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="ha-nlb-failover">
+                <i class="fa-solid fa-network-wired w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری HA و تفاوت کلاسترها</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="app-lb-cnc">
+                <i class="fa-solid fa-scale-balanced w-5 text-center"></i>
+                <span class="text-sm font-medium">App Load Balancing & C&C</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="nlb-architecture">
+                <i class="fa-solid fa-ethernet w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری کارت شبکه در NLB</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="nlb-setup-modes">
+                <i class="fa-solid fa-gears w-5 text-center"></i>
+                <span class="text-sm font-medium">راه‌اندازی، Modeها و Port Rules</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: DC Cloning -->
+            <section id="dc-cloning" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-clone text-accent"></i>
+                        مفهوم DC Cloning (مجازی‌سازی ایمن)
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            در گذشته، گرفتن Clone (کپی) یا Snapshot از یک سرور Domain Controller در محیط‌های مجازی (مثل VMware یا Hyper-V) یک فاجعه بود و باعث خطای وحشتناک <strong>USN Rollback</strong> می‌شد که کل دیتابیس را به هم می‌ریخت.
+                        </p>
+
+                        <div class="bg-blue-500/10 p-5 rounded-xl border border-blue-500/20">
+                            <h3 class="font-bold text-blue-400 mb-2 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> قابلیت DC Cloning (از سرور 2012 به بعد)</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                مایکروسافت با معرفی ویژگی <strong>Virtualization Safeguards</strong> این مشکل را حل کرد. حالا می‌توانیم از یک DC در محیط مجازی با امنیت کامل Clone بگیریم تا به سرعت یک Additional DC جدید بسازیم (مخصوصاً برای مواقع بحرانی یا دیتاسنترهای بزرگ).
+                            </p>
+                            <div class="bg-[#050b14] p-4 rounded-lg border border-white/5">
+                                <strong class="text-white text-sm block mb-2">پیش‌نیازهای قطعی Cloning:</strong>
+                                <ul class="list-disc list-inside text-sm text-gray-400 space-y-1">
+                                    <li>سرور <strong>PDC Emulator</strong> باید آنلاین و در دسترس باشد.</li>
+                                    <li>DC ای که می‌خواهیم از آن کلون بگیریم باید عضو گروه <strong>Cloneable Domain Controllers</strong> در اکتیو دایرکتوری باشد.</li>
+                                    <li>باید فایل پیکربندی به نام <code class="mono-inline">DCCloneConfigFile.xml</code> (حاوی تنظیمات IP و نام سرور جدید) ساخته و در پوشه NTDS قرار گیرد.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: HA vs Failover Cluster -->
+            <section id="ha-nlb-failover" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-network-wired text-accent"></i>
+                        معماری HA: تفاوت عمیق NLB و Failover Cluster
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            مفهوم <strong>HA (High Availability)</strong> یا دسترسی‌پذیری بالا یعنی حذف نقطه‌ی تکی شکست (Single Point of Failure). اگر یک سرور خاموش شد، سرور دیگر بدون وقفه کار را ادامه دهد. مایکروسافت برای این کار دو تکنولوژی کاملاً متفاوت ارائه داده است:
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- NLB -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5 hover:border-accent/30 transition-all relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-accent"></div>
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-server text-accent"></i> Network Load Balancing (NLB)
+                                </h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    طراحی شده برای سرویس‌های <strong>Stateless (بدون وضعیت)</strong> مثل وب‌سرورها (IIS) یا پروکسی‌ها. هیچ دیتای مشترکی بین سرورها وجود ندارد. 
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-gray-400 space-y-2">
+                                    <li><strong class="text-white">Active-Active:</strong> همه سرورها همزمان با یک IP مجازی (VIP) روشن هستند و بار ترافیک بین آن‌ها تقسیم می‌شود.</li>
+                                    <li><strong class="text-white">فقط شبکه را می‌فهمد:</strong> NLB فقط آی‌پی و پورت شبکه را چک می‌کند. اگر سرویسِ IIS (نرم‌افزار) روی سرور ۱ متوقف شود اما سرور پینگ داشته باشد، NLB متوجه نمی‌شود و ترافیک را می‌فرستد!</li>
+                                    <li>توسط پالس‌های <strong>Heartbeat</strong> خرابی سخت‌افزاری سرورها را متوجه شده و ترافیک را قطع می‌کند.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Failover Cluster -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5 hover:border-purple-500/30 transition-all relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-database text-purple-400"></i> Failover Cluster
+                                </h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    طراحی شده برای سرویس‌های <strong>Stateful (وضعیت‌دار)</strong> مانند دیتابیس‌ها (SQL Server) یا فایل‌سرورها. این سیستم به شدت پیچیده و گران‌قیمت است.
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-gray-400 space-y-2">
+                                    <li><strong class="text-white">Active-Passive:</strong> معمولاً یک سرور کار می‌کند و سرور دوم در حالت آماده‌باش (Standby) است.</li>
+                                    <li><strong class="text-white">سرویس و استوریج را می‌فهمد:</strong> به عمق سیستم‌عامل نفوذ می‌کند. اگر سرویس SQL متوقف شود، فوراً متوجه شده و دیتابیس را روی سرور دوم بالا می‌آورد.</li>
+                                    <li>نیاز قطعی به <strong>Shared Storage (استوریج مشترک)</strong> مانند SAN دارد.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: App LB & C&C -->
+            <section id="app-lb-cnc" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-scale-balanced text-accent"></i>
+                        Application Load Balancing و امنیت (C&C)
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- App LB -->
+                        <div class="bg-gradient-to-r from-accent/10 to-transparent p-6 rounded-xl border-r-4 border-accent mb-6">
+                            <h3 class="text-lg font-bold text-white mb-2">Application Load Balancing (لایه ۷)</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                برخلاف NLB مایکروسافت که در لایه ۴ (شبکه) کار می‌کند، لود بالانسرهای سخت‌افزاری/نرم‌افزاری پیشرفته (مثل F5 Big-IP یا HAProxy) در <strong>لایه ۷ (Application)</strong> کار می‌کنند.
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                این یعنی ترافیک وب (HTTP/HTTPS) را می‌خوانند، کوکی‌ها را می‌فهمند و می‌توانند بر اساس <strong>وزن (Weight)</strong> ترافیک را تقسیم کنند (مثلا سرور A چون رم بیشتری دارد، ۳ برابر سرور B ترافیک بگیرد). آن‌ها حتی می‌فهمند کاربر کدام URL خاص را درخواست داده و ترافیک را به سرور مخصوص آن هدایت می‌کنند.
+                            </p>
+                        </div>
+
+                        <!-- C&C Server -->
+                        <div class="bg-red-900/20 p-6 rounded-xl border border-red-500/30 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-red-500"></div>
+                            <h3 class="text-lg font-bold text-red-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-skull-crossbones"></i> C&C Server (Command and Control) چیست؟
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                در دنیای امنیت شبکه، سرورِ <strong>C&C یا C2</strong>، سروری است که توسط هکرها کنترل می‌شود تا به بدافزارها و سیستم‌های آلوده‌شده (Botnets) در شبکه‌ی ما دستور بدهد. سیستم‌های آلوده مدام برای دریافت دستور به این سرورها متصل می‌شوند (Beaconing).
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                <strong class="text-white">ارتباط با Load Balancer:</strong> لود بالانسرهای لایه ۷ و WAFها (Web Application Firewalls) ترافیک خروجی و ورودی را مانیتور می‌کنند. اگر یک سیستم داخلی سعی کند با یک IP مخرب (C&C Server) ارتباط بگیرد، لود بالانسر به دلیل درک ترافیک لایه اپلیکیشن، این رفتار مخرب را شناسایی و مسدود می‌کند.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: NLB Architecture & NICs -->
+            <section id="nlb-architecture" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-ethernet text-accent"></i>
+                        معماری کارت‌های شبکه در NLB
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            برای راه‌اندازی NLB، تمام سرورهایی که می‌خواهند در کلاستر شرکت کنند باید <strong>فیچر NLB</strong> را نصب داشته باشند. اما مهم‌ترین چالش معماری NLB، تعداد کارت‌های شبکه (NIC) روی سرورهاست:
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Single NIC -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-white mb-3 text-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-network-wired text-orange-400"></i> Single NIC (یک کارت شبکه)
+                                </h4>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    در این حالت، سرورها فقط یک کارت شبکه دارند. ترافیک کاربران (VIP) و ترافیک <strong>Heartbeat (ارتباط خود سرورها با هم)</strong> هر دو از یک کابل رد می‌شوند.
+                                </p>
+                                <p class="text-sm text-orange-400 font-bold bg-orange-500/10 p-3 rounded-lg border border-orange-500/20 text-justify">
+                                    چالش: در مود Unicast با یک کارت شبکه، سرورها نمی‌توانند به راحتی با هم صحبت کنند، زیرا MAC کارت شبکه‌شان تغییر می‌کند!
+                                </p>
+                            </div>
+
+                            <!-- Dual NIC -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-white mb-3 text-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-server text-emerald-400"></i> Dual NIC (دو کارت شبکه) - <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">Best Practice</span>
+                                </h4>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    سرورها دو کارت شبکه دارند. یک کارت شبکه فقط و فقط به ترافیک کلاینت‌ها (کلاستر / VIP) اختصاص می‌یابد و دومی یک <strong>کارت شبکه اختصاصی</strong> است که صرفاً برای رد و بدل کردن پالس‌های Heartbeat و رپلیکیت دیتای مدیریتی بین خود سرورها استفاده می‌شود. این روش بالاترین پایداری را دارد.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: NLB Setup & Modes -->
+            <section id="nlb-setup-modes" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-gears text-accent"></i>
+                        کانفیگ ۰ تا ۱۰۰، Modeها و Port Rules
+                    </h2>
+
+                    <div class="space-y-8">
+                        
+                        <!-- NLB Setup Steps -->
+                        <div class="bg-[#050b14] border border-white/10 p-6 rounded-xl">
+                            <h3 class="font-bold text-white text-lg mb-4 border-b border-white/10 pb-2">فرایند راه‌اندازی (Step-by-Step)</h3>
+                            <ol class="list-decimal list-inside space-y-3 text-sm text-gray-400 marker:text-accent font-bold">
+                                <li><span class="font-normal text-white">نصب فیچر:</span> <span class="font-normal">نصب <code class="mono-inline">Network Load Balancing</code> روی تمام سرورها.</span></li>
+                                <li><span class="font-normal text-white">کنسول مدیریت:</span> <span class="font-normal">باز کردن NLB Manager روی سرور اول، کلیک راست و <code class="mono-inline">New Cluster</code>.</span></li>
+                                <li><span class="font-normal text-white">افزودن Host:</span> <span class="font-normal">وارد کردن IP سرور اول و انتخاب کارت شبکه‌ای که قرار است ترافیک را بگیرد.</span></li>
+                                <li><span class="font-normal text-white">تعیین VIP:</span> <span class="font-normal">اختصاص دادن <strong>Virtual IP (VIP)</strong>؛ این همان IP است که در DNS برای سایت ثبت می‌شود و کاربران آن را می‌بینند.</span></li>
+                                <li><span class="font-normal text-white">تعیین Mode:</span> <span class="font-normal">انتخاب یکی از حالت‌های Unicast / Multicast.</span></li>
+                                <li><span class="font-normal text-white">افزودن نودهای بعدی:</span> <span class="font-normal">کلیک راست روی کلاستر ساخته شده و زدن <code class="mono-inline">Add Host to Cluster</code> برای سرورهای دوم و سوم.</span></li>
+                            </ol>
+                        </div>
+
+                        <!-- Cluster Operation Modes -->
+                        <div class="bg-black/30 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-xl font-bold text-accent mb-4">حالت‌های عملیاتی (Cluster Operation Modes)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                                    <strong class="text-white block mb-1">Unicast</strong>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        مک آدرسِ فیزیکی کارت شبکه سرور را <strong>حذف</strong> کرده و مک آدرس مجازی کلاستر را جایگزین می‌کند. چون همه سرورها یک MAC یکسان دارند، باعث <strong>Switch Flooding</strong> می‌شود تا سوئیچ ترافیک را به همه پورت‌ها بفرستد.
+                                    </p>
+                                </div>
+                                <div class="bg-white/5 p-4 rounded-lg border border-white/5">
+                                    <strong class="text-white block mb-1">Multicast</strong>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        مک آدرس اصلی سرور را نگه می‌دارد و یک مک آدرس Multicast به آن اضافه می‌کند. از Switch Flooding جلوگیری می‌کند اما نیاز دارد ادمین شبکه روی روتر تنظیمات <strong>ARP استاتیک</strong> بنویسد.
+                                    </p>
+                                </div>
+                                <div class="bg-white/5 p-4 rounded-lg border border-white/5 border-b-2 border-b-accent">
+                                    <strong class="text-white block mb-1">IGMP Multicast</strong>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        بهترین و هوشمندانه‌ترین حالت! با استفاده از پروتکل IGMP به سوئیچ (اگر پشتیبانی کند) دقیقاً می‌گوید کدام پورت‌ها عضو کلاستر هستند تا ترافیک فقط به همان پورت‌ها برود.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Port Rules & Priority -->
+                        <div class="bg-gradient-to-l from-accent/10 to-transparent p-6 rounded-xl border-l-4 border-accent">
+                            <h3 class="text-lg font-bold text-white mb-3">قوانین پورت (Port Rules) و مفهوم Priority</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در تب <strong>Port Rules</strong> تعیین می‌کنیم که کلاستر روی چه پورتی ترافیک را بالانس کند (مثلاً فقط ترافیک TCP پورت 443 بین سرورها تقسیم شود).
+                            </p>
+                            
+                            <div class="bg-[#050b14] p-4 rounded-lg border border-white/10">
+                                <strong class="text-accent text-sm block mb-2"><i class="fa-solid fa-circle-question mr-1"></i> معمای Priority در پورت‌های متفرقه:</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    وقتی هاست‌ها را اضافه می‌کنیم، به هر سرور یک شناسه <strong>Host ID (Priority)</strong> از ۱ تا ۳۲ داده می‌شود. کاربرد این عدد چیست؟ <br><br>
+                                    فرض کنید قانون (Port Rule) فقط برای پورت ۴۴۳ نوشته شده است. حالا اگر یک کاربر به IP کلاستر در پورت ۸۰ یا ۲۱ وصل شود چه می‌شود؟ <br>
+                                    در اینجا ترافیک بالانس نمی‌شود! بلکه سروری که <strong>Priority بالاتری دارد (یعنی عدد آن کمتر است، مثلاً ۱)</strong> به عنوان <strong>Default Host</strong> شناخته شده و تمام ترافیک‌های متفرقه (که در Rule نیستند) مستقیماً و فقط به آن سرور ارسال می‌شوند.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; 
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
