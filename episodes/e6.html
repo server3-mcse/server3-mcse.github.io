@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۶</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            direction: ltr;
+            text-align: left;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-route text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۶ : Forest Trust & DNS</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="forest-trust-arch">
+                <i class="fa-solid fa-tree w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری Forest Trust</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="dns-trust-resolution">
+                <i class="fa-solid fa-satellite-dish w-5 text-center"></i>
+                <span class="text-sm font-medium">پیش‌نیاز DNS در تراست</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="tree-domain">
+                <i class="fa-solid fa-sitemap w-5 text-center"></i>
+                <span class="text-sm font-medium">کالبدشکافی Tree Domain</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="dns-delegation">
+                <i class="fa-solid fa-share-nodes w-5 text-center"></i>
+                <span class="text-sm font-medium">مفهوم DNS Delegation</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: Forest Trust Architecture -->
+            <section id="forest-trust-arch" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-tree text-accent"></i>
+                        کالبدشکافی صفر تا صد Forest Trust
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-black/40 p-5 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-3">Forest Trust چیست؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-2">
+                                وقتی دو شرکت با هم ادغام می‌شوند (M&A) یا نیاز به اشتراک‌گذاری منابع بین دو ساختار کاملاً مجزا داریم، باید بین آن‌ها <strong>Forest Trust</strong> ایجاد کنیم. این تراست بالاترین سطح ارتباط بین دو جنگل (فارست) مایکروسافتی است.
+                            </p>
+                            <div class="bg-blue-900/20 p-3 rounded-lg border border-blue-500/30 text-sm text-gray-300 mt-3">
+                                <i class="fa-solid fa-circle-exclamation text-blue-400 mr-2"></i><strong>نکته کلیدی معماری:</strong> Forest Trust <strong>فقط و فقط</strong> می‌تواند بین <strong>Root Domain</strong> های دو فارست ایجاد شود. شما نمی‌توانید یک چایلد از فارست A را با چایلد از فارست B مستقیماً Forest Trust کنید.
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-gradient-to-br from-accent/10 to-transparent p-5 rounded-xl border border-accent/20">
+                                <h4 class="font-bold text-accent mb-2"><i class="fa-solid fa-link me-2"></i>ویژگی Transitive (عبورپذیری)</h4>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    فارست تراست به صورت پیش‌فرض <strong>Transitive</strong> است. یعنی اگر Root فارست A با Root فارست B تراست برقرار کند، <strong>تمام Childهای فارست A به صورت خودکار به تمام Childهای فارست B اعتماد خواهند داشت.</strong> این یک مزیت بزرگ برای جلوگیری از ایجاد ده‌ها تراستِ دستی بین چایلدهاست.
+                                </p>
+                            </div>
+
+                            <div class="bg-black/40 p-5 rounded-xl border border-white/5">
+                                <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-right-left text-accent me-2"></i>جهت تراست (Direction)</h4>
+                                <ul class="list-none text-sm text-gray-400 space-y-2 mt-3">
+                                    <li><strong class="text-gray-300">One-Way:</strong> فقط کاربران فارست A به منابع فارست B دسترسی دارند (یا برعکس).</li>
+                                    <li><strong class="text-gray-300">Two-Way:</strong> ارتباط کاملاً دوطرفه است و کاربران هر دو سازمان می‌توانند از منابع یکدیگر استفاده کنند.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: DNS Resolution for Trust -->
+            <section id="dns-trust-resolution" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-satellite-dish text-accent"></i>
+                        چالش بزرگ DNS در راه‌اندازی Trust
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="bg-red-500/10 p-5 rounded-xl border-l-4 border-red-500 mb-6">
+                            <h3 class="text-lg font-bold text-red-400 mb-2">پیش‌نیاز قطعی: کشف DC مقابل</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify">
+                                قبل از اینکه حتی ویزارد Trust را باز کنید، یک شرط اساسی وجود دارد: <strong>سرورهای DC دو فارست باید بتوانند یکدیگر را از طریق DNS پیدا (Resolve) کنند.</strong> وقتی در فارست `A.com` نامِ دامین `B.com` را پینگ می‌کنید، دی‌ان‌اسِ `A.com` باید بتواند آی‌پی سرور `B.com` را به شما برگرداند. بدون این نام‌گشایی، تراست <strong>هرگز</strong> ایجاد نخواهد شد.
+                            </p>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">۳ روش برای حل مشکل DNS در Trust</h3>
+                        
+                        <div class="grid grid-cols-1 gap-5">
+                            <!-- Conditional Forwarder -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-accent/40 relative overflow-hidden shadow-[0_0_15px_rgba(0,229,255,0.05)]">
+                                <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
+                                <h4 class="font-bold text-accent text-lg mb-2">۱. کاندیشنال فرواردر (Conditional Forwarder) - <span class="text-sm font-normal bg-accent/20 px-2 py-1 rounded text-accent">Best Practice</span></h4>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    بهترین، سبک‌ترین و ایمن‌ترین روش. شما در کنسول DNS فارست A یک Conditional Forwarder می‌سازید و می‌گویید: <em>"اگر کسی آدرس `B.com` را خواست، لطفاً درخواست او را مستقیماً به آی‌پیِ DNS سرورِ `B.com` (مثلاً 10.10.10.5) ارسال کن (Forward)."</em>
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-gray-500 space-y-1">
+                                    <li>هیچ دیتابیسی رد و بدل نمی‌شود و ترافیک شبکه‌ای بسیار پایینی دارد.</li>
+                                    <li>باید در هر دو طرف (به صورت ضربدری) تنظیم شود.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Stub Zone -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-purple-500/30 relative overflow-hidden">
+                                <div class="absolute right-0 top-0 w-1 h-full bg-purple-500"></div>
+                                <h4 class="font-bold text-purple-400 text-lg mb-2">۲. استاب زون (Stub Zone)</h4>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    در فارست A یک Stub Zone برای دامین `B.com` می‌سازیم. این زون دیتابیس کامل نیست، بلکه <strong>فقط رکوردهای حیاتی (SOA, NS, A)</strong> سرورهای DNS فارست مقابل را نگه می‌دارد. 
+                                </p>
+                                <p class="text-xs text-gray-500">
+                                    مزیت آن نسبت به Conditional Forwarder این است که اگر آی‌پی DNS سرور مقابل تغییر کند یا DC جدیدی اضافه شود، Stub Zone به صورت داینامیک خود را آپدیت می‌کند (چون رکوردهای NS را سینک می‌کند).
+                                </p>
+                            </div>
+
+                            <!-- Cross-Primary / Secondary -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-red-500/30 relative overflow-hidden">
+                                <div class="absolute right-0 top-0 w-1 h-full bg-red-500"></div>
+                                <h4 class="font-bold text-red-400 text-lg mb-2">۳. زون‌های Secondary / Cross-Primary</h4>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    بدترین روش از نظر امنیتی! در این حالت، دیتابیس کامل DNS فارست B به عنوان یک زون ثانویه روی سرور فارست A کپی می‌شود. این یعنی شما <strong>کل نقشه شبکه، لیست کامپیوترها و سرورهای سازمان مقابل را در اختیار دارید</strong> که از نظر امنیتی بین دو سازمان مجزا به هیچ وجه توصیه نمی‌شود.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Tree Domain -->
+            <section id="tree-domain" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-sitemap text-accent"></i>
+                        معماری Tree Domain و تفاوت آن
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-white mb-3 border-b border-white/10 pb-2">Child Domain چیست؟</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    چایلد دامین دارای <strong>Contiguous Namespace (فضای نام پیوسته)</strong> است. یعنی نامِ دامین مادر را در پسوند خود به ارث می‌برد. <br>
+                                    مثال: اگر مادر `contoso.local` باشد، چایلد می‌شود `tehran.contoso.local`.
+                                </p>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-accent/10 to-transparent p-6 rounded-xl border border-accent/20">
+                                <h3 class="text-lg font-bold text-accent mb-3 border-b border-accent/20 pb-2">Tree Domain چیست؟</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    تری دامین دارای <strong>Discontiguous Namespace (فضای نام ناپیوسته)</strong> است. یعنی در همان فارست ایجاد می‌شود (Schema و Configuration مشترک دارند)، اما <strong>نام آن کاملاً با ریشه فارست متفاوت است.</strong><br>
+                                    مثال: دامین مادر `contoso.local` است، اما تری دامینِ جدید با نام `fabrikam.com` در همان فارست ساخته می‌شود.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- نکته حیاتی DNS در Tree Domain -->
+                        <div class="bg-[#050b14] border border-red-500/30 p-6 rounded-xl mt-6 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
+                            <h3 class="font-bold text-red-400 text-lg mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i> نکته فوق‌العاده حیاتی DNS در ساخت Tree
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در چایلد دامین‌ها، چون پسوند یکسان است، DNS به راحتی پروسه نام‌گشایی را انجام می‌دهد. اما در <strong>Tree Domain</strong>، چون نام‌ها کاملاً مجزا هستند (مثلا `contoso.com` و `fabrikam.com`)، سرورها به صورت پیش‌فرض نمی‌توانند یکدیگر را پیدا کنند!
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify bg-white/5 p-4 rounded-lg">
+                                <strong>قانون:</strong> بلافاصله پس از ایجاد یک Tree Domain، <strong>حتماً و فوراً</strong> باید بین DNS سرورِ Forest Root و DNS سرورِ Tree Domain، یک <strong>Conditional Forwarder</strong> (به صورت دوطرفه) تنظیم کنید. اگر این کار را نکنید، Replication بین آن‌ها قطع می‌شود، Trust ایجاد شده کار نمی‌کند و کل ساختار فارست با خطاهای پیاپی روبرو می‌شود.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: DNS Delegation -->
+            <section id="dns-delegation" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-share-nodes text-accent"></i>
+                        کالبدشکافی DNS Delegation (تفویض اختیار)
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-3">Delegation اصلاً یعنی چه؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                کلمه <strong>Delegation</strong> به معنای تفویض اختیار یا واگذاری مسئولیت است. وقتی شما یک ساب‌دامین (مانند `tehran.contoso.com`) می‌سازید، دو راه برای مدیریت آن در DNS دارید:
+                            </p>
+                            <ul class="list-none space-y-3 mt-4">
+                                <li class="flex items-start gap-3">
+                                    <i class="fa-solid fa-folder text-gray-500 mt-1"></i>
+                                    <div>
+                                        <strong class="text-gray-300 text-sm">حالت عادی (ساخت پوشه):</strong>
+                                        <p class="text-xs text-gray-400 mt-1 text-justify">در همان زونِ `contoso.com` یک پوشه (Domain) به نام `tehran` می‌سازید و رکوردها را دستی وارد می‌کنید. مدیریت همچنان دست سرور مرکزی است.</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa-solid fa-share text-accent mt-1"></i>
+                                    <div>
+                                        <strong class="text-white text-sm">حالت Delegation (واگذاری):</strong>
+                                        <p class="text-xs text-gray-400 mt-1 text-justify">می‌گویید من دیگر نمی‌خواهم رکوردهای تهران را مدیریت کنم. ادمینِ تهران برای خودش یک DNS سرور مستقل راه‌اندازی کرده است. من مسئولیت این ساب‌دامین را کاملاً به سرورِ خودِ تهران واگذار (Delegate) می‌کنم.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-accent/10 to-transparent p-6 rounded-xl border-r-4 border-accent">
+                            <h3 class="text-lg font-bold text-accent mb-3">زیر پوست Delegation چه اتفاقی می‌افتد؟</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
+                                وقتی شما در کنسول DNS روی زون اصلی راست‌کلیک کرده و <code>New Delegation</code> را می‌زنید، در واقع DNS برای شما <strong>دو رکورد بسیار مهم</strong> در زون مادر ایجاد می‌کند:
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-black/50 p-4 rounded-lg border border-white/5">
+                                    <h4 class="font-bold text-white mb-2 text-sm flex items-center gap-2">
+                                        <i class="fa-solid fa-server text-accent"></i> ۱. رکورد NS (Name Server)
+                                    </h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        یک رکورد NS ایجاد می‌شود که می‌گوید: <em>"مسئولِ پاسخگویی به درخواست‌های ساب‌دامین `tehran`، سروری به نام `ns1.tehran.contoso.com` است."</em>
+                                    </p>
+                                </div>
+                                <div class="bg-black/50 p-4 rounded-lg border border-white/5">
+                                    <h4 class="font-bold text-white mb-2 text-sm flex items-center gap-2">
+                                        <i class="fa-solid fa-link text-accent"></i> ۲. رکورد Glue (A Record)
+                                    </h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        چون کلاینت هنوز آی‌پیِ `ns1.tehran` را نمی‌داند تا از آن سوال کند، سیستم فوراً یک <strong>رکورد چسب (Glue Record)</strong> از نوع A می‌سازد و آی‌پیِ سرور تهران (مثلا `192.168.20.10`) را به آن می‌چسباند تا مسیر کامل شود.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; 
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>

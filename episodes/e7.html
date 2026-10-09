@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۷</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-route text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۷ : AD Backup & Restore</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="ad-design-security">
+                <i class="fa-solid fa-shield-halved w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری، امنیت و افزونگی</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="object-lifecycle">
+                <i class="fa-solid fa-recycle w-5 text-center"></i>
+                <span class="text-sm font-medium">چرخه حیات آبجکت در AD</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="recovery-methods">
+                <i class="fa-solid fa-trash-arrow-up w-5 text-center"></i>
+                <span class="text-sm font-medium">متدهای بازیابی (Restore)</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="usn-lingering">
+                <i class="fa-solid fa-ghost w-5 text-center"></i>
+                <span class="text-sm font-medium">معمای USN و آبجکت سرگردان</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="monitoring-bmr">
+                <i class="fa-solid fa-stethoscope w-5 text-center"></i>
+                <span class="text-sm font-medium">Bare Metal، اسنپ‌شات و DCDiag</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: Design & Security -->
+            <section id="ad-design-security" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-shield-halved text-accent"></i>
+                        دیزاین، امنیت و افزونگی زیرساخت AD
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-2">
+                            معماری و دیزاین در اکتیو دایرکتوری حرف اول را می‌زند. یک اشتباه در طراحی می‌تواند کل سازمان را به زانو درآورد. امنیت، مانیتورینگ، گزارش‌گیری (Auditing) و هاردنینگ (Hardening) سرورها جزو لاینفک یک دیزاین Enterprise است.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-red-500/10 p-5 rounded-xl border border-red-500/20">
+                                <h3 class="font-bold text-red-400 mb-2 flex items-center gap-2"><i class="fa-solid fa-virus"></i> پاشنه آشیل: آنتی‌ویروس و Replication</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    اکتیو دایرکتوری بر اساس مکانیزم Replication کار می‌کند. این بزرگترین نقطه قوت و همزمان <strong>بزرگترین نقطه ضعف</strong> آن است! اگر یک DC ویروسی شود (مخصوصاً باج‌افزارها)، به دلیل سرعت بالای Replication، این آلودگی در عرض چند ثانیه به تمام DCهای دیگر در کل فارست منتقل می‌شود و کل دامین می‌ترکد. به همین دلیل نصب و آپدیت آنتی‌ویروس‌های Enterprise روی تمام DCها فوق‌العاده حیاتی است.
+                                </p>
+                            </div>
+
+                            <div class="bg-blue-500/10 p-5 rounded-xl border border-blue-500/20">
+                                <h3 class="font-bold text-blue-400 mb-2 flex items-center gap-2"><i class="fa-solid fa-server"></i> افزونگی سرورها (Redundancy)</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    ما <strong>هرگز و تحت هیچ شرایطی</strong> در محیط واقعی نباید فقط ۱ دامین کنترلر داشته باشیم. 
+                                </p>
+                                <ul class="list-disc list-inside text-sm text-gray-300 space-y-1">
+                                    <li><strong>حداقل مطلق:</strong> ۲ عدد DC.</li>
+                                    <li><strong>پیشنهاد استاندارد (Best Practice):</strong> ۳ عدد DC برای تحمل خطای بالا.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Object Lifecycle -->
+            <section id="object-lifecycle" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-recycle text-accent"></i>
+                        کالبدشکافی چرخه حیات آبجکت و Garbage Collection
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="bg-black/30 p-6 rounded-xl border border-white/5">
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-6">
+                                وقتی کاربری را در اکتیودایرکتوری پاک می‌کنیم (Delete)، این آبجکت مستقیماً از دیتابیس (NTDS.DIT) حذف نمی‌شود، بلکه وارد یک چرخه زمانی می‌شود تا بتوانیم آن را ریکاوری کنیم یا به سایر DCها خبر دهیم که پاک شده است.
+                            </p>
+
+                            <div class="relative pl-8 md:pl-0">
+                                <!-- خط عمودی تایم‌لاین -->
+                                <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-accent/30 -translate-x-1/2"></div>
+                                <div class="md:hidden absolute left-3 top-0 bottom-0 w-0.5 bg-accent/30"></div>
+
+                                <div class="space-y-8">
+                                    <!-- Live -->
+                                    <div class="relative md:w-1/2 md:pr-12 text-right">
+                                        <div class="absolute top-1 right-[-41px] md:-right-3 w-6 h-6 rounded-full bg-green-500 border-4 border-[#050b14] z-10"></div>
+                                        <h4 class="font-bold text-green-400 text-lg mb-1">Live Object (آبجکت زنده)</h4>
+                                        <p class="text-sm text-gray-400">کاربری که هم‌اکنون فعال است، لاگین می‌کند و تمام ویژگی‌ها (Attributes) مثل عضویت در گروه‌ها، شماره تلفن، پسورد و غیره را در خود دارد.</p>
+                                    </div>
+
+                                    <!-- Deleted (Tombstone) -->
+                                    <div class="relative md:w-1/2 md:ml-auto md:pl-12 md:text-left text-right">
+                                        <div class="absolute top-1 right-[-41px] md:left-[-11px] md:right-auto w-6 h-6 rounded-full bg-orange-500 border-4 border-[#050b14] z-10"></div>
+                                        <h4 class="font-bold text-orange-400 text-lg mb-1">Deleted Object (حالت Tombstone)</h4>
+                                        <p class="text-sm text-gray-400 leading-relaxed">
+                                            به محض زدن دکمه Delete، آبجکت به این فاز می‌رود. در این حالت (اگر Recycle Bin <strong>خاموش</strong> باشد)، آبجکت تبدیل به سنگ قبر (Tombstone) می‌شود؛ یعنی اکثر ویژگی‌های مهم آن (مثل عضویت در گروه‌ها و پسورد) <strong>کاملاً پاک و تخلیه می‌شود (Stripped)</strong> و فقط نام و SID آن باقی می‌ماند تا به بقیه DCها Replicate کند که این آبجکت پاک شده است. این آبجکت تا ۱۸۰ روز (Tombstone Lifetime) در این حالت مخفی می‌ماند.
+                                        </p>
+                                    </div>
+
+                                    <!-- Recycled -->
+                                    <div class="relative md:w-1/2 md:pr-12 text-right">
+                                        <div class="absolute top-1 right-[-41px] md:-right-3 w-6 h-6 rounded-full bg-red-400 border-4 border-[#050b14] z-10"></div>
+                                        <h4 class="font-bold text-red-400 text-lg mb-1">Recycled Object</h4>
+                                        <p class="text-sm text-gray-400">
+                                            اگر Recycle Bin <strong>روشن</strong> باشد، آبجکت به جای Tombstone شدن، وارد فاز Recycled Object می‌شود و <strong>تمامی Attributeهای خود را حفظ می‌کند</strong>. این فاز نیز دیفالت ۱۸۰ روز طول می‌کشد. در طول این ۱۸۰ روز آبجکت به راحتی و کاملاً سالم قابل بازگردانی است.
+                                        </p>
+                                    </div>
+
+                                    <!-- Removed -->
+                                    <div class="relative md:w-1/2 md:ml-auto md:pl-12 md:text-left text-right">
+                                        <div class="absolute top-1 right-[-41px] md:left-[-11px] md:right-auto w-6 h-6 rounded-full bg-gray-600 border-4 border-[#050b14] z-10"></div>
+                                        <h4 class="font-bold text-gray-400 text-lg mb-1">Removed Object (حذف فیزیکی)</h4>
+                                        <p class="text-sm text-gray-500 leading-relaxed">
+                                            وقتی ۱۸۰ روز مهلت (Tombstone Lifetime) تمام شود، آبجکت رسماً Expire می‌شود و نوبت به پروسه Garbage Collection می‌رسد تا آن را برای همیشه پاک کند.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Garbage Collection -->
+                        <div class="bg-gradient-to-l from-accent/10 to-transparent border-l-4 border-accent p-6 rounded-xl">
+                            <h3 class="font-bold text-white mb-2 text-lg">موتور Garbage Collection چیست؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify">
+                                یک پردازش پس‌زمینه (Background Process) روی هر DC است که به صورت پیش‌فرض <strong>هر ۱۲ ساعت یک‌بار</strong> بیدار می‌شود. وظیفه آن گشتن در دیتابیس است تا ببیند مهلت ۱۸۰ روزه کدام آبجکت‌ها تمام شده (Expired Tombstones). سپس آن‌ها را به صورت <strong>فیزیکی</strong> از دیتابیس NTDS.DIT حذف (Defrag) می‌کند تا فضای هارد دیسک آزاد شود.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Recovery Methods -->
+            <section id="recovery-methods" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-trash-arrow-up text-accent"></i>
+                        متدهای بازیابی (Restore) در اکتیو دایرکتوری
+                    </h2>
+
+                    <div class="space-y-6">
+                        <!-- Recycle Bin -->
+                        <div class="bg-black/40 border border-emerald-500/20 p-5 rounded-xl hover:border-emerald-500/50 transition-all">
+                            <h3 class="text-xl font-bold text-emerald-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-recycle"></i> ۱. Active Directory Recycle Bin (بهترین روش)
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-2">
+                                بهترین و بی‌نقص‌ترین راه برای برگرداندن یک یوزرِ پاک شده. این ویژگی به طور پیش‌فرض خاموش است و <strong>باید دستی آن را فعال کنید</strong>. پس از فعال‌سازی، یوزرها تا ۱۸۰ روز با <strong>تمام ویژگی‌هایشان (اعم از پسورد، گروه‌ها و...)</strong> کاملاً سالم برمی‌گردند.
+                            </p>
+                            <p class="text-sm font-bold text-red-400 mt-3">
+                                <i class="fa-solid fa-triangle-exclamation"></i> نکته بسیار مهم: <span class="text-gray-400 font-normal">آبجکت‌هایی که <strong>قبل</strong> از فعال کردن Recycle Bin پاک شده‌اند، توسط این روش برنمی‌گردند! (چون در زمان پاک شدن Attributeهای آن‌ها Stripped شده بود).</span>
+                            </p>
+                        </div>
+
+                        <!-- Tombstone Reanimation -->
+                        <div class="bg-black/40 border border-orange-500/20 p-5 rounded-xl hover:border-orange-500/50 transition-all">
+                            <h3 class="text-xl font-bold text-orange-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-ghost"></i> ۲. Tombstone Reanimation
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-2">
+                                اگر Recycle Bin خاموش بود اما هنوز ۱۸۰ روز از پاک شدن کاربر نگذشته بود چه؟ با استفاده از ابزار <code class="mono-inline">ldp.exe</code> می‌توانیم یوزر را برگردانیم. اما این روش <strong>ناقص</strong> است!
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                یوزر برمی‌گردد، اما چون قبلاً Tombstone شده بود، <strong>هیچ پسوردی ندارد و از تمام گروه‌های قبلی خود خارج شده است</strong>. ادمین باید دوباره پسورد و گروه‌ها را برای او تنظیم کند.
+                            </p>
+                        </div>
+
+                        <!-- Authoritative Restore -->
+                        <div class="bg-black/40 border border-purple-500/20 p-5 rounded-xl hover:border-purple-500/50 transition-all">
+                            <h3 class="text-xl font-bold text-purple-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-crown"></i> ۳. Authoritative Restore (بازگردانی مقتدرانه از Backup)
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-2">
+                                زمانی کاربرد دارد که یوزر به کل نابود شده (مثلاً Garbage Collection آن را پاک کرده) و می‌خواهیم آن را از فایل بک‌آپ برگردانیم (بدون اینکه کل شبکه را به تاریخ قبل برگردانیم، فقط همان یک یوزر). این کار با ابزار <code class="mono-inline">ntdsutil</code> انجام می‌شود.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: USN and Lingering Objects -->
+            <section id="usn-lingering" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-ghost text-red-400"></i>
+                        چالش‌های پیچیده: معمای USN و آبجکت‌های سرگردان
+                    </h2>
+
+                    <div class="space-y-8">
+                        
+                        <!-- داستان 100 هزارتایی USN -->
+                        <div class="bg-[#050b14] border border-white/10 p-6 rounded-xl relative">
+                            <div class="absolute right-0 top-0 bottom-0 w-1 bg-accent rounded-r-xl"></div>
+                            <h3 class="font-bold text-accent text-xl mb-4">معمای افزایش ۱۰۰ هزارتایی USN در Authoritative Restore</h3>
+                            
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                اکتیو دایرکتوری برای فهمیدن اینکه چه آبجکتی جدیدتر است، از شمارهای به نام <strong>USN (Update Sequence Number)</strong> یا ورژن استفاده می‌کند. 
+                            </p>
+                            
+                            <div class="bg-red-900/20 p-4 rounded-lg border border-red-500/20 mb-4">
+                                <strong class="text-red-400 block mb-1">مشکل بزرگ (اگر 100 هزارتا اضافه نشود):</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    فرض کنید یوزر علی پاک شده است. ورژن علی در تمام DCها الان (مثلا) ۵۰ است (حالت پاک‌شده). شما بک‌آپ هفته پیش را روی DC1 برمی‌گردانید. در فایل بک‌آپ، ورژن علی (زمانی که زنده بود) ۳۰ بوده است. <br>
+                                    وقتی DC1 می‌خواهد با DC2 رپلیکیت کند، می‌گوید: "علی رو برگردوندم، ورژنشم ۳۰ هست". DC2 به او می‌خندد و می‌گوید: "اطلاعات تو قدیمیه! ورژن ۵۰ِ من میگه علی پاک شده!". در نتیجه DC2 دوباره علی را روی DC1 پاک می‌کند!
+                                </p>
+                            </div>
+
+                            <div class="bg-green-900/20 p-4 rounded-lg border border-green-500/20">
+                                <strong class="text-green-400 block mb-1">راه‌حل مایکروسافت (Authoritative Restore):</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    ابزار <code class="mono-inline">ntdsutil</code> وقتی متد Authoritative را روی علی اجرا می‌کنید، می‌آید <strong>به ازای هر روزی که از تاریخ بک‌آپ گذشته، عدد ۱۰۰,۰۰۰ (صد هزار) را به ورژنِ فعلی علی اضافه می‌کند.</strong> <br>
+                                    پس ورژن علی از ۳۰ ناگهان به ۱۰,۰۳۰ تبدیل می‌شود! حالا وقتی DC1 با بقیه رپلیکیت می‌کند، بقیه DCها می‌بینند ورژن علی ۱۰,۰۳۰ است (از ۵۰ِ خودشان خیلی بزرگتر است)، پس تسلیم شده و این آبجکت را به عنوان جدیدترین تغییر می‌پذیرند و علی روی همه سرورها برمی‌گردد.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Lingering Objects -->
+                        <div class="bg-black/50 border border-white/5 p-6 rounded-xl">
+                            <h3 class="font-bold text-white text-xl mb-4 border-b border-white/10 pb-2">فاجعه‌ای به نام Lingering Object (آبجکت شبح)</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                این خطرناک‌ترین پدیده در Replication است. فرض کنید یکی از DCهای شبکه (مثلاً DC3) خاموش می‌شود یا ارتباطش قطع می‌شود. این قطعی بیش از <strong>۱۸۰ روز (Tombstone Lifetime)</strong> طول می‌کشد.
+                            </p>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در این مدت ۱۸۰ روز، ما صدها یوزر را از روی بقیه DCها پاک کرده‌ایم و موتور Garbage Collection هم آن‌ها را برای همیشه نابود کرده است (هیچ اثری از آن‌ها در شبکه نیست). <br><br>
+                                ناگهان روز ۱۹۰ ام، ادمینِ غافل DC3 را روشن کرده و به شبکه وصل می‌کند!
+                            </p>
+                            
+                            <div class="bg-red-500/10 p-4 rounded-lg border border-red-500/30">
+                                <strong class="text-red-400 block mb-2"><i class="fa-solid fa-skull"></i> چه اتفاقی می‌افتد؟</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    DC3 به بقیه شبکه می‌گوید: "من ۱۰۰۰ تا یوزر دارم که شما ندارید!" (در حالی که آن یوزرها قبلاً پاک شده بودند اما DC3 خبر نداشت). چون ۱۸۰ روز گذشته، بقیه DCها هم هیچ سابقه (Tombstone) ای از آن یوزرها ندارند تا به DC3 ثابت کنند که پاک شده‌اند! <br>
+                                    بنابراین، تمام یوزرهای پاک شده، مانند زامبی یا شبح <strong>(Lingering Object)</strong> از DC3 به کل شبکه تزریق می‌شوند و اکتیودایرکتوری شما را پر از زباله می‌کنند.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Monitoring & BMR -->
+            <section id="monitoring-bmr" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-stethoscope text-accent"></i>
+                        مانیتورینگ، Snapshot و Bare Metal Recovery
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Bare Metal -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-hard-drive text-accent"></i> Bare Metal Recovery (BMR)
+                                </h3>
+                                <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-2">
+                                    اگر کل سرور فیزیکی یا ویندوز کاملاً نابود شد و بالا نیامد (یا کل دامین پرید)، ما به فول بک‌آپ از نوع <strong>Bare Metal</strong> نیاز داریم.
+                                </p>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    این نوع بک‌آپ (که معمولا با Windows Server Backup گرفته می‌شود) شامل سیستم‌عامل کامل، رجیستری و تمام وضعیتِ System State (دیتابیس AD) است و می‌تواند روی یک سخت‌افزار خام و خالی از نو برگردانده شود.
+                                </p>
+                            </div>
+
+                            <!-- AD Snapshot -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-camera text-accent"></i> Active Directory Snapshot
+                                </h3>
+                                <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-2">
+                                    اسنپ‌شات با ابزار <code class="mono-inline">ntdsutil</code> گرفته می‌شود. یک تصویر لحظه‌ای و Read-only از دیتابیس AD می‌گیرد.
+                                </p>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    <strong>کاربرد:</strong> اسنپ‌شات برای برگرداندن سرور نیست! کاربرد آن این است که با دستور <code class="mono-inline">dsamain</code> آن را Mount کنیم تا بتوانیم یک یوزرِ قدیمی را ببینیم و مقادیر و ویژگی‌های قبلی او (مثل اینکه پارسال عضو چه گروه‌هایی بوده) را با الان مقایسه کنیم.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- DCDIAG -->
+                        <div class="bg-gradient-to-r from-accent/10 to-transparent border-r-4 border-accent p-6 rounded-xl mt-6">
+                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-user-doctor text-accent"></i> ابزار طلایی DCDiag
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                دستور <code class="mono-inline">dcdiag</code> (Domain Controller Diagnostic) جامع‌ترین ابزار خط فرمان برای بررسی سلامت کامل سرور اکتیو دایرکتوری است.
+                            </p>
+                            <div class="bg-black/50 p-4 rounded-lg text-sm text-gray-400">
+                                <strong class="text-white block mb-2">چه چیزهایی را تست می‌کند؟</strong>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>سلامت سرویس DNS (تست می‌کند که رکوردهای سرور درست ثبت شده باشند).</li>
+                                    <li>وضعیت صحیح ارتباطات و Replication بین شرکا.</li>
+                                    <li>سلامت نقش‌های FSMO و در دسترس بودن آن‌ها.</li>
+                                    <li>بررسی سلامت لاگ‌ها، سرویس‌های سیستمی و خطاهای حیاتی سرور.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; 
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
