@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۹</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-route text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۹ : Failover Cluster</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="failover-arch">
+                <i class="fa-solid fa-sitemap w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری و استوریج (SAN/S2D)</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="ha-tuning">
+                <i class="fa-solid fa-sliders w-5 text-center"></i>
+                <span class="text-sm font-medium">اکتیو-پسیو و تیونینگ منابع</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="cluster-prereqs">
+                <i class="fa-solid fa-list-check w-5 text-center"></i>
+                <span class="text-sm font-medium">پیش‌نیازها و ارتباط با AD</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="quorum-networks">
+                <i class="fa-solid fa-scale-balanced w-5 text-center"></i>
+                <span class="text-sm font-medium">کالبدشکافی Quorum و شبکه‌ها</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="cluster-ops">
+                <i class="fa-solid fa-power-off w-5 text-center"></i>
+                <span class="text-sm font-medium">اولویت‌بندی و آپدیت بدون قطعی</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: Architecture & Storage -->
+            <section id="failover-arch" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-sitemap text-accent"></i>
+                        معماری Failover Cluster و نبرد استوریج‌ها
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            ویژگی Failover Cluster قدرتمندترین مکانیزم HA (High Availability) در ویندوز سرور است که برای سرویس‌های <strong>وضعیت‌دار (Stateful)</strong> مثل دیتابیس‌ها و ماشین‌های مجازی استفاده می‌شود. در یک کلاستر می‌توانیم <strong>بین ۲ تا ۶۴ سرور (نود)</strong> را برای تحمل خطا در کنار هم قرار دهیم.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Traditional SAN -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
+                                <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-server text-purple-400"></i> معماری سنتی (SAN Storage)
+                                </h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    در روش کلاسیک، ما به شدت نیازمند یک استوریج فیزیکی مرکزی (Shared Storage) مثل SAN هستیم تا همه نودها به آن وصل شوند.
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-gray-400 space-y-2">
+                                    <li>نیاز به دستگاه گران‌قیمت SAN Storage.</li>
+                                    <li>نیاز به <strong>SAN Switch</strong> (یا سوئیچ‌های فیبر) برای ارتباط سرورها با استوریج.</li>
+                                    <li>معمولاً از راهکارهای نرم‌افزاری ارزان‌تر مثل <strong>iSCSI Target</strong> در خود ویندوز، یا سیستم‌های لینوکسی مانند <strong>Open-E</strong> و <strong>FreeNAS (TrueNAS)</strong> نیز برای شبیه‌سازی این استوریج استفاده می‌شود.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Modern S2D -->
+                            <div class="bg-gradient-to-br from-accent/10 to-transparent p-6 rounded-xl border border-accent/20 hover:border-accent/50 transition-colors">
+                                <h3 class="text-lg font-bold text-accent mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-cubes text-accent"></i> معماری مدرن با S2D
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                    مایکروسافت با معرفی <strong>S2D (Storage Spaces Direct)</strong> انقلابی به پا کرد. حالا دیگر نیازی به خرید SAN نیست!
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-gray-300 space-y-2">
+                                    <li>هارد دیسک‌های Local هر سرور (نود) توسط S2D شبکه‌بندی شده و یک <strong>Storage Pool</strong> مشترک و مجازی می‌سازند.</li>
+                                    <li><strong class="text-red-400">نکته حیاتی:</strong> در سناریوی S2D، هاردها <strong>تحت هیچ شرایطی نباید سخت‌افزاری RAID شوند!</strong> ویندوز سرور باید هاردها را به صورت خام (Pass-through) ببیند تا خودش دیتای آن‌ها را مدیریت کند.</li>
+                                    <li>قابل ذکر است که تکنولوژی S2D و SAN می‌توانند در یک کلاستر به صورت هیبریدی کنار هم کار کنند. کانفیگ S2D به شدت راحت و اتوماتیک است.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Active-Passive & Tuning -->
+            <section id="ha-tuning" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-sliders text-accent"></i>
+                        مدل‌های کلاسترینگ و تیونینگ منابع (Capacity Planning)
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="bg-[#050b14] border border-white/10 p-6 rounded-xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-1 h-full bg-accent"></div>
+                            <h3 class="font-bold text-white text-lg mb-3">تیونینگ و پخش منابع (قانون N+1)</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                در راه‌اندازی HA، فقط ساختن کلاستر مهم نیست؛ <strong>Tuning منابع</strong> حیاتی است. فرض کنید ۳ سرور دارید که رم هر کدام ۶۴ گیگابایت است. اگر شما روی هر سرور ۶۰ گیگ رم را به ماشین‌های مجازی اختصاص دهید و ناگهان یک سرور بسوزد، ماشین‌های مجازیِ سرورِ سوخته به سرورهای دیگر منتقل می‌شوند، <strong>اما سرورهای دیگر رمی برای روشن کردن آن‌ها ندارند!</strong>
+                            </p>
+                            <p class="text-sm text-accent bg-accent/10 p-3 rounded-lg border border-accent/20">
+                                همواره باید منابع (RAM و CPU) به گونه‌ای توزیع شوند که در صورت ترکیدن یک (یا چند) نود، نودهای باقی‌مانده ظرفیت خالی برای به دوش کشیدن بارِ نودِ از دست رفته را داشته باشند.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                                <h3 class="font-bold text-orange-400 mb-2 border-b border-white/10 pb-2">مدل Active-Passive</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    اکثر رول‌ها و ماشین‌های مجازی در کلاستر به این شکل کار می‌کنند. یعنی یک سرویس (مثلاً یک VM که سرویس DHCP می‌دهد)، در آنِ واحد <strong>فقط و فقط می‌تواند روی یک سرور فعال (Active) باشد</strong>. سرورهای دیگر در حالت آماده‌باش (Passive) هستند تا اگر سرور اول قطع شد، سرویس را روشن کنند.
+                                </p>
+                            </div>
+
+                            <div class="bg-black/30 p-5 rounded-xl border border-white/5">
+                                <h3 class="font-bold text-emerald-400 mb-2 border-b border-white/10 pb-2">مدل Active-Active</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    برخی سرویس‌های خاص مثل <strong>File Server (به ویژه Scale-Out File Server یا SOFS)</strong> به دلیل ماهیت تکنولوژی CSV (Cluster Shared Volume) می‌توانند همزمان روی تمام نودهای کلاستر فعال باشند و ترافیک بین آن‌ها پخش شود تا کلاینت‌ها بالاترین پرفورمنس را تجربه کنند.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Prerequisites & AD -->
+            <section id="cluster-prereqs" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-list-check text-accent"></i>
+                        پیش‌نیازهای سخت‌گیرانه و پیوند با Active Directory
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="bg-red-500/10 p-6 rounded-xl border border-red-500/20">
+                            <h3 class="text-lg font-bold text-red-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i> قانون طلایی یکپارچگی (Consistency)
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                کلاسترینگ به شدت روی جزئیات حساس است. برای اینکه انتقال (Failover) به درستی انجام شود، تنظیمات نودها باید مو به مو شبیه هم باشد:
+                            </p>
+                            <ul class="list-none space-y-3">
+                                <li class="bg-black/40 p-3 rounded-lg text-sm text-gray-400 flex items-center gap-3">
+                                    <i class="fa-solid fa-hard-drive text-white w-5"></i> <strong>Drive Letters:</strong> اگر در سرور اول درایوی به نام <code class="mono-inline">E:\</code> دارید، در سرورهای دیگر هم دقیقاً باید همان استوریج با درایو <code class="mono-inline">E:\</code> مپ شده باشد.
+                                </li>
+                                <li class="bg-black/40 p-3 rounded-lg text-sm text-gray-400 flex items-center gap-3">
+                                    <i class="fa-solid fa-network-wired text-white w-5"></i> <strong>NIC Names:</strong> اسم کارت‌های شبکه باید دقیقاً یکسان باشد. اگر در نود اول اسم کارت شبکه کلاینت <code>MGMT-Net</code> است، در نود دوم نباید <code>Ethernet 1</code> باشد!
+                                </li>
+                                <li class="bg-black/40 p-3 rounded-lg text-sm text-gray-400 flex items-center gap-3">
+                                    <i class="fa-solid fa-microchip text-white w-5"></i> <strong>CPU Architecture:</strong> پردازنده‌ها ترجیحاً باید از یک نسل و برند باشند، وگرنه نیازمند تنظیمات پیچیده CPU Compatibility Mode در Hyper-V خواهید بود.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-blue-900/20 p-6 rounded-xl border border-blue-500/30 relative">
+                            <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                            <h3 class="text-xl font-bold text-blue-400 mb-3">الزام به Domain Join و مفهوم CNO</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                اگرچه در ویندوز سرورهای جدید امکان کلاستر در حالت Workgroup وجود دارد، اما <strong>در محیط‌های Enterprise، کلاسترینگ الزام قطعی به Active Directory دارد.</strong>
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify bg-[#050b14] p-4 rounded-lg border border-white/5">
+                                <strong>تولد کلاستر در AD:</strong> هنگامی که ویزارد <code>Create Cluster</code> را اجرا می‌کنید و کلاستر Validate می‌شود، ویندوز به صورت خودکار به سمت اکتیو دایرکتوری می‌رود و یک آبجکت کامپیوتری به نام <strong>CNO (Cluster Name Object)</strong> در دامین می‌سازد و به آن IP اختصاص می‌دهد. کلاینت‌ها در شبکه از طریق همین CNO (نام و IP کلاستر) با کل مجموعه ارتباط برقرار می‌کنند، نه با تک تک سرورها.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Quorum & Networks -->
+            <section id="quorum-networks" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-scale-balanced text-accent"></i>
+                        کالبدشکافی شبکه‌ها و مفهوم پیچیده Quorum
+                    </h2>
+
+                    <div class="space-y-8">
+                        
+                        <!-- Networks -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                                <h3 class="font-bold text-emerald-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-globe"></i> شبکه Cluster and Client
+                                </h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    این کارت شبکه، رابط اصلی سرور با دنیای بیرون است. کلاینت‌ها درخواست‌های خود را به این کارت شبکه می‌فرستند. این سوئیچ به شبکه Production متصل است و کلاستر نیز از طریق آن در دسترس کلاینت‌هاست.
+                                </p>
+                            </div>
+
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                                <h3 class="font-bold text-orange-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-heart-pulse"></i> شبکه Cluster Only (Heartbeat)
+                                </h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    کارت شبکه‌ای کاملاً ایزوله که <strong>هیچ کلاینتی در آن وجود ندارد.</strong> سرورها از طریق یک سوئیچ جداگانه (و در S2D با کارت‌های بسیار پرسرعت RDMA) منحصراً برای رپلیکیت کردن دیتا و ارسال پالس‌های Heartbeat با یکدیگر صحبت می‌کنند.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Quorum -->
+                        <div class="bg-gradient-to-r from-accent/10 to-transparent p-6 rounded-xl border-r-4 border-accent">
+                            <h3 class="text-xl font-bold text-white mb-3">Quorum (کوروم) چیست و چرا حیاتی است؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در شبکه‌های کلاستر، خطر بزرگی به نام <strong>Split-Brain (دوپارگی مغز)</strong> وجود دارد. فرض کنید کلاستر شما ۲ نود دارد. ناگهان کابل ارتباطی (Heartbeat) بین این دو سرور قطع می‌شود! سرور A فکر می‌کند سرور B سوخته و می‌خواهد تمام سرویس‌ها را بالا بیاورد؛ همزمان سرور B هم فکر می‌کند A سوخته و او هم شروع به روشن کردن سرویس‌ها می‌کند! <strong>نتیجه: تداخل وحشتناک دیتا و نابودی دیتابیس!</strong>
+                            </p>
+                            
+                            <div class="bg-[#050b14] p-5 rounded-xl border border-white/5">
+                                <p class="text-sm text-gray-400 text-justify leading-relaxed mb-4">
+                                    <strong>Quorum (نصاب آرا)</strong> جلوی این فاجعه را می‌گیرد. برای اینکه کلاستر زنده بماند و حق روشن کردن سرویس‌ها را داشته باشد، باید همیشه <strong>اکثریت آرا (بیش از ۵۰ درصد)</strong> حفظ شود. اگر نودی رأی اکثریت را از دست بدهد، فوراً خودش را متوقف می‌کند. 
+                                </p>
+                                
+                                <strong class="text-accent text-sm block mb-2 border-b border-white/10 pb-2">انواع رایج Quorum:</strong>
+                                <ul class="space-y-3 mt-3">
+                                    <li class="flex items-start gap-3">
+                                        <div class="mt-1 w-2 h-2 rounded-full bg-accent shadow-[0_0_5px_#00e5ff]"></div>
+                                        <div>
+                                            <strong class="text-white text-xs block mb-1">Node Majority</strong>
+                                            <p class="text-xs text-gray-500 text-justify">مناسب برای کلاسترهای با تعداد نود فرد (مثل ۳، ۵). خود سرورها رأی‌گیری می‌کنند.</p>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <div class="mt-1 w-2 h-2 rounded-full bg-accent shadow-[0_0_5px_#00e5ff]"></div>
+                                        <div>
+                                            <strong class="text-white text-xs block mb-1">Node and Disk Witness (یا File Share Witness)</strong>
+                                            <p class="text-xs text-gray-500 text-justify">در کلاسترهای زوج (مثل ۲، ۴ نود)، چون امکان رأی برابر ۵۰-۵۰ وجود دارد، یک هارد دیسک کوچک در SAN یا یک پوشه شیر شده در شبکه‌ای دیگر (به عنوان شاهد/Witness) اضافه می‌شود که حق یک رأی دارد و در مواقع قطعی، گره کوری را باز می‌کند.</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Ops & CAU -->
+            <section id="cluster-ops" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-power-off text-accent"></i>
+                        عملیات کلاستر: اولویت‌ها و آپدیت بدون قطعی
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- Startup Priority -->
+                        <div class="bg-black/30 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-arrow-up-9-1 text-accent"></i> Change Startup Priority
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                وقتی کلاستر پس از قطعی برق به صورت کلی ری‌استارت می‌شود، یا وقتی یک نود می‌ترکد و ماشین‌ها روی نود دیگر روشن می‌شوند، اولویت روشن شدن آن‌ها مهم است (مثلاً ابتدا دیتابیس روشن شود، بعد وب‌سرور). 
+                                در کنسول کلاستر، روی رول‌ها (ماشین‌ها) کلیک راست کرده و در <strong>Change Startup Priority</strong> آن‌ها را در ۴ دسته تنظیم می‌کنیم:
+                            </p>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                                <div class="bg-red-500/10 border border-red-500/20 p-2 rounded-lg text-sm text-red-400 font-bold">High (بالا)</div>
+                                <div class="bg-orange-500/10 border border-orange-500/20 p-2 rounded-lg text-sm text-orange-400 font-bold">Medium (متوسط)</div>
+                                <div class="bg-blue-500/10 border border-blue-500/20 p-2 rounded-lg text-sm text-blue-400 font-bold">Low (پایین)</div>
+                                <div class="bg-gray-500/10 border border-gray-500/20 p-2 rounded-lg text-sm text-gray-400 font-bold leading-tight">No Auto Start<br><span class="text-[10px] font-normal">(روشن نشود)</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Cluster Updating -->
+                        <div class="bg-gradient-to-r from-emerald-500/10 to-transparent border-l-4 border-emerald-500 p-6 rounded-xl">
+                            <h3 class="text-xl font-bold text-white mb-3">آپدیت کلاستر با Zero Downtime</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                چگونه سرورهای فیزیکی کلاستر را آپدیت کنیم یا ویندوز آن‌ها را ارتقا دهیم بدون اینکه کاربران متوجه قطعی شوند؟
+                            </p>
+                            <div class="bg-black/50 p-4 rounded-lg text-sm text-gray-400 leading-relaxed text-justify border border-white/5">
+                                <strong class="text-emerald-400 block mb-2">روش انجام کار (Drain Roles):</strong>
+                                ابتدا روی نود ۱ راست‌کلیک کرده و گزینه <strong>Pause -> Drain Roles</strong> را می‌زنیم. کلاستر به صورت زنده و با استفاده از قابلیت Live Migration، تمام ماشین‌های مجازی این نود را بدون خاموش شدن به نودهای دیگر (مثلا نود ۲) پرتاب می‌کند.<br><br>
+                                حالا نود ۱ کاملاً خالی شده و Pause است. آن را آپدیت، پچ و ری‌استارت می‌کنیم. پس از بالا آمدن، آن را Resume می‌کنیم. حالا همین پروسه را برای نود ۲ تکرار می‌کنیم تا کل کلاستر آپدیت شود. (این کار با ابزار <strong>Cluster-Aware Updating یا CAU</strong> قابل اتوماسیون است).
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    // Active state for sidebar
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; // Trigger reflow for animation
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    // Close sidebar on mobile after click
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
