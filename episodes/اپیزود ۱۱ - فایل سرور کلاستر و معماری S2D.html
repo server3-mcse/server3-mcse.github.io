@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۱۱</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.65);
+            color: #67e8f9;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            direction: ltr;
+            text-align: left;
+            overflow-x: auto;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-database text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۱۱ : SOFS & S2D</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="arch-lun">
+                <i class="fa-solid fa-sitemap w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری دامین کلاستر و LUN</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="sofs-fileserver">
+                <i class="fa-solid fa-folder-open w-5 text-center"></i>
+                <span class="text-sm font-medium">کلاستر فایل‌سرور و Scale-Out</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="s2d-architecture">
+                <i class="fa-solid fa-cubes w-5 text-center"></i>
+                <span class="text-sm font-medium">کالبدشکافی معماری S2D</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="s2d-vmware-lab">
+                <i class="fa-solid fa-terminal w-5 text-center"></i>
+                <span class="text-sm font-medium">پیاده‌سازی S2D در VMware</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="s2d-tiers-resiliency">
+                <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                <span class="text-sm font-medium">حالت‌های دیسک و Tiering</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: Cluster Domain Design, LUN Sizing & Shutdown vs Destroy -->
+            <section id="arch-lun" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-sitemap text-accent"></i>
+                        تفکیک دامین کلاستر، ظرفیت‌سنجی LUN و خاموشی ایمن
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        
+                        <!-- Separate Domains for Nodes vs VMs -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-accent/25 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
+                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-shield-halved text-accent"></i> ۱. جداسازی دامین نودهای کلاستر از دامین ماشین‌های مجازی
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در طراحی استاندارد دیتاسنترهای بزرگ (Enterprise Fabric Design)، <strong>نودهای فیزیکی کلاستر (Hyper-V Hosts) در یک دامین یا فارست مدیریتی کاملاً مجزا قرار می‌گیرند</strong>، در حالی که ماشین‌های مجازی (VMs) که داخل این کلاستر روشن هستند، عضو دامین اصلی شرکت (Production Domain) هستند!
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-[#050b14] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-accent text-sm block mb-2">چرا این جداسازی حیاتی است؟ (ایزولاسیون امنیتی)</strong>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        اگر اکانت ادمین شبکه شرکت (Production) هک شود، هکر نباید بتواند به لایه زیرساخت فیزیکی (Fabric) و هاست‌های Hyper-V یا استوریج‌های کلاستر دسترسی پیدا کند. نودهای کلاستر در یک دامین ایزوله (مثلاً <code class="mono-inline">fabric.local</code>) مدیریت می‌شوند.
+                                    </p>
+                                </div>
+                                <div class="bg-[#050b14] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-purple-400 text-sm block mb-2">جلوگیری از وابستگی حلقوی (Circular Dependency)</strong>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        اگر DCهای شرکت به صورت VM داخل کلاستر باشند و خودِ نودهای کلاستر هم عضو همان دامین باشند، هنگام خاموشی کامل دیتاسنتر، کلاستر برای بالا آمدن منتظر DC می‌ماند و DC هم برای روشن شدن منتظر بالا آمدن کلاستر است! تفکیک دامین این بن‌بست را حل می‌کند.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 20% to 30% LUN Buffer Rule -->
+                        <div class="bg-gradient-to-l from-orange-500/10 to-transparent p-6 rounded-xl border-l-4 border-orange-500">
+                            <h3 class="text-xl font-bold text-orange-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie"></i> ۲. قانون طلایی ۲۰ تا ۳۰ درصد فضای اضافه در LUN
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                هنگام طراحی ظرفیت LUN برای نگهداری ماشین‌های مجازی، <strong>همواره باید حجم LUN را ۲۰ تا ۳۰ درصد بیشتر از مجموع حداکثر حجم هارد ماشین‌های مجازی (VHDX) در نظر بگیرید!</strong>
+                            </p>
+                            <div class="bg-black/50 p-4 rounded-lg border border-white/5 text-xs text-gray-300 leading-relaxed text-justify">
+                                <strong class="text-white block mb-1">چرا اگر LUN کیپ‌به‌کیپ پر شود به مشکل می‌خوریم؟</strong>
+                                یک ماشین مجازی فقط فایل هارد (VHDX) نیست! زمانی که از ماشین <strong>Checkpoint (Snapshot)</strong> می‌گیرید (مثلاً توسط نرم‌افزارهای بکاپ مثل Veeam)، فایل‌های <code class="mono-inline">.avhdx</code> تولید می‌شوند. همچنین فایل‌های وضعیت رم، Smart Paging و فایل‌های <code class="mono-inline">.bin</code> و <code class="mono-inline">.vsv</code> روی همان LUN ذخیره می‌شوند. اگر این ۲۰ الی ۳۰ درصد فضای تنفس (Buffer) وجود نداشته باشد، LUN ناگهان پر شده و تمام ماشین‌های مجازیِ روی آن <strong>Paused-Critical</strong> می‌شوند!
+                            </div>
+                        </div>
+
+                        <!-- Shut Down vs Destroy Cluster -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/40 p-6 rounded-xl border border-emerald-500/30 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                                <h3 class="text-lg font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-power-off"></i> Shut Down Cluster (خاموشی موقت)
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify">
+                                    اگر به دلیل تعمیرات برق دیتاسنتر می‌خواهید کل کلاستر را موقتاً خاموش کنید، از <code class="mono-inline">More Actions -> Shut Down Cluster</code> استفاده می‌کنید. این کار تمام رول‌ها را به صورت ایمن متوقف کرده و سرویس کلاستر را روی تمام نودها خاموش می‌کند تا با روشن شدن مجدد سرورها، کلاستر سالم بالا بیاید.
+                                </p>
+                            </div>
+
+                            <div class="bg-red-900/15 p-6 rounded-xl border border-red-500/40 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
+                                <h3 class="text-lg font-bold text-red-400 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-bomb"></i> Destroy Cluster (نابودی کامل!)
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify">
+                                    گزینه <code class="mono-inline">Destroy Cluster</code> برای خاموش کردن نیست! اگر این گزینه را بزنید، <strong>کل ساختار و کانفیگ کلاستر برای همیشه منفجر و پاک می‌شود</strong>، نودها از هم جدا می‌شوند و آبجکت CNO در اکتیو دایرکتوری غیرفعال می‌گردد. تنها زمانی از آن استفاده کنید که قصد برچیدن دائمی کلاستر را دارید.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Scale-Out File Server vs General Use -->
+            <section id="sofs-fileserver" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-folder-open text-accent"></i>
+                        کلاستر فایل‌سرور: نبرد Scale-Out (SOFS) و General Use
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            وقتی در کنسول Failover Cluster می‌خواهید نقش <strong>File Server</strong> را کلاستر کنید، ویزارد دو معماری کاملاً متفاوت را جلوی پای شما می‌گذارد که انتخاب اشتباه بین آن‌ها در محیط عملیاتی فاجعه‌بار است:
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- File Server for General Use -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/10 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-blue-400"></div>
+                                <h3 class="text-lg font-bold text-blue-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-users"></i> ۱. File Server for General Use (استفاده پرسنلی)
+                                </h3>
+                                <p class="text-xs text-gray-400 mb-3 font-semibold">(همان فایل‌سرور کلاسیک برای اشتراک فایل‌های کاربران و پرسنل)</p>
+                                <ul class="space-y-3 text-sm text-gray-300 leading-relaxed text-justify">
+                                    <li>• <strong>معماری Active-Passive:</strong> در هر لحظه فقط یک نود مالک دیسک و پوشه‌های Share است و به کاربران سرویس می‌دهد.</li>
+                                    <li>• <strong>کاربرد:</strong> ذخیره فایل‌های روزمره پرسنل شرکت (Word, Excel, PDF، پوشه‌های Home Folder و Roaming Profiles) که هزاران فایل کوچک باز و بسته می‌شوند.</li>
+                                    <li>• <strong>استوریج:</strong> از دیسک‌های کلاستر معمولی (LUN اختصاصی با Drive Letter) استفاده می‌کند و نیازی به CSV ندارد.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Scale-Out File Server (SOFS) -->
+                            <div class="bg-gradient-to-br from-accent/15 to-transparent p-6 rounded-xl border border-accent/40 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-accent"></div>
+                                <h3 class="text-lg font-bold text-accent mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-rocket"></i> ۲. Scale-Out File Server (SOFS)
+                                </h3>
+                                <p class="text-xs text-accent/80 mb-3 font-semibold">(فایل‌سرور مدرن برای استوریج اپلیکیشن‌ها بر بستر CSV)</p>
+                                <ul class="space-y-3 text-sm text-gray-300 leading-relaxed text-justify">
+                                    <li>• <strong>معماری Active-Active واقعی:</strong> همه نودهای کلاستر به صورت همزمان پوشه Share را ارائه می‌دهند! اگر ۴ نود داشته باشید، پهنای باند هر ۴ سرور با هم جمع می‌شود.</li>
+                                    <li>• <strong>الزام قطعی به CSV:</strong> وقتی می‌خواهیم از تکنولوژی <strong>CSV (Cluster Shared Volumes)</strong> در فایل‌سرور استفاده کنیم، <strong>حتماً باید سراغ Scale-Out برویم</strong> تا همه نودها همزمان به دیسک دسترسی Read/Write داشته باشند.</li>
+                                    <li>• <strong>کاربرد:</strong> نگهداری فایل‌های زنده ماشین‌های مجازی (Hyper-V over SMB) و دیتابیس‌های SQL Server با قابلیت Transparent Failover (صفر ثانیه قطعی!).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Site-Awareness in SOFS -->
+                        <div class="bg-[#050b14] p-6 rounded-xl border border-emerald-500/30 mt-6">
+                            <h3 class="text-lg font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-location-crosshairs"></i> ویژگی فوق‌العاده: Scale-Out یک سرویس Site-Aware است!
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify">
+                                سرویس <strong>SOFS کاملاً Site-Aware (آگاه به سایت‌های اکتیو دایرکتوری)</strong> است. یعنی اگر کلاستر شما بین دو سایت جغرافیایی (مثلاً تهران و اصفهان) گسترده شده باشد (Stretch Cluster)، وقتی یک سرور Hyper-V در سایت تهران نامِ اشتراکی SOFS را صدا می‌زند، کلاستر به صورت هوشمند تشخیص می‌دهد که درخواست از کدام سایت آمده و ترافیک SMB را مستقیماً به <strong>نودهای SOFS مستقر در همان سایت تهران</strong> هدایت می‌کند تا ترافیک سنگین استوریج روی لینک WAN بین شهری نیفتد!
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: S2D Architecture & Auto-Pooling -->
+            <section id="s2d-architecture" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-cubes text-accent"></i>
+                        کالبدشکافی معماری S2D (Storage Spaces Direct)
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- What is S2D & History -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-microchip text-accent"></i> S2D چیست و در کدام نسخه متولد شد؟
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                تکنولوژی <strong>S2D (Storage Spaces Direct)</strong> که برای اولین بار در <strong>Windows Server 2016 (نسخه Datacenter)</strong> معرفی شد، تکامل‌یافته‌ی فناوری <strong>SDS (Software-Defined Storage یا استوریج نرم‌افزارمحور)</strong> مایکروسافت است.
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify bg-[#050b14] p-4 rounded-lg border border-white/5">
+                                <strong>نحوه کارکرد:</strong> در S2D ما دستگاه SAN فیزیکی را حذف می‌کنیم! هارد دیسک‌های لوکال (SAS, SATA, SSD, NVMe) که مستقیماً روی مادربرد هر سرورِ کلاستر نصب شده‌اند، از طریق یک باس نرم‌افزاری پرسرعت شبکه‌ای به نام <strong>SBL (Software Storage Bus)</strong> بر بستر SMB3 و RDMA به هم متصل می‌شوند و یک <strong>Storage Pool (استخر ذخیره‌سازی)</strong> عظیم، هوشمند و مشترک را بین تمام نودها تشکیل می‌دهند.
+                            </p>
+                        </div>
+
+                        <!-- Hardware Symmetry Rule -->
+                        <div class="bg-gradient-to-r from-purple-500/15 to-transparent p-6 rounded-xl border-r-4 border-purple-500">
+                            <h3 class="text-lg font-bold text-purple-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-scale-balanced"></i> قانون توازن سخت‌افزاری (Symmetry Best Practice)
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                اگرچه S2D بسیار هوشمند است، اما برای جلوگیری از گلوگاه (Bottleneck) و خطا در توزیع بلوک‌های دیتا، دو توصیه اکید معماری (Recommended) وجود دارد:
+                            </p>
+                            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-300">
+                                <li class="bg-black/50 p-4 rounded-lg border border-white/5">
+                                    <strong class="text-white block mb-1 text-sm"><i class="fa-solid fa-server text-purple-400 me-1"></i> ۱. یکسان بودن سرورهای فیزیکی:</strong>
+                                    تمام نودهای کلاستر باید از نظر مدل سرور، پردازنده، رم و کارت‌های شبکه کاملاً همگن و یکسان باشند.
+                                </li>
+                                <li class="bg-black/50 p-4 rounded-lg border border-white/5">
+                                    <strong class="text-white block mb-1 text-sm"><i class="fa-solid fa-hard-drive text-purple-400 me-1"></i> ۲. متوازن بودن هاردها در تمام نودها:</strong>
+                                    تعداد، نوع و ظرفیت دیسک‌ها باید در همه سرورها متقارن باشد (مثلاً اگر نود ۱ دارای ۲ عدد NVMe و ۴ عدد SSD است، نودهای ۲ و ۳ نیز دقیقاً باید همین چیدمان و ظرفیت را داشته باشند).
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Storage Pool & Auto-Claiming Disks -->
+                        <div class="bg-[#050b14] p-6 rounded-xl border border-accent/30">
+                            <h3 class="text-lg font-bold text-accent mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-magnet"></i> رفتار اتوماتیک جذب هارد در S2D و کامند غیرفعال‌سازی آن
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
+                                <strong>Storage Pool</strong> در S2D به صورت پیش‌فرض یک خاصیت آهنربایی دارد: <strong>هر هارد خام و جدیدی را که به هر کدام از سرورهای کلاستر وصل کنید، S2D به صورت کاملاً اتوماتیک آن را می‌بلعد</strong>، وارد Storage Pool کرده و دیتا را روی آن پخش (Rebalance) می‌کند!
+                            </p>
+                            <p class="text-xs text-orange-300 mb-3">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i> اگر بخواهید هارد جدیدی به سرور وصل کنید ولی <strong>نخواهید به صورت خودکار وارد استخر S2D شود</strong>، باید ویژگی AutoPool را در سطح زیرساخت کلاستر با دستور پاورشل زیر خاموش کنید:
+                            </p>
+                            <div class="code-block text-xs">
+                                <div class="text-gray-400 mb-1"># جلوگیری از جذب خودکار دیسک‌های جدید در استخر S2D:</div>
+                                <div class="text-accent font-bold">Get-StorageSubSystem Cluster* | Set-StorageHealthSetting -Name "System.Storage.PhysicalDisk.AutoPool.Enabled" -Value $false</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: S2D Configuration in VMware Workstation -->
+            <section id="s2d-vmware-lab" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-terminal text-accent"></i>
+                        تغییرات حیاتی و دستورات پیاده‌سازی S2D در VMware Workstation
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            سرویس S2D روی سخت‌افزار بسیار حساس است و برای کار کردن، باید بتواند شماره سریال یکتای هر دیسک (Page 83 / VPD) را بخواند. وقتی می‌خواهیم S2D را در محیط آزمایشگاهی <strong>VMware Workstation</strong> یا ESXi شبیه‌سازی کنیم، اگر ۳ تغییر زیر را اعمال نکنیم، S2D هیچ دیسکی را قبول نمی‌کند!
+                        </p>
+
+                        <!-- Step 1 & 2: SCSI and EnableUUID -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/40 p-5 rounded-xl border border-white/10">
+                                <h3 class="text-md font-bold text-accent mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-hard-drive"></i> ۱. الزام به کنترلر SCSI (یا NVMe)
+                                </h3>
+                                <p class="text-xs text-gray-300 leading-relaxed text-justify">
+                                    تمام هارد دیسک‌های اضافی که به ماشین‌های مجازی (نودها) می‌دهید باید <strong>الزاماً از نوع SCSI (یا NVMe)</strong> باشند (هرگز IDE نباشند) و به صورت لوکال و مجزا برای هر ماشین ساخته شوند (در S2D دیسک‌ها نباید بین VMها مشترک باشند، بلکه هر نود دیسک‌های اختصاصی خودش را دارد).
+                                </p>
+                            </div>
+
+                            <div class="bg-black/40 p-5 rounded-xl border border-white/10">
+                                <h3 class="text-md font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-file-code"></i> ۲. فعال‌سازی EnableUUID در فایل VMX
+                                </h3>
+                                <p class="text-xs text-gray-300 leading-relaxed text-justify mb-2">
+                                    به صورت پیش‌فرض VMware سریال دیسک‌ها را به ویندوز نشان نمی‌دهد. باید ماشین مجازی را خاموش کنید، فایل کانفیگ آن (<code class="mono-inline">.vmx</code>) را با Notepad باز کرده و این خط را به انتهای آن اضافه کنید:
+                                </p>
+                                <div class="code-block py-2 px-3 text-xs text-emerald-300">
+                                    disk.EnableUUID = "TRUE"
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: The Long Disk Cleanup Command -->
+                        <div class="bg-black/50 p-6 rounded-xl border border-accent/30">
+                            <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-broom text-accent"></i> ۳. اسکریپت بلند PowerShell برای پاک‌سازی و آماده‌سازی دیسک‌ها
+                            </h3>
+                            <p class="text-xs text-gray-400 leading-relaxed text-justify mb-4">
+                                قبل از فعال کردن S2D، دیسک‌های اضافی روی همه نودها باید کاملاً خام (RAW)، بدون پارتیشن و دارای وضعیت <code class="mono-inline">CanPool = True</code> باشند. مایکروسافت این اسکریپت جامع (کامند بلند) را ارائه کرده که تمام دیسک‌های غیربُوت (Non-Boot) را در کل نودها پیدا کرده، پارتیشن‌ها و متادیتای قبلی را پاک (Clear) و آماده S2D می‌کند:
+                            </p>
+                            <div class="code-block text-xs space-y-1 leading-relaxed">
+                                <div class="text-gray-500"># Run on one cluster node (cleans all non-OS disks across nodes):</div>
+                                <div>Update-StorageProviderCache</div>
+                                <div>Get-StoragePool | ? IsPrimordial -eq $false | Set-StoragePool -IsReadOnly:$false -ErrorAction SilentlyContinue</div>
+                                <div>Get-StoragePool | ? IsPrimordial -eq $false | Get-VirtualDisk | Remove-VirtualDisk -Confirm:$false -ErrorAction SilentlyContinue</div>
+                                <div>Get-StoragePool | ? IsPrimordial -eq $false | Remove-StoragePool -Confirm:$false -ErrorAction SilentlyContinue</div>
+                                <div>Get-PhysicalDisk | Reset-PhysicalDisk</div>
+                                <div>Get-Disk | ? Number -ne $null | ? IsBoot -ne $true | ? IsSystem -ne $true | ? PartitionStyle -ne RAW | % {</div>
+                                <div class="ps-4">$_ | Set-Disk -IsOffline:$false</div>
+                                <div class="ps-4">$_ | Set-Disk -IsReadOnly:$false</div>
+                                <div class="ps-4">$_ | Clear-Disk -RemoveData -RemoveOEM -Confirm:$false</div>
+                                <div class="ps-4">$_ | Set-Disk -IsReadOnly:$true</div>
+                                <div class="ps-4">$_ | Set-Disk -IsOffline:$true</div>
+                                <div>}</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Validate & Enable S2D -->
+                        <div class="bg-emerald-900/15 p-5 rounded-xl border border-emerald-500/30">
+                            <h3 class="text-md font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-check-double"></i> ۴. تست اعتبارسنجی کلاستر (Validate) و روشن کردن S2D
+                            </h3>
+                            <p class="text-xs text-gray-300 leading-relaxed text-justify mb-3">
+                                پس از پاک‌سازی دیسک‌ها، ابتدا با دستور <code class="mono-inline">Test-Cluster</code> بخش Storage Spaces Direct را تست می‌کنیم و سپس با یک دستور جادویی، کل استخر S2D، لایه‌های کش و دیسک‌ها به صورت خودکار ساخته می‌شوند:
+                            </p>
+                            <div class="code-block text-xs space-y-2">
+                                <div><span class="text-gray-500"># ۱. تست سلامت پیش‌نیازهای S2D:</span><br>Test-Cluster -Node Node1,Node2,Node3 -Include "Storage Spaces Direct","Inventory","Network","System Configuration"</div>
+                                <div><span class="text-gray-500"># ۲. فعال‌سازی اتوماتیک S2D روی کلاستر:</span><br><span class="text-emerald-400 font-bold">Enable-ClusterStorageSpacesDirect</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Disk Resiliency Modes & Tiering -->
+            <section id="s2d-tiers-resiliency" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-layer-group text-accent"></i>
+                        تحمل خطای دیسک‌ها (Mirror/Parity) و لایه‌بندی Tiering
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            وقتی استخر ذخیره‌سازی (Storage Pool) در S2D ساخته شد، نوبت به ساخت <strong>Virtual Disk (یا همان Volume های CSV)</strong> می‌رسد. در این مرحله که معادل نرم‌افزاری RAID در سطح شبکه است، ۳ روش برای محافظت از دیتا وجود دارد:
+                        </p>
+
+                        <!-- 3 Resiliency Modes -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Two-Way Mirror -->
+                            <div class="bg-black/40 p-5 rounded-xl border border-blue-500/30 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="text-md font-bold text-blue-400 mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-clone"></i> ۱. Two-Way Mirror
+                                    </h3>
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify mb-3">
+                                        شبیه به RAID 1 شبکه‌ای است. از هر قطعه دیتا <strong>۲ نسخه</strong> روی دو نود مختلف نگه می‌دارد. سرعت خواندن و نوشتن فوق‌العاده بالایی دارد.
+                                    </p>
+                                </div>
+                                <div class="bg-[#050b14] p-3 rounded-lg border border-white/5 text-[11px] text-gray-400 space-y-1">
+                                    <div>• <strong>حداقل نود:</strong> ۲ سرور</div>
+                                    <div>• <strong>تحمل خطا:</strong> سوختن ۱ نود یا دیسک</div>
+                                    <div>• <strong>راندمان فضا:</strong> ۵۰ درصد</div>
+                                </div>
+                            </div>
+
+                            <!-- Three-Way Mirror -->
+                            <div class="bg-black/40 p-5 rounded-xl border border-emerald-500/30 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="text-md font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-cubes-stacked"></i> ۲. Three-Way Mirror
+                                    </h3>
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify mb-3">
+                                        ایمن‌ترین حالت برای محیط‌های حساس! از هر قطعه دیتا <strong>۳ کپی همزمان</strong> روی ۳ سرور مجزا می‌نویسد. حتی اگر ۲ سرور همزمان بسوزند، دیتا سالم می‌ماند.
+                                    </p>
+                                </div>
+                                <div class="bg-[#050b14] p-3 rounded-lg border border-white/5 text-[11px] text-gray-400 space-y-1">
+                                    <div>• <strong>حداقل نود:</strong> ۳ سرور</div>
+                                    <div>• <strong>تحمل خطا:</strong> سوختن ۲ نود همزمان</div>
+                                    <div>• <strong>راندمان فضا:</strong> ۳۳.۳ درصد</div>
+                                </div>
+                            </div>
+
+                            <!-- Parity -->
+                            <div class="bg-black/40 p-5 rounded-xl border border-purple-500/30 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="text-md font-bold text-purple-400 mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-calculator"></i> ۳. Parity (Single/Dual)
+                                    </h3>
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify mb-3">
+                                        معادل RAID 5 و RAID 6 (مبتنی بر محاسبات ریاضی Erasure Coding). فضای بسیار کمتری هدر می‌دهد اما به دلیل محاسبات بیتِ پریتی، CPU بیشتری مصرف کرده و سرعت Write کمتری دارد.
+                                    </p>
+                                </div>
+                                <div class="bg-[#050b14] p-3 rounded-lg border border-white/5 text-[11px] text-gray-400 space-y-1">
+                                    <div>• <strong>حداقل نود:</strong> ۳ نود (Single) / ۴ نود (Dual)</div>
+                                    <div>• <strong>راندمان فضا:</strong> ۵۰ تا ۸۰ درصد (بسیار بهینه)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Faster Tier vs Standard Tier -->
+                        <div class="bg-gradient-to-br from-accent/15 to-transparent p-6 rounded-xl border border-accent/40 mt-6 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
+                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-bolt text-accent"></i> مفهوم Tiering: ترکیب Faster Tier و Standard Tier
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
+                                در S2D وقتی چند نوع هارد با سرعت‌های متفاوت روی سرورها داریم (مثلاً دیسک‌های پرسرعت SSD/NVMe در کنار هاردهای حجیم HDD)، کلاستر به ما اجازه می‌دهد هنگام ساخت دیسک مجازی، از <strong>Storage Tiers (لایه‌بندی هوشمند)</strong> استفاده کنیم تا هم سرعت بالا داشته باشیم و هم فضای ارزان:
+                            </p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-[#050b14] p-4 rounded-xl border border-accent/30">
+                                    <h4 class="font-bold text-accent text-sm mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-gauge-high"></i> ۱. لایه پرسرعت (Faster Tier / Performance)
+                                    </h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        متشکل از دیسک‌های <strong>SSD یا NVMe</strong> است و معمولاً با الگوریتم پرسرعت <strong>Mirror</strong> پیکربندی می‌شود. تمام داده‌های داغ (Hot Data) و عملیات‌های نوشتن اولیه (Writes) با نهایت سرعت روی این لایه انجام می‌شوند.
+                                    </p>
+                                </div>
+
+                                <div class="bg-[#050b14] p-4 rounded-xl border border-white/10">
+                                    <h4 class="font-bold text-blue-400 text-sm mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-box-archive"></i> ۲. لایه استاندارد / ظرفیتی (Standard / Capacity Tier)
+                                    </h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        متشکل از دیسک‌های <strong>HDD (یا SATA SSD)</strong> است و معمولاً با الگوریتم کم‌مصرف <strong>Parity</strong> پیکربندی می‌شود. داده‌های سرد و آرشیوی (Cold Data) به صورت خودکار در پس‌زمینه از لایه Faster به این لایه منتقل می‌شوند تا فضا بهینه بماند.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    // Active state for sidebar
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; // Trigger reflow for animation
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    // Close sidebar on mobile after click
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
