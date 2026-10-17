@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۱۰</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-cubes-stacked text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۱۰ : CSV & VM Clustering</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="nodes-csv">
+                <i class="fa-solid fa-hard-drive w-5 text-center"></i>
+                <span class="text-sm font-medium">نودهای کلاستر و انقلاب CSV</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="quorum-voting">
+                <i class="fa-solid fa-check-to-slot w-5 text-center"></i>
+                <span class="text-sm font-medium">منطق رأی‌گیری Quorum (زوج/فرد)</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="vm-clustering-migration">
+                <i class="fa-solid fa-truck-fast w-5 text-center"></i>
+                <span class="text-sm font-medium">کلاسترینگ VM و Live Migration</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="role-properties">
+                <i class="fa-solid fa-sliders w-5 text-center"></i>
+                <span class="text-sm font-medium">تنظیمات Role (Preferred/Failback)</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="advanced-policies">
+                <i class="fa-solid fa-shield-halved w-5 text-center"></i>
+                <span class="text-sm font-medium">Dependency و Aggressiveness</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: Cluster Nodes & CSV -->
+            <section id="nodes-csv" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-hard-drive text-accent"></i>
+                        معماری نودهای کلاستر و تریک طلایی CSV
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Cluster Nodes & AD Context -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-network-wired text-accent"></i> نودهای کلاستر و جایگاه آن‌ها در Forest / Domain
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                هر سروری که عضو مجموعه Failover Cluster می‌شود یک <strong>Node (نود)</strong> نام دارد. در طراحی زیرساخت (چه در زمان راه‌اندازی یک <strong>New Forest</strong> و چه در یک <strong>New Domain</strong>)، نودهای یک کلاستر باید همگی در <strong>یک دامین مشترک</strong> عضو (Member Server) باشند تا بتوانند اشیاء کامپیوتری کلاستر یعنی <strong>CNO (Cluster Name Object)</strong> و <strong>VCO (Virtual Computer Object)</strong> را در اکتیو دایرکتوری ثبت و مدیریت کنند.
+                            </p>
+                            <div class="bg-blue-900/20 p-3 rounded-lg border border-blue-500/30 text-xs text-gray-300">
+                                <i class="fa-solid fa-circle-info text-blue-400 me-1"></i>
+                                <strong>نکته معماری:</strong> در صورتی که روی ماشین‌های مجازی داخل کلاستر بخواهید سرویس اکتیو دایرکتوری (New Forest / New Domain) بالا بیاورید، هرگز نباید همه DCها را روی یک نود نگه دارید و باید قوانین Anti-Affinity رعایت شود تا با سوختن یک سرور فیزیکی، کل دامین پایین نیاید.
+                            </div>
+                        </div>
+
+                        <!-- The LUN Problem vs CSV -->
+                        <div class="bg-gradient-to-br from-red-500/10 to-transparent p-6 rounded-xl border border-red-500/20">
+                            <h3 class="text-xl font-bold text-red-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i> فاجعه LUN سنتی بدون CSV (چرا CSV حیاتی است؟)
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در استوریج‌های سنتی کلاستر، سیستم‌فایل NTFS یک محدودیت ذاتی دارد: <strong>در هر لحظه فقط و فقط یک سرور (Owner Node) می‌تواند به یک LUN (دیسک اشتراکی) دسترسی Read/Write داشته باشد</strong> تا دیتا خراب (Corrupt) نشود.
+                            </p>
+                            <div class="bg-black/50 p-4 rounded-lg border border-red-500/30 text-sm text-gray-300 leading-relaxed text-justify">
+                                <strong class="text-white block mb-1">سناریوی بحران:</strong>
+                                فرض کنید یک LUN بزرگ (مثلاً ۱۰ ترابایت) دارید و فایل‌های <strong>۱۰۰ ماشین مجازی (VM)</strong> را داخل این یک LUN گذاشته‌اید. حالا اگر بخواهید <strong>فقط یکی از این VMها</strong> را به نودِ دوم منتقل (Migrate) کنید، چون مالکیتِ VM به مالکیتِ LUN گره خورده است، اگر LUN را به نود دوم جابجا کنید، <strong>هر ۱۰۰ ماشین مجازی به اجبار با هم بلند می‌شوند و به سمت سرور دوم می‌روند!</strong>
+                            </div>
+                        </div>
+
+                        <!-- CSV Solution -->
+                        <div class="bg-gradient-to-br from-accent/10 to-transparent p-6 rounded-xl border border-accent/30 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-1 h-full bg-accent"></div>
+                            <h3 class="text-xl font-bold text-accent mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> راه‌حل مهندسی: تریک CSV (Cluster Shared Volumes)
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                مایکروسافت برای حل این بن‌بست، تکنولوژی <strong>CSV</strong> را معرفی کرد. وقتی روی یک دیسک در کلاستر کلیک راست کرده و گزینه <code class="mono-inline">Add to Cluster Shared Volumes</code> را می‌زنید، جادوی زیر رخ می‌دهد:
+                            </p>
+                            <ul class="space-y-3 text-sm text-gray-300">
+                                <li class="bg-black/40 p-3 rounded-lg border border-white/5 flex items-start gap-3">
+                                    <i class="fa-solid fa-folder-tree text-accent mt-1"></i>
+                                    <div class="text-justify leading-relaxed">
+                                        <strong>حذف Drive Letter و مپ شدن در مسیر واحد:</strong> دیسک دیگر درایو E یا F نمی‌گیرد، بلکه روی تمام نودهای کلاستر دقیقاً در مسیر <code class="mono-inline">C:\ClusterStorage\Volume1</code> مپ (Mount) می‌شود.
+                                    </div>
+                                </li>
+                                <li class="bg-black/40 p-3 rounded-lg border border-white/5 flex items-start gap-3">
+                                    <i class="fa-solid fa-arrows-split-up-and-left text-accent mt-1"></i>
+                                    <div class="text-justify leading-relaxed">
+                                        <strong>دسترسی همزمان (Simultaneous Read/Write):</strong> فایل‌سیستم به <strong>CSVFS</strong> تبدیل می‌شود. حالا <strong>تمام نودهای کلاستر می‌توانند به صورت همزمان</strong> روی همان یک LUN بخوانند و بنویسند! (یک نود به عنوان <em>Coordinator Node</em> فقط تغییرات متادیتای فایل‌سیستم را مدیریت می‌کند).
+                                    </div>
+                                </li>
+                                <li class="bg-black/40 p-3 rounded-lg border border-white/5 flex items-start gap-3">
+                                    <i class="fa-solid fa-check-double text-emerald-400 mt-1"></i>
+                                    <div class="text-justify leading-relaxed">
+                                        <strong>استقلال کامل VMها:</strong> حالا اگر ۱۰۰ ماشین مجازی روی یک LUN باشند، شما می‌توانید هر VM را کاملاً مستقل و بدون تکان خوردن LUN یا سایر ماشین‌ها، در کسری از ثانیه بین نودها جابجا (Live Migrate) کنید.
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Quorum & Voting -->
+            <section id="quorum-voting" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-check-to-slot text-accent"></i>
+                        کالبدشکافی Quorum: قانون زوج و فرد و حق رأی Witness
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            همانطور که می‌دانیم، هدف Quorum جلوگیری از پدیده مرگبار <strong>Split-Brain</strong> است. قانون آهنین کلاستر این است: <strong>مجموع کل آرای فعال در کلاستر همواره باید یک عدد «فرد» (Odd) باشد</strong> تا هیچ‌گاه نتیجه رأی‌گیری مساوی (۵۰-۵۰) نشود و همیشه یک طرف حائز اکثریت آرا (بیش از نصف) گردد.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Odd Nodes -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-emerald-500/20 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-emerald-500"></div>
+                                <h3 class="text-lg font-bold text-emerald-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-server"></i> سناریوی نودهای فرد (مثلاً ۳ یا ۵ سرور)
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                    وقتی تعداد سرورهای شما <strong>فرد</strong> است، هر سرور ۱ حق رأی دارد (مجموعاً ۳ رأی). اگر ۱ سرور بسوزد، ۲ سرور باقی می‌مانند (اکثریت حفظ شده و کلاستر کار می‌کند). اگر ۲ سرور بسوزند، تنها ۱ سرور می‌ماند که چون زیر ۵۰ درصد است، کلاستر برای حفظ سلامت دیتا خودش را خاموش می‌کند.
+                                </p>
+                                <div class="bg-[#050b14] p-3 rounded-lg border border-white/5 text-xs text-gray-400">
+                                    در این حالت، نیازی به رأیِ دیسک یا فولدر کمکی نداریم چون خود نودها فرد هستند.
+                                </div>
+                            </div>
+
+                            <!-- Even Nodes -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-orange-500/20 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                                <h3 class="text-lg font-bold text-orange-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-scale-unbalanced"></i> سناریوی نودهای زوج (مثلاً ۲ یا ۴ سرور)
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                    وقتی تعداد سرورها <strong>زوج</strong> است (مثلاً ۲ نود)، اگر یکی قطع شود، ۱ رأی باقی می‌ماند. ۱ از ۲ می‌شود دقیقاً ۵۰ درصد (نه بیشتر از ۵۰ درصد!). پس کلاستر نمی‌تواند تصمیم بگیرد و کل سیستم می‌خوابد!
+                                </p>
+                                <div class="bg-[#050b14] p-3 rounded-lg border border-white/5 text-xs text-orange-300">
+                                    <strong>راه‌حل:</strong> وارد کردن یک داور یا شاهد (<strong>Witness</strong>) به بازی تا جمع آرا را از ۲ به ۳ (عدد فرد) تبدیل کند!
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Witness Voting Logic (Disk & Folder) -->
+                        <div class="bg-[#050b14] border border-accent/30 p-6 rounded-xl mt-6">
+                            <h3 class="text-xl font-bold text-accent mb-4 border-b border-white/10 pb-3">
+                                LUN (Disk Witness) و فولدر (File Share Witness) در چه شرایطی رأی می‌دهند؟
+                            </h3>
+                            
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-5">
+                                ما دو نوع شاهد مرسوم در شبکه‌های داخلی داریم: <strong>Disk Witness</strong> (یک LUN کوچک حدود ۱ گیگابایت در SAN که CSV <em>نمی‌شود</em>) و <strong>File Share Witness</strong> (یک پوشه Share شده روی سروری خارج از کلاستر، مثل فایل‌سرور یا DC). در ویندوز سرورهای جدید، مکانیزمی به نام <strong>Dynamic Witness (شاهد پویا)</strong> وجود دارد که تعیین می‌کند این شاهدها چه زمانی حق رأی دارند:
+                            </p>
+
+                            <div class="space-y-4">
+                                <div class="bg-emerald-900/15 p-4 rounded-xl border border-emerald-500/30 flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold shrink-0 mt-0.5">۱</div>
+                                    <div>
+                                        <h4 class="font-bold text-white text-sm mb-1">زمانی که تعداد نودهای زنده «زوج» باشد -> Witness رأی دارد (Vote = 1)</h4>
+                                        <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                            اگر ۲ نود زنده دارید، کلاستر به صورت خودکار به Disk Witness یا File Share Witness <strong>یک حق رأی می‌دهد</strong> تا مجموع آرا بشود ۳ (فرد). حالا هر سروری که بتواند زودتر LUN را قفل (Lock) کند یا به فولدر Share دسترسی بگیرد، ۲ رأی از ۳ رأی را صاحب شده و زنده می‌ماند.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="bg-red-900/15 p-4 rounded-xl border border-red-500/30 flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400 font-bold shrink-0 mt-0.5">۰</div>
+                                    <div>
+                                        <h4 class="font-bold text-white text-sm mb-1">زمانی که تعداد نودهای زنده «فرد» باشد -> Witness رأی ندارد (Vote = 0)</h4>
+                                        <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                            اگر کلاستر شما ۳ نود دارد و شما یک Disk Witness هم به آن داده‌اید، چون تعداد نودها خودش فرد است، کلاستر <strong>حق رأی Witness را صفر (غیرفعال) می‌کند!</strong> اما به محض اینکه یکی از ۳ سرور بسوزد و ۲ سرور (زوج) باقی بمانند، قابلیت <em>Dynamic Quorum</em> وارد عمل شده و <strong>فوراً حق رأیِ Witness را روشن (۱) می‌کند</strong> تا دوباره جمع آرا فرد (۲ نود + ۱ شاهد = ۳) شود!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: VM Clustering, Pause/Drain & Live Migration -->
+            <section id="vm-clustering-migration" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-truck-fast text-accent"></i>
+                        کلاسترینگ VM، عملیات Drain و کالبدشکافی Live Migration
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- Steps to Cluster a VM -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-layer-group text-accent"></i> مراحل کلاستر کردن یک VM در Hyper-V (صفر تا صد)
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
+                                شرط اول و حیاتی این است که فایل‌های هارد و کانفیگ ماشین مجازی (VHDX) روی هارد لوکال سرور نباشد، بلکه حتماً داخل مسیر استوریج اشتراکی (<code class="mono-inline">C:\ClusterStorage\VolumeX</code>) ذخیره شده باشد. سپس به دو روش می‌توان آن را کلاستر (HA) کرد:
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-[#050b14] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-accent text-sm block mb-2">روش اول: ماشین از قبل در Hyper-V ساخته شده</strong>
+                                    <ol class="list-decimal list-inside text-xs text-gray-400 space-y-2 leading-relaxed">
+                                        <li>وارد کنسول <strong>Failover Cluster Manager</strong> شوید.</li>
+                                        <li>روی شاخه <strong>Roles</strong> کلیک راست کرده و گزینه <code class="mono-inline">Configure Role</code> را بزنید.</li>
+                                        <li>از لیست سرویس‌ها، گزینه <strong>Virtual Machine</strong> را انتخاب کنید.</li>
+                                        <li>تیک VM مورد نظر را بزنید تا ویزارد آن را به یک رول کلاستر (Highly Available VM) تبدیل کند.</li>
+                                    </ol>
+                                </div>
+                                <div class="bg-[#050b14] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-purple-400 text-sm block mb-2">روش دوم: ساخت مستقیم از داخل کلاستر</strong>
+                                    <ol class="list-decimal list-inside text-xs text-gray-400 space-y-2 leading-relaxed">
+                                        <li>در کنسول کلاستر، روی <strong>Roles</strong> کلیک راست کنید.</li>
+                                        <li>گزینه <code class="mono-inline">Virtual Machines -> New Virtual Machine</code> را بزنید.</li>
+                                        <li>نود مقصد را انتخاب کنید؛ پنجره آشنای Hyper-V باز می‌شود. مسیر ذخیره را روی درایو CSV قرار دهید تا VM از همان لحظه تولد کلاستر شود.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pause & Drain Modes -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-pause text-orange-400"></i> انواع حالت‌های Pause و Drain در نودهای کلاستر
+                            </h3>
+                            <p class="text-sm text-gray-300 mb-4 text-justify">
+                                وقتی روی یکی از نودهای کلاستر (در بخش Nodes) کلیک راست کرده و روی گزینه <strong>Pause</strong> می‌روید، دو انتخاب کاملاً متفاوت پیش روی شماست:
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20">
+                                    <h4 class="font-bold text-emerald-400 text-sm mb-2">۱. Drain Roles (تخلیه کامل نود)</h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify">
+                                        تمام ماشین‌های مجازی و سرویس‌های فعلی روی این نود را به صورت خودکار و بدون قطعی (با Live Migration) به نودهای دیگر منتقل می‌کند و سرور را در حالت <strong>Paused</strong> قرار می‌دهد. عالی برای زمانی که می‌خواهید سرور را خاموش، ری‌استارت یا آپدیت کنید.
+                                    </p>
+                                </div>
+                                <div class="bg-orange-500/10 p-4 rounded-xl border border-orange-500/20">
+                                    <h4 class="font-bold text-orange-400 text-sm mb-2">۲. Do Not Drain Roles (عدم تخلیه)</h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify">
+                                        ماشین‌های مجازی فعلی که روی این سرور روشن هستند <strong>سر جای خود باقی می‌مانند و به کارشان ادامه می‌دهند</strong>؛ اما سرور قفل می‌شود تا هیچ VM یا رول جدیدی از سرورهای دیگر (در صورت Failover) به این نود منتقل نشود. مناسب برای عیب‌یابی نود بدون جابجایی بار فعلی.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Migration & NIC Warning -->
+                        <div class="bg-gradient-to-r from-accent/10 to-transparent p-6 rounded-xl border-r-4 border-accent">
+                            <h3 class="text-xl font-bold text-white mb-3">کالبدشکافی Live Migration و پاشنه آشیل کارت شبکه!</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                <strong>Live Migration</strong> یعنی انتقال یک ماشین مجازیِ روشن از یک سرور فیزیکی به سرور دیگر، بدون اینکه کاربر حتی یک پینگ (Ping) را از دست بدهد! (در کنسول: <code class="mono-inline">Right Click VM -> Move -> Live Migration -> Select Node</code>).
+                            </p>
+                            
+                            <div class="bg-[#050b14] p-4 rounded-xl border border-white/5 mb-4">
+                                <strong class="text-accent text-sm block mb-2">زیر پوست Live Migration چه می‌گذرد؟</strong>
+                                <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                    چون فایل هارد (VHDX) روی CSV است، اصلاً نیازی به جابجایی هارد نیست! فقط باید <strong>محتویات RAM و وضعیت CPU</strong> منتقل شود. ابتدا پیکربندی VM در سرور مقصد ساخته می‌شود. سپس صفحات رم (Memory Pages) در پس‌زمینه کپی می‌شوند. در لحظه آخر، ماشین برای چند میلی‌ثانیه Freeze شده، آخرین تغییرات رم (Dirty Pages) و رجیسترهای CPU منتقل می‌شوند و یک پکت <strong>RARP (Reverse ARP)</strong> در سوئیچ شبکه ارسال می‌شود تا ترافیک شبکه به پورت سرور جدید هدایت گردد.
+                                </p>
+                            </div>
+
+                            <div class="bg-red-500/15 p-4 rounded-xl border border-red-500/40 flex items-start gap-3">
+                                <i class="fa-solid fa-skull-crossbones text-red-400 text-xl mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-red-400 text-sm mb-1">خطای مرگبار کارت شبکه و Virtual Switch در مایگریشن</h4>
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify">
+                                        در زمان Live Migration، نام کارت‌های شبکه و به خصوص <strong>نام Virtual Switch در Hyper-V Manager</strong> باید در تمام نودها <strong>مو به مو و با رعایت حروف کوچک و بزرگ یکسان باشد!</strong> اگر در سرور اول اسم سوئیچ مجازی <code class="mono-inline">vSwitch-LAN</code> باشد و در سرور دوم <code class="mono-inline">vSwitch_LAN</code>، به محض اینکه ماشین مایگریت شود یا عملیات فیل می‌شود و یا کارت شبکه VM قطع شده و کل سرویس روی هوا می‌رود!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Role Properties (Preferred, Failover, Failback) -->
+            <section id="role-properties" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-sliders text-accent"></i>
+                        تنظیمات تخصصی Properties در Role کلاستر
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            وقتی روی یک Role (مثلاً یک ماشین مجازی کلاستر شده) کلیک راست کرده و گزینه <strong>Properties</strong> را می‌زنید، دو تب فوق‌العاده حیاتی برای کنترل رفتار HA و جابجایی سرورها وجود دارد:
+                        </p>
+
+                        <!-- Preferred Owners -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-accent/20 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
+                            <h3 class="text-lg font-bold text-accent mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-star"></i> ۱. تب General: تنظیم Preferred Owners (مالکان ترجیحی)
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                در این بخش لیست تمام نودهای کلاستر را می‌بینید. با تیک زدن و جابجا کردن نودها با دکمه‌های Up/Down، به کلاستر می‌گویید که <strong>ترجیح می‌دهید این ماشین مجازی در حالت عادی روی کدام سرور فیزیکی روشن باشد</strong> و اگر آن سرور سوخت، به ترتیب سراغ کدام نودهای بعدی برود.
+                            </p>
+                            <div class="bg-[#050b14] p-3 rounded-lg border border-white/5 text-xs text-gray-400">
+                                <strong>مثال:</strong> اگر سرور ۱ قوی‌ترین سرور شماست، برای VM دیتابیس، سرور ۱ را به عنوان Preferred Owner اول و سرور ۲ را در رتبه دوم قرار می‌دهید.
+                            </div>
+                        </div>
+
+                        <!-- Failover & Failback -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Failover Settings -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-orange-400 mb-3 border-b border-white/10 pb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-rotate"></i> ۲. تب Failover: محدودیت خطا
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                    شامل دو پارامتر <strong>Maximum failures in the specified period</strong> و <strong>Period (hours)</strong> است.
+                                </p>
+                                <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                    مشخص می‌کند اگر یک سرویس دچار مشکل شد، کلاستر در یک بازه زمانی مشخص (مثلاً ۶ ساعت) حداکثر چند بار تلاش کند آن را ری‌استارت یا بین نودها جابجا کند. اگر تعداد خرابی از این عدد رد شد، کلاستر می‌فهمد مشکل از خودِ سرویس است و دیگر آن را بی‌هدف بین سرورها پاس‌کاری (Flapping) نمی‌کند و در حالت Failed نگه می‌دارد.
+                                </p>
+                            </div>
+
+                            <!-- Failback Settings -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-emerald-400 mb-3 border-b border-white/10 pb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i> ۳. تب Failover: سیاست Failback
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                    فرض کنید سرور ۱ (Preferred Owner) خاموش شده و VM به سرور ۲ رفته است (Failover). حالا سرور ۱ تعمیر شده و دوباره روشن می‌شود! آیا VM باید به خانه اصلی خود (سرور ۱) برگردد؟
+                                </p>
+                                <ul class="space-y-2 text-xs text-gray-400">
+                                    <li><strong class="text-red-400">Prevent Failback (پیش‌فرض):</strong> خیر! ماشین روی همان سرور ۲ بماند تا جابجایی اضافی در شبکه رخ ندهد.</li>
+                                    <li><strong class="text-emerald-400">Allow Failback:</strong> بله، به سرور ۱ برگردد! (الزامی است که برای کار کردن این گزینه، حتماً Preferred Owner تعیین شده باشد). دارای دو حالت است:
+                                        <div class="mt-1 ps-3 border-r-2 border-emerald-500/40 space-y-1 text-[11px] text-gray-300">
+                                            <div>• <strong>Immediately:</strong> به محض بالا آمدن سرور ۱، فوراً برگردد.</div>
+                                            <div>• <strong>Failback between X and Y hours:</strong> بسیار هوشمندانه! مثلاً می‌گوییم بین ساعت ۲۲ شب تا ۲ بامداد برگردد تا در ساعات اداری هیچ فشار شبکه‌ای ایجاد نشود.</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Dependencies, Advanced Policies & Aggressiveness -->
+            <section id="advanced-policies" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-shield-halved text-accent"></i>
+                        مفاهیم Dependency، Advanced Policies و Aggressiveness
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- Dependencies -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-diagram-project text-accent"></i> ۱. مفهوم Dependency (وابستگی منابع در کلاستر)
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                هر Role در کلاستر از چند <strong>Resource (منبع)</strong> کوچکتر تشکیل شده است (مثل IP Address، Network Name، دیسک فیزیکی، و خودِ سرویس یا VM). با کلیک راست روی هر Resource و رفتن به تب <strong>Dependencies</strong>، می‌توانیم ترتیب بالا آمدن و وابستگی آن‌ها را با منطق <strong>AND / OR</strong> تعریف کنیم.
+                            </p>
+                            <div class="bg-[#050b14] p-4 rounded-lg border border-white/5 text-xs text-gray-400 leading-relaxed text-justify">
+                                <strong>مثال عملی:</strong> در یک رول دیتابیس، سرویس موتور دیتابیس (SQL Engine) به دو چیز وابسته (Dependent) است: اول باید <strong>دیسک (Storage)</strong> کاملاً آنلاین شود و دوم <strong>Network Name (و آن هم وابسته به IP)</strong> بالا بیاید. کلاستر تا زمانی که پیش‌نیازها را ۱۰۰٪ آنلاین نکند، سراغ روشن کردن ریسورسِ وابسته نمی‌رود. در زمان خاموش شدن نیز ترتیب دقیقاً برعکس می‌شود.
+                            </div>
+                        </div>
+
+                        <!-- Advanced Policies (Possible Owners) -->
+                        <div class="bg-black/40 p-6 rounded-xl border border-purple-500/20 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-purple-500"></div>
+                            <h3 class="text-lg font-bold text-purple-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-user-lock"></i> ۲. تب Advanced Policies و راز Possible Owners
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-3">
+                                اگر روی خودِ Resource داخل یک رول (مثلاً Resource ماشین مجازی در تب پایین کنسول) کلیک راست کرده و Properties بگیرید، تبی به نام <strong>Advanced Policies</strong> می‌بینید که گزینه بسیار مهمی به نام <strong>Possible Owners (مالکان ممکن)</strong> دارد.
+                            </p>
+                            <div class="bg-purple-900/15 p-4 rounded-lg border border-purple-500/30 text-sm text-gray-300 leading-relaxed text-justify">
+                                <strong class="text-white block mb-1">تفاوت حیاتی Preferred Owner و Possible Owner:</strong>
+                                در <em>Preferred Owner</em> می‌گفتیم «ترجیح می‌دهیم روی نود ۱ و ۲ باشد، ولی اگر سوختند برو روی نود ۳». اما اگر در <strong>Possible Owners</strong> تیکِ نود ۳ را بردارید، یعنی این نود اصلاً لایسنس یا سخت‌افزارِ اجرای این سرویس را ندارد! حتی اگر نود ۱ و ۲ کاملاً بسوزند و فقط نود ۳ در کلاستر زنده باشد، <strong>این VM هرگز روی نود ۳ روشن نخواهد شد!</strong> (در این تب گزینه‌هایی مثل <em>Run this resource in a separate Resource Monitor</em> نیز برای ایزوله کردن پروسه تست سلامت وجود دارد).
+                            </div>
+                        </div>
+
+                        <!-- Aggressiveness -->
+                        <div class="bg-gradient-to-l from-red-500/10 to-transparent p-6 rounded-xl border-l-4 border-red-500">
+                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-gauge-high text-red-400"></i> ۳. مفهوم Aggressiveness (درجه حساسیت و سخت‌گیری کلاستر)
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                <strong>Aggressiveness</strong> در معماری کلاستر و Hyper-V مشخص می‌کند که کلاستر چقدر نسبت به اختلالات شبکه، قطع شدن پالس‌های Heartbeat، هنگ کردن موقتی سرور (Unresponsiveness) یا نوسان نودها (Flapping) <strong>سخت‌گیر و تهاجمی</strong> رفتار کند.
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-black/50 p-4 rounded-xl border border-white/5">
+                                    <h4 class="font-bold text-red-400 text-sm mb-2">حساسیت بالا (High Aggressiveness)</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        با کوچک‌ترین تأخیر در شبکه یا از دست رفتن چند پالس Heartbeat (مثلاً تنظیم مقادیر پایین برای <code class="mono-inline">SameSubnetThreshold</code>)، کلاستر سریعاً فرض می‌کند نود مرده است و فوراً دستور Failover صادر می‌کند یا نودِ نوسانی را سریعاً <strong>قرنطینه (Node Quarantine)</strong> می‌کند.
+                                    </p>
+                                </div>
+                                <div class="bg-black/50 p-4 rounded-xl border border-white/5">
+                                    <h4 class="font-bold text-blue-400 text-sm mb-2">حساسیت پایین / بردباری بالا (Low / Relaxed)</h4>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        در شبکه‌هایی که زیرساخت شلوغ است یا نودها در سایت‌های جغرافیایی مختلف (Geo-Cluster) هستند، حساسیت را پایین می‌آوریم تا کلاستر به خاطر یک قطعی ۱ ثانیه‌ایِ سوئیچ، بی‌دلیل کل ماشین‌های مجازی را جابجا نکند و کمی صبر (Resiliency) به خرج دهد.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    // Active state for sidebar
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; // Trigger reflow for animation
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    // Close sidebar on mobile after click
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
