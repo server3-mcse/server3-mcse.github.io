@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۱۳</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-certificate text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۱۳ : ADCS & EFS</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="efs-dra-export">
+                <i class="fa-solid fa-key w-5 text-center"></i>
+                <span class="text-sm font-medium">پیکربندی EFS و DRA</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="iis-san-challenge">
+                <i class="fa-solid fa-globe w-5 text-center"></i>
+                <span class="text-sm font-medium">خطای HTTPS و معمای SAN</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="cert-requests">
+                <i class="fa-solid fa-file-signature w-5 text-center"></i>
+                <span class="text-sm font-medium">درخواست با MMC و Web</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="gpo-root-cert">
+                <i class="fa-solid fa-network-wired w-5 text-center"></i>
+                <span class="text-sm font-medium">پخش Root CA با GPO</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="auto-enrollment">
+                <i class="fa-solid fa-robot w-5 text-center"></i>
+                <span class="text-sm font-medium">جادوی Auto-Enrollment</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: EFS Recovery Agent & DRA -->
+            <section id="efs-dra-export" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-key text-accent"></i>
+                        اولین گام پس از CA: پیاده‌سازی EFS Recovery Agent
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-3">چرا این اولین و حیاتی‌ترین کار است؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                بلافاصله پس از نصب Enterprise CA در شبکه، مهم‌ترین اقدام پیشگیرانه، راه‌اندازی <strong>EFS Recovery Agent</strong> است. اگر کاربری فایلی را با ویژگی EFS ویندوز رمزنگاری کند و سپس اکانت او پاک شود یا پسوردش را فراموش کند، آن فایل برای همیشه غیرقابل دسترسی خواهد شد!
+                            </p>
+                            
+                            <div class="bg-gradient-to-l from-emerald-500/10 to-transparent p-4 rounded-xl border-l-4 border-emerald-500">
+                                <h4 class="font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-shield-halved"></i> Data Recovery Agent (DRA) چیست؟
+                                </h4>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    <strong>DRA (عامل بازیابی داده)</strong> مانند یک «شاه‌کلید سازمانی» عمل می‌کند. وقتی ادمین یک سرتیفیکت EFS Recovery برای خود صادر می‌کند و آن را از طریق GPO در کل شبکه پخش می‌کند، از آن لحظه به بعد هر فایلی که توسط هر کاربری رمزنگاری شود، ویندوز به صورت نامرئی یک کپی از کلیدِ بازگشاییِ آن فایل را با <strong>Public Key مربوط به DRA</strong> نیز قفل می‌کند. بدین ترتیب ادمین همیشه می‌تواند قفل فایل هر کاربری را بشکند.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Private Key Export (Crucial Step) -->
+                        <div class="bg-red-900/15 p-6 rounded-xl border border-red-500/30 relative overflow-hidden shadow-[0_0_15px_rgba(239,68,68,0.05)]">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-red-500"></div>
+                            <h3 class="text-lg font-bold text-red-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-skull-crossbones"></i> صدور سرتیفیکت و خروج فوری Private Key!
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-4">
+                                ادمین از طریق MMC درخواست یک سرتیفیکتِ <strong>EFS Recovery</strong> می‌دهد. اما نگه داشتن این سرتیفیکت (به خصوص کلید خصوصی آن) روی سیستم ادمین یک فاجعه امنیتی است! اگر سیستم ادمین هک شود، هکر شاه‌کلید تمام فایل‌های رمزنگاری شده سازمان را به دست آورده است.
+                            </p>
+                            <div class="bg-black/50 p-4 rounded-lg border border-white/5">
+                                <strong class="text-white text-sm block mb-2">روند اصولی (Export & Vault):</strong>
+                                <ol class="list-decimal list-inside text-sm text-gray-400 space-y-2">
+                                    <li>وارد کنسول <code class="mono-inline">certmgr.msc</code> شوید و روی سرتیفیکت DRA کلیک راست کنید (Export).</li>
+                                    <li>گزینه <strong>Yes, export the private key</strong> را انتخاب کنید (فرمت PFX).</li>
+                                    <li>یک <strong>پسورد بسیار قدرتمند</strong> روی فایل PFX بگذارید.</li>
+                                    <li>فایل PFX را روی یک فلش مموریِ امن ریخته، آن را در <strong>گاوصندوق فیزیکی سازمان</strong> قرار دهید.</li>
+                                    <li><strong>بسیار مهم:</strong> پس از اکسپورت، سرتیفیکت را از روی سیستمِ خودتان (Personal Store) کاملاً پاک (Delete) کنید! هر زمان که کاربری فایلش قفل شد، فلش را آورده، سرتیفیکت را موقتاً Import کرده، فایل را باز می‌کنید و دوباره سرتیفیکت را پاک می‌کنید.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: IIS & SAN Challenge -->
+            <section id="iis-san-challenge" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-globe text-accent"></i>
+                        سرتیفیکت IIS، خطای مرورگرها و معمای SAN
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-2">ایمن‌سازی IIS وب‌سرور داخلی</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در شبکه‌های دامین، سایت‌های داخلی (مثل پورتال پرسنل روی IIS) به صورت پیش‌فرض با HTTP (پورت 80) بالا می‌آیند که ناامن است. ما می‌توانیم با درخواست یک سرتیفیکت از نوع <strong>Web Server</strong> از CA داخلی خودمان، و Bind کردن آن به پورت 443 در IIS، ترافیک را امن کنیم.
+                            </p>
+                        </div>
+
+                        <!-- The SAN Challenge -->
+                        <div class="bg-gradient-to-br from-orange-500/10 to-transparent p-6 rounded-xl border border-orange-500/30">
+                            <h3 class="text-xl font-bold text-orange-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i> خطای مدرن مرورگرها: "سرتیفیکت مایکروسافتی SAN می‌خواهد!"
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در گذشته، مرورگرها برای تأیید هویت سایت، فقط فیلد <strong>Common Name (CN)</strong> سرتیفیکت را با آدرس سایت چک می‌کردند. اما مرورگرهای مدرن (مثل Chrome و Edge) بر اساس استانداردهای جدید (RFC 2818)، فیلد CN را برای امنیت کافی نمی‌دانند و آن را <strong>Deprecated (منسوخ)</strong> کرده‌اند.
+                            </p>
+                            
+                            <div class="bg-[#050b14] p-4 rounded-xl border border-white/5 mb-4">
+                                <strong class="text-white text-sm block mb-2">مشکل چیست؟</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    هنگامی که شما از ویزارد پیش‌فرض IIS برای درخواست سرتیفیکت از CA مایکروسافتی استفاده می‌کنید، ویزارد فقط مقدار CN را پر می‌کند. در نتیجه، حتی اگر CA شما کاملاً مورد اعتماد کلاینت باشد، مرورگر به خاطر <strong>نبودن فیلد SAN (Subject Alternative Name)</strong> خطای قرمز HTTPS (Not Secure) می‌دهد!
+                                </p>
+                            </div>
+
+                            <div class="bg-emerald-900/15 p-4 rounded-xl border border-emerald-500/30">
+                                <strong class="text-emerald-400 text-sm block mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-wrench"></i> راه‌حل‌های مهندسی برای حل مشکل SAN:
+                                </strong>
+                                <ul class="list-disc list-inside text-sm text-gray-300 space-y-2">
+                                    <li>
+                                        <strong>روش اول (Custom Template):</strong> در کنسول <code>certtmpl.msc</code>، از قالب Web Server یک Duplicate می‌گیریم و در تب Subject Name تنظیم می‌کنیم که اطلاعات (از جمله DNS Name به عنوان SAN) را مستقیماً از اکتیو دایرکتوری بخواند.
+                                    </li>
+                                    <li>
+                                        <strong>روش دوم (MMC Request):</strong> به جای استفاده از کنسول IIS، درخواست را از طریق کنسول <code>certlm.msc -> Certificates</code> می‌دهیم. در فرم درخواست، به صورت دستی در بخش <strong>Alternative name</strong>، مقادیر DNS (مانند <code class="mono-inline">portal.corp.local</code> و IP سرور) را اضافه می‌کنیم و سپس سرتیفیکت نهایی را در IIS ایمپورت می‌کنیم.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: MMC & Web Enrollment -->
+            <section id="cert-requests" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-file-signature text-accent"></i>
+                        روش‌های درخواست سرتیفیکت: MMC و Web Enrollment
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- MMC Request -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-white/5 hover:border-blue-500/30 transition-colors">
+                                <h3 class="text-lg font-bold text-blue-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-window-maximize"></i> درخواست از طریق کنسول MMC
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                    این روش برای سیستم‌هایی است که <strong>عضو دامین (Domain-Joined)</strong> هستند. کاربر یا ادمین با تایپ <code class="mono-inline">certmgr.msc</code> (برای یوزر) یا <code class="mono-inline">certlm.msc</code> (برای کامپیوتر) وارد کنسول می‌شود.
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-gray-400 space-y-2">
+                                    <li>با کلیک راست روی پوشه Personal و زدن Request New Certificate، به CA متصل می‌شود.</li>
+                                    <li>بهترین مزیت این روش، توانایی <strong>Customize کردن جزئیات</strong> (مثل اضافه کردن فیلد SAN، تعیین طول کلید و مقادیر دلخواه) قبل از ارسال درخواست است.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Web Enrollment -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-white/5 hover:border-purple-500/30 transition-colors">
+                                <h3 class="text-lg font-bold text-purple-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-brands fa-chrome"></i> درخواست تحت وب (Web Enrollment)
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                    سرویس Web Enrollment یک فیچر جانبی (Role Service) در ADCS است که یک وب‌سایت کوچک روی IIS سرور CA می‌سازد (معمولاً در مسیر <code class="mono-inline">http://ca-server/certsrv</code>).
+                                </p>
+                                <strong class="text-white text-xs block mb-1">سناریوی استفاده:</strong>
+                                <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                    مختص زمانی است که دستگاهِ متقاضی <strong>عضو دامین نیست!</strong> (مانند سیستم‌عامل‌های لینوکس، مک، موبایل‌ها، یا کاربرانی که از بیرون شبکه VPN زده‌اند). این کاربران نمی‌توانند از کنسول MMC به CA دامین وصل شوند، در نتیجه از طریق مرورگر وب به این پورتال رفته و درخواست فایل سرتیفیکت می‌دهند.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: GPO Root Deployment -->
+            <section id="gpo-root-cert" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-network-wired text-accent"></i>
+                        پخش کردن Root Certificate در کل دامین (تراستد روت)
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="bg-black/40 p-6 rounded-xl border border-accent/20 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-accent"></div>
+                            <h3 class="text-lg font-bold text-white mb-3">چرا سیستم‌ها ارور Untrusted می‌دهند؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                وقتی یک سرور CA داخلی راه می‌اندازیم، سرتیفیکت‌های صادر شده توسط آن برای کلاینت‌ها ناشناخته است (مگر اینکه کلاینت به طور خودکار CA را بشناسد). برای اینکه همه مرورگرها و کلاینت‌ها در سازمان، بدون هیچ خطایی، سرتیفیکت‌های صادر شده توسط CA ما را قبول کنند، باید <strong>سرتیفیکتِ اصلی خودِ CA (Root Certificate)</strong> را به پوشه <strong>Trusted Root Certification Authorities</strong> در تک‌تک سیستم‌ها اضافه کنیم.
+                            </p>
+                            
+                            <div class="bg-[#050b14] p-5 rounded-xl border border-white/5">
+                                <strong class="text-accent text-sm block mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-share-nodes"></i> راه‌حل: پخش با Group Policy (GPO)
+                                </strong>
+                                <ol class="list-decimal list-inside text-sm text-gray-400 space-y-3 leading-relaxed marker:text-accent font-bold">
+                                    <li><span class="font-normal text-white">دریافت فایل:</span> <span class="font-normal">ابتدا وارد سرور CA شده و سرتیفیکتِ روت آن را با فرمت <code class="mono-inline">.cer</code> اکسپورت می‌گیریم. (بدون پرایوت کی).</span></li>
+                                    <li><span class="font-normal text-white">ایجاد GPO:</span> <span class="font-normal">در دامین کنترلر، یک Group Policy جدید در سطح دامین (Default Domain Policy) می‌سازیم.</span></li>
+                                    <li><span class="font-normal text-white">مسیر اعمال:</span> <span class="font-normal">به مسیر زیر می‌رویم: <br>
+                                        <code class="text-xs text-purple-300 bg-purple-900/20 px-2 py-1 rounded block mt-2 mb-1">Computer Configuration > Policies > Windows Settings > Security Settings > Public Key Policies</code></span>
+                                    </li>
+                                    <li><span class="font-normal text-white">ایمپورت در تراستد روت:</span> <span class="font-normal">روی پوشه <strong>Trusted Root Certification Authorities</strong> کلیک راست کرده و Import را می‌زنیم. فایل <code class="mono-inline">.cer</code> را آدرس می‌دهیم.</span></li>
+                                    <li><span class="font-normal text-accent">نتیجه:</span> <span class="font-normal">با یک بار <code class="mono-inline">gpupdate /force</code> یا ری‌استارت، این سرتیفیکت روت به صورت اجباری در گاوصندوق تراستِ تمامی ویندوزهای سازمان قرار می‌گیرد.</span></li>
+                                </ol>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Auto-Enrollment -->
+            <section id="auto-enrollment" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-robot text-accent"></i>
+                        جادوی بی‌صدا: مکانیزم Auto-Enrollment
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-l from-emerald-500/10 to-transparent p-6 rounded-xl border-l-4 border-emerald-500">
+                            <h3 class="text-xl font-bold text-white mb-3">Auto-Enrollment چیست؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                <strong>Auto-enrollment (ثبت نام خودکار)</strong> قدرت واقعی و Enterprise سرویس ADCS را نشان می‌دهد. در یک سازمان با ۱۰۰۰ کلاینت، ادمین نمی‌تواند پای هر سیستم برود و دستی درخواست Certificate بدهد! با Auto-enrollment، به محض اینکه کلاینت به شبکه لاگین می‌کند، ویندوز در پس‌زمینه (بدون دخالت کاربر) با CA صحبت کرده و سرتیفیکت مجاز خود را دریافت و نصب می‌کند. (مخصوصاً برای امن کردن وای‌فای با 802.1X یا VPN).
+                            </p>
+                            
+                            <div class="bg-black/50 p-5 rounded-xl border border-white/5">
+                                <strong class="text-emerald-400 text-sm block mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-cogs"></i> دو شرط الزامی برای کار کردن Auto-Enrollment:
+                                </strong>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                                    <div class="bg-[#050b14] p-4 rounded-lg border border-white/10">
+                                        <h4 class="font-bold text-white text-sm mb-2">۱. تنظیمات قالب (Certificate Template)</h4>
+                                        <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                            ابتدا باید در سرور CA، یک کپی از قالب مورد نظر (مثلا User یا Computer) بگیریم. سپس در تب Securityِ آن قالب، علاوه بر دسترسی‌های <strong>Read</strong> و <strong>Enroll</strong>، باید تیک حیاتی <strong>Autoenroll</strong> را برای گروه کاربران یا کامپیوترهای هدف فعال کنیم (Allow).
+                                        </p>
+                                    </div>
+                                    <div class="bg-[#050b14] p-4 rounded-lg border border-white/10">
+                                        <h4 class="font-bold text-white text-sm mb-2">۲. فعال‌سازی در Group Policy</h4>
+                                        <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                            حتی اگر قالب تنظیم شود، کلاینت نمی‌داند که باید برود و درخواست دهد! در GPO (هم در سطح Computer و هم User)، در مسیر <code>Public Key Policies</code> باید ویژگی <strong>Certificate Services Client - Auto-Enrollment</strong> را باز کرده و آن را Enabled کنیم (و دو تیک آپدیت و تمدید خودکار را نیز بزنیم).
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; 
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
