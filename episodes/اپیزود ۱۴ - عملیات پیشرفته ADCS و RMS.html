@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۱۴</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.65);
+            color: #67e8f9;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            direction: ltr;
+            text-align: left;
+            overflow-x: auto;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-shield-virus text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۱۴ : ADCS Advanced & RMS</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="crl-cdp-aia">
+                <i class="fa-solid fa-ban w-5 text-center"></i>
+                <span class="text-sm font-medium">مفاهیم CRL، CDP و AIA</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="ca-storage-hardening">
+                <i class="fa-solid fa-database w-5 text-center"></i>
+                <span class="text-sm font-medium">مکان ذخیره‌سازی و هاردنینگ</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="offline-ca-policy">
+                <i class="fa-solid fa-file-code w-5 text-center"></i>
+                <span class="text-sm font-medium">معماری CAPolicy.inf</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="ad-rms-architecture">
+                <i class="fa-solid fa-file-shield w-5 text-center"></i>
+                <span class="text-sm font-medium">کالبدشکافی AD RMS و CSP</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="rms-email-attribute">
+                <i class="fa-solid fa-envelope-open-text w-5 text-center"></i>
+                <span class="text-sm font-medium">چالش فیلد Email در RMS</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: CRL, CDP, AIA -->
+            <section id="crl-cdp-aia" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-ban text-accent"></i>
+                        کالبدشکافی لیست‌های ابطال (CRL) و مسیریابی
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            وقتی یک سرتیفیکت به هر دلیلی (هک شدن، اخراج کاربر، تعویض سرور) پیش از موعدِ انقضا باطل (Revoke) می‌شود، کلاینت‌های شبکه از کجا باید بفهمند که این سرتیفیکت دیگر اعتبار ندارد؟ پاسخ در مکانیزم‌های <strong>CRL</strong> نهفته است.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Base CRL vs Delta CRL -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-red-500/30 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
+                                <h3 class="text-lg font-bold text-red-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-list-ul"></i> Base CRL و Delta CRL
+                                </h3>
+                                <div class="space-y-3">
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify">
+                                        <strong class="text-white">Base CRL:</strong> فایل اصلی حاوی لیست کامل تمام سرتیفیکت‌های باطل شده است. این فایل می‌تواند بسیار حجیم شود. کلاینت‌ها معمولاً هر یک هفته این فایل را دانلود و کش می‌کنند.
+                                    </p>
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify border-t border-white/10 pt-2">
+                                        <strong class="text-red-300">Delta CRL:</strong> برای جلوگیری از دانلود مداومِ فایل حجیمِ Base، فایل کوچک‌تری به نام Delta (اختلاف) تولید می‌شود. این فایل فقط شامل سرتیفیکت‌هایی است که از زمان تولید آخرین Base CRL باطل شده‌اند. کلاینت‌ها Delta را با فرکانس بالاتر (مثلا روزانه) دانلود می‌کنند.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- CDP and AIA -->
+                            <div class="bg-black/40 p-6 rounded-xl border border-accent/30 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-accent"></div>
+                                <h3 class="text-lg font-bold text-accent mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-route"></i> اکستنشن‌های CDP و AIA
+                                </h3>
+                                <div class="space-y-3">
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify">
+                                        <strong class="text-white">CDP (CRL Distribution Point):</strong> داخل خودِ فایل سرتیفیکت، یک فیلد آدرس (HTTP یا LDAP) وجود دارد به نام CDP. کلاینت با خواندن این آدرس می‌فهمد که فایل CRL را باید از کدام سرور دانلود کند.
+                                    </p>
+                                    <p class="text-xs text-gray-300 leading-relaxed text-justify border-t border-white/10 pt-2">
+                                        <strong class="text-accentHover">AIA (Authority Information Access):</strong> این فیلد در سرتیفیکت، آدرسی را نشان می‌دهد که کلاینت می‌تواند <strong>سرتیفیکتِ صادرکننده (CA)</strong> را از آنجا دانلود کند تا زنجیره اعتماد (Chain of Trust) را در سیستم خودش کامل کند.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Checking Frequency -->
+                        <div class="bg-[#050b14] p-5 rounded-xl border border-white/10 mt-6">
+                            <h3 class="font-bold text-white mb-2 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-clock text-yellow-400"></i> کلاینت‌ها هر چند وقت یک‌بار CRL را چک می‌کنند؟
+                            </h3>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                کلاینت‌ها فایل CRL را دانلود کرده و تا زمانِ فیلد <strong>Next Update (تاریخ انقضای خودِ فایل CRL)</strong> در کَش (Cache) محلی خود نگه می‌دارند. در این مدت به سرور CA مراجعه نمی‌کنند! اگر ادمین، کاربری را همین الان Revoke کند، کلاینتی که CRL قدیمی را کش کرده، تا زمانِ اتمام Next Update آن کَش، متوجه ابطال نخواهد شد. (مگر اینکه ادمین فوراً یک Delta CRL جدید منتشر کند و کلاینت آن را بگیرد).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: CA Storage & Hardening -->
+            <section id="ca-storage-hardening" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-database text-accent"></i>
+                        مکان‌های ذخیره‌سازی و هاردنینگ حیاتی CA
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <!-- Storage Locations -->
+                        <div class="bg-black/30 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">مکان ذخیره‌سازی اطلاعات CA کجاست؟</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-[#050b14] p-4 rounded-lg border border-white/10 flex items-start gap-3">
+                                    <i class="fa-solid fa-folder-open text-blue-400 mt-1"></i>
+                                    <div>
+                                        <strong class="text-white text-sm block mb-1">File System (فایل سیستم)</strong>
+                                        <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                            دیتابیس اصلی CA با فرمت <code class="text-accent">.edb</code> (Extensible Storage Engine) و لاگ‌های آن در مسیر <code class="mono-inline">C:\Windows\System32\CertLog</code> ذخیره می‌شوند. فایل‌های درخواست و خروجی در پوشه <code class="mono-inline">CertEnroll</code> قرار می‌گیرند.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="bg-[#050b14] p-4 rounded-lg border border-white/10 flex items-start gap-3">
+                                    <i class="fa-solid fa-gears text-purple-400 mt-1"></i>
+                                    <div>
+                                        <strong class="text-white text-sm block mb-1">Registry (رجیستری ویندوز)</strong>
+                                        <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                            پیکربندی ساختاری و تنظیمات امنیتی CA در رجیستری در مسیر <br><code class="text-[10px] bg-black px-1 rounded text-purple-300">HKLM\SYSTEM\CurrentControlSet\Services\CertSvc</code><br> ذخیره می‌شود.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CA Hardening (Templates) -->
+                        <div class="bg-gradient-to-r from-red-500/10 to-transparent p-6 rounded-xl border-r-4 border-red-500 mt-6">
+                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-shield-halved text-red-400"></i> هاردنینگ CA: پاک‌سازی تمپلیت‌های خطرناک
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                وقتی یک Enterprise CA نصب می‌کنید، مایکروسافت به صورت پیش‌فرض مجموعه‌ای از Certificate Template ها (مثل Basic EFS, Machine, User, و غیره) را برای صدور فعال می‌کند. <strong>این بزرگترین آسیب‌پذیری پیش‌فرض ADCS است!</strong>
+                            </p>
+                            <div class="bg-black/50 p-4 rounded-lg border border-red-500/30 text-sm text-gray-300 leading-relaxed text-justify">
+                                <strong class="text-red-400 block mb-2"><i class="fa-solid fa-bug me-1"></i> حملات خانواده ESC (ESC1 تا ESC8):</strong>
+                                هکرها با استفاده از اکسپلویت‌هایی مثل <em>Certipy</em> به دنبال تمپلیت‌های پیش‌فرضی می‌گردند که تنظیمات آسیب‌پذیری دارند (مثلاً اجازه می‌دهند کاربر فیلد SAN را خودش وارد کند). با این کار، یک کاربر عادی یک سرتیفیکت به نام Domain Admin صادر کرده و کل شبکه را تصاحب می‌کند! 
+                                <br><br>
+                                <strong class="text-white">قانون طلایی هاردنینگ:</strong> بلافاصله پس از نصب CA، وارد پوشه Certificate Templates شوید و <strong>تمام تمپلیت‌های پیش‌فرض که سازمان به آن‌ها نیازی ندارد را از لیست صدور (Issue) حذف (Delete) کنید.</strong> (این کار آن‌ها را از AD پاک نمی‌کند، فقط از لیست صدور این CA حذف می‌کند).
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: CAPolicy.inf Architecture -->
+            <section id="offline-ca-policy" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-file-code text-accent"></i>
+                        معماری پنهان: فایل CAPolicy.inf
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="bg-black/30 p-6 rounded-xl border border-white/5">
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در معماری Enterprise (ایجاد Offline Root CA)، ما نمی‌توانیم فقط با زدن چند <code>Next</code> در ویزارد، سرور را نصب کنیم! تنظیمات حیاتیِ ریشه‌ای (مانند طول کلید، طول عمر سرتیفیکت، و مسیرهای CRL/AIA) باید <strong>قبل از اجرای ویزارد نصب</strong>، در قالب یک فایل پیکربندی به موتور ADCS تزریق شوند.
+                            </p>
+
+                            <div class="bg-gradient-to-br from-accent/10 to-transparent p-5 rounded-xl border border-accent/30 relative">
+                                <h3 class="font-bold text-accent mb-3">ساختار فایل CAPolicy.inf</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-4">
+                                    این یک فایل متنی ساده است که <strong>باید الزاماً در مسیر <code class="mono-inline">C:\Windows\capolicy.inf</code> ذخیره شود</strong>. وقتی ویزارد نصب ADCS را اجرا می‌کنید، ابتدا چک می‌کند آیا این فایل وجود دارد؟ اگر بود، تنظیمات ویزارد را بر اساس آن Override (بازنویسی) می‌کند.
+                                </p>
+                                
+                                <strong class="text-white text-xs block mb-2">نمونه یک فایل CAPolicy.inf برای Offline Root CA:</strong>
+                                <div class="code-block text-xs space-y-1">
+                                    <div class="text-emerald-400">[Version]</div>
+                                    <div>Signature="$Windows NT$"</div>
+                                    <br>
+                                    <div class="text-emerald-400">[Certsrv_Server]</div>
+                                    <div>RenewalKeyLength=4096</div>
+                                    <div>RenewalValidityPeriod=Years</div>
+                                    <div>RenewalValidityPeriodUnits=20</div>
+                                    <div><span class="text-gray-500">; جلوگیری از نوشتن آدرس‌های اکتیودایرکتوری روی سرور آفلاین</span></div>
+                                    <div class="text-red-400 font-bold">CRLDistributionPoint=Empty</div>
+                                    <div class="text-red-400 font-bold">AuthorityInformationAccess=Empty</div>
+                                </div>
+                                <div class="mt-4 text-xs text-gray-400 text-justify leading-relaxed">
+                                    <strong class="text-white">چرا Empty؟</strong> چون سرور Root قرار است کاملاً خاموش و در گاوصندوق باشد. کلاینت‌ها نمی‌توانند به آن وصل شوند! ما این فیلدها را در سرتیفیکت روت خالی می‌کنیم تا کلاینت‌ها به دنبال لینک‌های مُرده (Dead Links) روی سرور خاموش نگردند. توزیع CRL به عهده سرور Subordinate (Enterprise CA) گذاشته می‌شود.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: AD RMS Architecture -->
+            <section id="ad-rms-architecture" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-file-shield text-accent"></i>
+                        کالبدشکافی AD RMS و مدیریت حقوق فایل
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-xl font-bold text-white mb-3 border-b border-white/10 pb-2">AD RMS چیست؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                <strong>Active Directory Rights Management Services (AD RMS)</strong> راهکار قدرتمند مایکروسافت برای حفاظت از اطلاعات سازمانی (Information Protection) در <strong>سطح خودِ فایل</strong> است (به ویژه اسناد Office و ایمیل‌ها). 
+                                با RMS، حتی اگر یک کارمند فایل محرمانه‌ی Word را روی فلش بریزد و به خانه ببرد، فایل در کامپیوتر خانه باز نخواهد شد!
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div class="bg-[#050b14] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-accent text-sm block mb-2"><i class="fa-solid fa-list-check me-1"></i> امکانات کنترلی (Usage Rights):</strong>
+                                    <ul class="list-disc list-inside text-xs text-gray-400 space-y-1">
+                                        <li>جلوگیری از Print گرفتن سند.</li>
+                                        <li>جلوگیری از Copy/Paste متن داخل سند.</li>
+                                        <li>جلوگیری از Forward کردن ایمیل‌های حساس (Do Not Forward).</li>
+                                        <li>تعیین تاریخ انقضا (Expiration) برای باز شدن فایل.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-[#050b14] p-4 rounded-xl border border-white/5">
+                                    <strong class="text-purple-400 text-sm block mb-2"><i class="fa-solid fa-key me-1"></i> مفهوم CSP:</strong>
+                                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
+                                        سرویس RMS برای تولید کلیدهای رمزنگاری و مدیریت امنیت، به موتور <strong>CSP (Cryptographic Service Provider)</strong> متکی است. CSP می‌تواند نرم‌افزاری (درون خود ویندوز سرور) باشد، یا از ماژول‌های سخت‌افزاری فوق‌امن (HSM) استفاده کند.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: RMS Email Attribute Challenge -->
+            <section id="rms-email-attribute" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-envelope-open-text text-accent"></i>
+                        چالش پنهان: وابستگی قطعی RMS به فیلد Email
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="bg-red-900/15 p-6 rounded-xl border border-red-500/30 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-red-500"></div>
+                            <h3 class="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i> چرا کلاینت‌ها نمی‌توانند فایل را قفل کنند؟
+                            </h3>
+                            
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                در پروسه کاری AD RMS، کلاینت (مثلا نرم‌افزار Word) برای اینکه بتواند سندی را محافظت کند، باید ابتدا از سرور RMS یک <strong>RAC (Rights Account Certificate)</strong> دریافت کند. سرور RMS این سرتیفیکت را بر اساس هویت کاربر صادر می‌کند.
+                            </p>
+
+                            <div class="bg-black/50 p-5 rounded-lg border border-red-500/20 text-sm text-gray-300 leading-relaxed text-justify">
+                                <strong class="text-white block mb-2 text-md">الزام مطلق به فیلد Email در اکتیودایرکتوری!</strong>
+                                <p class="mb-3">
+                                    معماری RMS به گونه‌ای نوشته شده که <strong>هویت کاربر را منحصراً از طریق فیلد «ایمیل» (Mail Attribute) در اکتیو دایرکتوری شناسایی می‌کند.</strong> 
+                                </p>
+                                <p class="text-accent bg-accent/10 p-2 rounded border border-accent/20">
+                                    اگر در سازمان خود Exchange Server ندارید و فیلد Email در ویژگی‌های کاربران (در ADUC) خالی است، RMS <strong>تحت هیچ شرایطی</strong> به کلاینت RAC نمی‌دهد و کاربر خطای ناشناخته دریافت می‌کند!
+                                </p>
+                                <strong class="text-white block mt-4 mb-1">راه‌حل:</strong>
+                                حتی اگر ایمیل سرور واقعی ندارید، <strong>باید</strong> به صورت فرمالیته، تب General اکانت کاربران در اکتیودایرکتوری را باز کرده و فیلد Email را با یک آدرس مجازی (مثلا <code class="mono-inline">user@corp.local</code>) پر کنید (یا از طریق PowerShell برای همه یوزرها یک ایمیل Fake مقداردهی کنید) تا موتور AD RMS شروع به کار کند.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    // Active state for sidebar
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; // Trigger reflow for animation
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    // Close sidebar on mobile after click
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>

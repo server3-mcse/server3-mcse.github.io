@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویندوز سرور ۳ | اپیزود ۱۵</title>
+    
+    <!-- Vazirmatn Font (Strictly from requested link) -->
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Courier New", 'monospace']
+                    },
+                    colors: {
+                        accent: '#00e5ff',
+                        accentHover: '#33edff',
+                        darkBg: '#050b14',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Dark Theme & Background Pattern */
+        body {
+            font-family: 'Vazirmatn', sans-serif !important;
+            background-color: #050b14;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-sidebar {
+            background: rgba(5, 10, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Sections Toggle */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+        /* Monospace / Code Blocks */
+        .mono-inline {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            color: #67e8f9;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 0.9em;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        /* Sidebar active item styling */
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, transparent 100%);
+            border-right: 3px solid #00e5ff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-sans">
+
+    <!-- Mobile Header & Menu Toggle -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 flex items-center justify-between px-6 border-b border-accent/20">
+        <div class="text-accent font-bold text-lg"><i class="fa-solid fa-server me-2"></i>ویندوز سرور ۳</div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <aside id="sidebar" class="glass-sidebar w-72 fixed h-full right-0 top-0 z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pt-16 lg:pt-0">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/40 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+                <i class="fa-solid fa-shield-cat text-accent text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">مستندات کلاس</h1>
+                <p class="text-accent/80 text-sm">اپیزود ۱۵ : Advanced Security</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 tracking-wider">سرفصل‌های اپیزود</p>
+            
+            <a href="#" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="rms-advanced">
+                <i class="fa-solid fa-file-shield w-5 text-center"></i>
+                <span class="text-sm font-medium">پیکربندی پیشرفته AD RMS</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="dfl-ffl">
+                <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                <span class="text-sm font-medium">سطوح عملکردی (DFL / FFL)</span>
+            </a>
+            
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="protected-users">
+                <i class="fa-solid fa-user-shield w-5 text-center"></i>
+                <span class="text-sm font-medium">گروه قدرتمند Protected Users</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="auth-silos">
+                <i class="fa-solid fa-building-shield w-5 text-center"></i>
+                <span class="text-sm font-medium">Auth Policies & Silos</span>
+            </a>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-all" data-target="service-accounts">
+                <i class="fa-solid fa-robot w-5 text-center"></i>
+                <span class="text-sm font-medium">کالبدشکافی Service Accounts</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:mr-72 min-h-screen pt-20 lg:pt-8 px-4 sm:px-8 lg:px-12 pb-16">
+        <div class="max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: RMS Advanced (Templates, DR, Super User) -->
+            <section id="rms-advanced" class="section-content active fade-in">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-file-shield text-accent"></i>
+                        AD RMS: تمپلیت‌ها، فایل‌های مجاز و بحران ریکاوری
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        
+                        <!-- RMS Templates & File Types -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-accent"></div>
+                                <h3 class="text-lg font-bold text-white mb-3">تمپلیت‌های توزیع‌شده RMS</h3>
+                                <p class="text-[14px] text-gray-300 leading-relaxed text-justify mb-3">
+                                    به جای اینکه هر کاربر دستی مشخص کند چه کسی می‌تواند فایل را بخواند یا پرینت بگیرد، ادمین در کنسول RMS <strong>قالب‌هایی (Rights Policy Templates)</strong> می‌سازد (مثلاً قالب "محرمانه مالی - فقط خواندنی"). این قالب‌ها در شبکه پخش شده و کاربر فقط از منوی آفیس، قالب مورد نظر را روی فایل اعمال می‌کند.
+                                </p>
+                            </div>
+
+                            <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-white mb-3">فایل‌های پشتیبانی شده</h3>
+                                <p class="text-[14px] text-gray-300 leading-relaxed text-justify mb-2">
+                                    RMS مستقیماً از فایل‌های <strong>Enlightened (روشن/سازگار)</strong> پشتیبانی می‌کند. این فایل‌ها شامل اسناد آفیس (Word, Excel, PowerPoint)، فایل‌های XPS، ایمیل‌های Exchange و برخی نرم‌افزارهای PDF خوانِ سازگار هستند.
+                                </p>
+                                <p class="text-xs text-gray-400 bg-white/5 p-2 rounded">
+                                    <strong class="text-accent">ترفند:</strong> فایل‌های ناسازگار (مثل عکس یا فایل متنی ساده) با استفاده از ابزار RMS Sharing به فرمت <strong>.pfile</strong> تبدیل و رمزنگاری می‌شوند تا توسط کلاینتِ RMS محافظت گردند.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- RMS Super User -->
+                        <div class="bg-blue-900/15 p-6 rounded-xl border border-blue-500/30">
+                            <h3 class="text-lg font-bold text-blue-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-mask"></i> گروه Super User در RMS چیست؟
+                            </h3>
+                            <p class="text-sm text-gray-300 leading-relaxed text-justify mb-3">
+                                فرض کنید یک مدیر، فایلی را با RMS قفل کرده که <em>"هیچکس حتی ادمین شبکه نتواند آن را بخواند"</em>. حالا اگر این مدیر اخراج شود یا حکم دادگاه برای بررسی فایل‌های او صادر شود، چه باید کرد؟
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                در تنظیمات RMS، یک گروه ویژه به نام <strong>Super Users</strong> وجود دارد (که دیفالت خاموش است). اعضای این گروه <strong>خداوندگارانِ RMS</strong> هستند و می‌توانند محدودیتِ هر فایلِ محافظت‌شده‌ای را دور بزنند، آن را بخوانند یا قفلش را بشکنند. این نقش فقط در مواقع بازرسی (eDiscovery) یا اضطراری به ادمین‌های ارشد داده می‌شود.
+                            </p>
+                        </div>
+
+                        <!-- Disaster Recovery -->
+                        <div class="bg-gradient-to-r from-red-500/10 to-transparent p-6 rounded-xl border-r-4 border-red-500">
+                            <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-radiation text-red-400"></i> اگر سرور RMS منفجر شود، فایل‌ها چه می‌شوند؟
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                اگر سرور RMS از بین برود، <strong>تمام فایل‌های قفل شده سازمان برای همیشه قفل می‌مانند و نابود می‌شوند!</strong> حتی با نصب یک سرور RMS جدید هم نمی‌توان آن‌ها را باز کرد، چون سرور جدید کلیدهای متفاوتی دارد.
+                            </p>
+                            <div class="bg-black/50 p-4 rounded-lg border border-red-500/30">
+                                <strong class="text-white text-sm block mb-2">نجات از فاجعه (Disaster Recovery):</strong>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                    تنها راه برگرداندن فایل‌ها این است که از قبل، از دو چیز بک‌آپ داشته باشید: <br>
+                                    ۱. <strong>دیتابیس‌های RMS</strong> (از سرور SQL). <br>
+                                    ۲. <strong>کلید خصوصی SLC (Server Licensor Certificate)</strong>. این کلید در هنگام راه‌اندازی با یک پسورد قدرتمند تولید می‌شود و اگر از بین برود، هیچ راه برگشتی در دنیا وجود ندارد. با داشتن این دو، می‌توانید سرور RMS را عیناً در یک ماشین جدید بازیابی کنید.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: DFL & FFL Evolution -->
+            <section id="dfl-ffl" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-layer-group text-accent"></i>
+                        سطوح عملکردی (DFL و FFL) و تغییرات تاریخی
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="text-lg font-bold text-white mb-2">DFL و FFL چیست؟</h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                <strong>Domain/Forest Functional Level</strong> تعیین‌کننده پایین‌ترین نسخه ویندوز سروری است که می‌تواند در دامین یا فارست شما به عنوان Domain Controller (DC) فعالیت کند. با ارتقای این سطوح (که نیازمند آپگرید کردن تمام DCهای قدیمی است)، مایکروسافت قابلیت‌های امنیتی و معماری جدیدی را در ساختار اکتیودایرکتوری شما روشن (Unlock) می‌کند.
+                            </p>
+                            
+                            <strong class="text-accent text-sm block mb-3 border-b border-white/10 pb-2">سیر تکامل قابلیت‌ها با ارتقای Functional Levels:</strong>
+                            <ul class="space-y-4 text-sm text-gray-300">
+                                <li class="bg-white/5 p-4 rounded-lg border border-white/5">
+                                    <strong class="text-white">ویندوز سرور 2008 R2:</strong> 
+                                    مهم‌ترین قابلیتی که با ارتقای FFL به 2008R2 روشن می‌شد، <strong>Active Directory Recycle Bin</strong> بود که به ادمین‌ها اجازه داد یوزرهای پاک‌شده را به طور کامل برگردانند.
+                                </li>
+                                <li class="bg-white/5 p-4 rounded-lg border border-white/5">
+                                    <strong class="text-white">ویندوز سرور 2012:</strong> 
+                                    معرفی ویژگی‌های قدرتمندی مثل <strong>Dynamic Access Control (DAC)</strong> و پشتیبانی KDC از ادعاها (Claims) برای دسترسی‌های فوق‌پیشرفته.
+                                </li>
+                                <li class="bg-white/5 p-4 rounded-lg border border-white/5 border-l-4 border-l-accent">
+                                    <strong class="text-accent">ویندوز سرور 2012 R2:</strong> 
+                                    یک جهش عظیم در امنیت! معرفی گروه فوق‌امنیتی <strong>Protected Users</strong> و راه‌اندازی مکانیزم‌های <strong>Authentication Policies و Silos</strong>.
+                                </li>
+                                <li class="bg-white/5 p-4 rounded-lg border border-white/5">
+                                    <strong class="text-white">ویندوز سرور 2016:</strong> 
+                                    معرفی <strong>PAM (Privileged Access Management)</strong> و قابلیت فوق‌العاده‌ی <strong>Time-to-Live (TTL) برای گروه‌ها</strong> (کاربر می‌تواند فقط برای ۲ ساعت عضو گروه Domain Admins باشد و بعد خودکار خارج شود).
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Protected Users -->
+            <section id="protected-users" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-user-shield text-accent"></i>
+                        گروه فوق‌امنیتی Protected Users
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="bg-red-900/10 p-6 rounded-xl border border-red-500/20 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-1 h-full bg-red-500"></div>
+                            <h3 class="text-xl font-bold text-red-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-hand-fist"></i> این گروه با کاربران چه می‌کند؟
+                            </h3>
+                            <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                                گروه <strong>Protected Users</strong> (معرفی شده در DFL 2012 R2)، یک گاوصندوق امنیتی غیرقابل نفوذ برای ادمین‌های ارشد شبکه است. هر کاربری (مثل Domain Admins) که عضو این گروه شود، تحت شدیدترین پروتکل‌های امنیتی قرار می‌گیرد تا از حملات Pass-the-Hash و دزدیده شدن رمز عبور (Credential Theft) در امان بماند.
+                            </p>
+                            
+                            <div class="bg-black/50 p-5 rounded-lg border border-white/5 text-sm text-gray-400">
+                                <strong class="text-white block mb-3 border-b border-white/10 pb-2">محدودیت‌ها و خاصیت‌های عضویت در این گروه:</strong>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li><strong class="text-red-300">مرگ NTLM:</strong> کاربر دیگر <strong>به هیچ وجه</strong> نمی‌تواند با پروتکل‌های قدیمی و ناامن NTLM, WDigest یا CredSSP احراز هویت کند (فقط و فقط Kerberos مجاز است).</li>
+                                    <li><strong class="text-red-300">الگوریتم‌های قوی:</strong> تیکت‌های Kerberos کاربر دیگر نمی‌توانند با الگوریتم‌های ضعیف (DES یا RC4) رمزنگاری شوند و فقط AES مجاز است.</li>
+                                    <li><strong class="text-orange-400">عدم کش شدن پسورد:</strong> ویندوز رمز این کاربر را در حافظه رم یا هارد (LSA) کَش نمی‌کند. <br><em>نتیجه: اگر ارتباط با DC قطع شود، این کاربر برخلاف بقیه <strong>نمی‌تواند به صورت آفلاین لاگین کند!</strong></em></li>
+                                    <li><strong class="text-orange-400">محدودیت Delegation:</strong> تیکت TGT کاربر قابل تفویض (Delegation) به سرورهای دیگر نیست.</li>
+                                    <li><strong class="text-accent">کاهش زمان TGT:</strong> به جای ۱۰ ساعت دیفالت، تیکت این کاربران معمولاً پس از <strong>۴ ساعت</strong> باطل می‌شود (مگر اینکه با Auth Policy مقدار کمتری تنظیم شود).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Auth Policies & Silos -->
+            <section id="auth-silos" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-building-shield text-accent"></i>
+                        کالبدشکافی Authentication Policies و Silos
+                    </h2>
+
+                    <div class="space-y-6">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Auth Policies -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-white/5">
+                                <h3 class="text-lg font-bold text-accent mb-3">Authentication Policies و مفهوم Time Span</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    این پالیسی‌ها به شما اجازه می‌دهند کنترل دقیقی روی فرآیند صدور تیکت TGT و شرایط دسترسی داشته باشید. 
+                                </p>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify">
+                                    <strong class="text-white">Time Span (بازه زمانی):</strong> شما در این پالیسی می‌توانید <em>Time Span</em> (طول عمر) تیکت TGT را برای یک ادمین حساس به شدت کاهش دهید. مثلاً به جای ১০ ساعت، تنظیم کنید که تیکت او فقط <strong>۲ ساعت (Time Span = 120 mins)</strong> اعتبار داشته باشد و پس از آن نیاز به احراز هویت مجدد (با Smart Card) داشته باشد.
+                                </p>
+                            </div>
+
+                            <!-- Silos -->
+                            <div class="bg-black/30 p-6 rounded-xl border border-purple-500/20 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                <h3 class="text-lg font-bold text-purple-400 mb-3">Authentication Policy Silos (سیلوهای امنیتی)</h3>
+                                <p class="text-sm text-gray-400 leading-relaxed text-justify mb-3">
+                                    <strong>سیلو (Silo)</strong> در لغت به معنای انبار مجزا و ایزوله است. در اکتیو دایرکتوری، سیلوها برای جلوگیری از حرکت عرضی (Lateral Movement) هکرها استفاده می‌شوند.
+                                </p>
+                                <p class="text-sm text-gray-300 leading-relaxed text-justify">
+                                    با استفاده از Silo، ما به DC می‌گوییم: <em>"کاربر X (که ادمین دیتابیس است)، <strong>فقط و فقط</strong> اجازه دارد روی سرور A و سرور B لاگین کند."</em> اگر این ادمین سعی کند (یا هکری پسوردش را بدزدد و سعی کند) با این اکانت روی سیستم حسابداری یا یک کلاینت معمولی لاگین کند، دی‌سی تیکت نمی‌دهد و بلاک می‌شود! این کار اکانت‌های حساس را در سرورهای خاص <strong>قرنطینه</strong> می‌کند.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Service Accounts (MSA/gMSA) -->
+            <section id="service-accounts" class="section-content">
+                <div class="glass-panel rounded-2xl p-6 sm:p-10 mb-8 relative overflow-hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-robot text-accent"></i>
+                        کالبدشکافی Service Accounts و ظهور gMSA
+                    </h2>
+
+                    <div class="space-y-6">
+                        <p class="text-[15px] text-gray-300 leading-relaxed text-justify mb-4">
+                            سرویس‌هایی مثل SQL Server یا IIS برای اجرا شدن در بک‌گراند و دسترسی به منابع شبکه، نیاز به یک اکانت (Identity) دارند. استفاده از اکانت‌های یوزری معمولی برای این کار، یک کابوس امنیتی است.
+                        </p>
+
+                        <!-- Evolution -->
+                        <div class="space-y-4">
+                            
+                            <!-- Traditional -->
+                            <div class="bg-black/40 p-5 rounded-xl border border-white/5 flex items-start gap-4">
+                                <i class="fa-solid fa-user text-gray-500 text-2xl mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-white mb-1">نسل اول: Traditional Service Account</h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        یک یوزر عادی در AD می‌سازیم، تیک <em>Password never expires</em> را می‌زنیم و به سرویس می‌دهیم. <strong>مشکل:</strong> پسورد این اکانت‌ها معمولاً برای سال‌ها عوض نمی‌شود! اگر عوض کنیم، باید برویم روی تمام سرورهایی که با این اکانت کار می‌کنند سرویس را دستی ری‌استارت کرده و پسورد جدید را وارد کنیم که ادمین‌ها معمولاً از این کار فرار می‌کنند!
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- MSA -->
+                            <div class="bg-black/40 p-5 rounded-xl border border-white/5 flex items-start gap-4">
+                                <i class="fa-solid fa-user-shield text-blue-400 text-2xl mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-blue-400 mb-1">نسل دوم: Managed Service Account (MSA)</h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed text-justify">
+                                        معرفی شده در ۲۰۰۸R2. در این حالت، <strong>خودِ اکتیو دایرکتوری پسوردِ سرویس را مدیریت می‌کند</strong> (تولید رندوم با ۱۲۰ کاراکتر پیچیده) و به صورت خودکار هر ۳۰ روز آن را عوض می‌کند. 
+                                        <br><span class="text-orange-400 mt-1 block"><strong>نقطه ضعف بزرگ:</strong> MSA <strong>فقط به یک کامپیوتر</strong> گره می‌خورد! یعنی اگر سرویس شما کلاستر یا NLB باشد (که روی ۳ سرور است)، نمی‌توانید از MSA استفاده کنید.</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- gMSA -->
+                            <div class="bg-gradient-to-r from-emerald-500/10 to-transparent p-5 rounded-xl border-r-4 border-emerald-500 flex items-start gap-4">
+                                <i class="fa-solid fa-users-gear text-emerald-400 text-2xl mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-emerald-400 mb-1">نسل نهایی: Group Managed Service Account (gMSA)</h4>
+                                    <p class="text-[14px] text-gray-300 leading-relaxed text-justify">
+                                        معرفی شده در ۲۰۱۲. این اکانت دقیقاً قابلیت‌های تغییر پسورد خودکارِ MSA را دارد، اما <strong>می‌تواند روی ده‌ها سرور به صورت همزمان نصب شود!</strong> این ویژگی برای NLBها و Failover Clusterها عالی است.
+                                    </p>
+                                    <div class="bg-[#050b14] p-3 rounded-lg border border-white/5 mt-3 text-xs text-gray-400">
+                                        <strong class="text-white">چگونه کار می‌کند؟ (سرویس KDS):</strong><br>
+                                        برای راه‌اندازی gMSA، ابتدا باید یک <strong>KDS Root Key</strong> در دامین تولید کنید. سرویس Key Distribution Service در DCها با استفاده از این کلید مادر، پسوردِ gMSA را محاسبه کرده و به صورت امن به تمام سرورهای مجازیِ گروهِ کلاستر (که مجاز شده‌اند) تحویل می‌دهد.
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section-content');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    sections.forEach(section => {
+                        section.classList.remove('active', 'fade-in');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            void section.offsetWidth; 
+                            section.classList.add('fade-in');
+                        }
+                    });
+
+                    if(window.innerWidth < 1024) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+
+            function openMobileSidebar() {
+                sidebar.classList.remove('translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileSidebar() {
+                sidebar.classList.add('translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuBtn.addEventListener('click', openMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>
